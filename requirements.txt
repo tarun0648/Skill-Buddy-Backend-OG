@@ -1,0 +1,35 @@
+# Core Flask dependencies
+Flask==2.3.3
+Flask-CORS==4.0.0
+Flask-Limiter==3.5.0
+Werkzeug==2.3.7
+
+# Authentication and Security
+cryptography==41.0.4
+
+# Firebase and Google Cloud
+firebase-admin==6.2.0
+google-auth==2.23.3
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+google-cloud-firestore==2.12.0
+
+# Environment and Configuration
+python-dotenv==1.0.0
+
+# Server
+gunicorn==21.2.0
+
+# Caching and Storage
+redis==4.6.0
+
+# Resume Processing Dependencies
+PyPDF2==3.0.1
+anthropic==0.32.0
+requests==2.31.0
+
+# Testing Dependencies (optional)
+reportlab==4.0.4
+
+# Additional utilities
+python-multipart==0.0.6

@@ -1,0 +1,82 @@
+{
+  "personal_information": {
+    "name": "TARUN S",
+    "email": "taruns0648@gmail.com",
+    "phone": "9480620648",
+    "city": null,
+    "country": null
+  },
+  "summary": "Enthusiastic and proactive Computer Science Engineering in Artificial Intelligence and Machine Learning student in the 4th semester, seeking an internship to apply academic knowledge in a real-world setting. Eager to learn and excited to contribute to a dynamic team environment.",
+  "education": [
+    {
+      "school": "PES University",
+      "degree": "B.Tech",
+      "start_year": null,
+      "end_year": "2027",
+      "major": "CSE - AIML",
+      "gpa": "8.02"
+    }
+  ],
+  "work_experience": [],
+  "projects": [
+    {
+      "name": "Random Password Generator Using Python",
+      "start_year": null,
+      "end_year": null,
+      "description": "Developed a program that generates passwords based on user criteria."
+    },
+    {
+      "name": "Audio Visualizer",
+      "start_year": null,
+      "end_year": null,
+      "description": "Created a platform to convert audio into visual form, allowing users to download and modify the output."
+    },
+    {
+      "name": "Alcohol Breath Analyzer Using Arduino",
+      "start_year": null,
+      "end_year": null,
+      "description": "Detected alcohol levels based on temperature monitoring."
+    },
+    {
+      "name": "Chat Bot File Transfer using Wireshark and C",
+      "start_year": null,
+      "end_year": null,
+      "description": "Facilitated file transfer using custom-built chat bot."
+    },
+    {
+      "name": "Rock Paper Scissors Game (Multiuser) using Wireshark and C",
+      "start_year": null,
+      "end_year": null,
+      "description": "Implemented game logic with support for multiple servers."
+    },
+    {
+      "name": "Website Project",
+      "start_year": null,
+      "end_year": null,
+      "description": "Developed front end using HTML, Java and integrated with backend using MongoDB."
+    }
+  ],
+  "certifications": [],
+  "awards": [
+    {
+      "title": "Winner of a Roller Ball Championship",
+      "issuer": null,
+      "year": null
+    }
+  ],
+  "skills": [
+    "Python",
+    "HTML",
+    "Java",
+    "C",
+    "MongoDB",
+    "React",
+    "Programming",
+    "Communication",
+    "Leadership",
+    "Problem-Solving",
+    "English",
+    "Kannada"
+  ],
+  "is_resume": true
+}
