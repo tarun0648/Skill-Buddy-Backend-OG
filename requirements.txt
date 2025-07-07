@@ -1,0 +1,57 @@
+# Core Flask dependencies
+Flask==2.3.3
+Flask-CORS==4.0.0
+Flask-Limiter==3.5.0
+Werkzeug==2.3.7
+
+# Authentication and Security
+cryptography==41.0.4
+
+# Firebase and Google Cloud
+firebase-admin==6.2.0
+google-auth==2.23.3
+google-auth-oauthlib==1.1.0
+google-auth-httplib2==0.1.1
+google-cloud-firestore==2.12.0
+
+# Environment and Configuration
+python-dotenv==1.0.0
+
+# Server
+gunicorn==21.2.0
+
+# Caching and Storage
+redis==4.6.0
+
+# Resume Processing Dependencies
+PyPDF2==3.0.1
+requests==2.31.0
+
+# Web Scraping Dependencies (if needed for future features)
+selenium==4.15.0
+beautifulsoup4==4.12.2
+
+# Testing Dependencies (optional)
+reportlab==4.0.4
+
+# Additional utilities
+python-multipart==0.0.6
+anthropic==0.32.0
+
+# NEW: Profile Analysis Dependencies
+urllib3==2.0.7
+certifi==2023.7.22
+charset-normalizer==3.3.2
+idna==3.4
+
+# NEW: Date and time handling
+python-dateutil==2.8.2
+
+# NEW: JSON handling and validation
+jsonschema==4.19.2
+
+# NEW: API rate limiting and caching
+Flask-Caching==2.1.0
+
+# NEW: Enhanced logging
+structlog==23.2.0
