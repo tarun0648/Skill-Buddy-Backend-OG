@@ -66,9 +66,12 @@ def get_profile():
                 'career_choices': [],
                 'college_name': '',
                 'college_email': '',
+                'github_link': '',
+                'linkedin_link': '',
                 'completion_status': 0,
                 'is_profile_complete': False,
-                'profile_picture': ''
+                'profile_picture': '',
+                'has_resume': False
             }),
             'xp': user.get('xp', {
                 'total_xp': 0,
@@ -90,7 +93,7 @@ def get_profile():
 @user_bp.route('/profile', methods=['PUT'])
 @auth_required
 def update_profile():
-    """Update user profile endpoint"""
+    """Update user profile endpoint - Updated for new completion system"""
     try:
         if not user_model:
             return jsonify({'error': 'Database not available'}), 500
@@ -107,42 +110,40 @@ def update_profile():
             return jsonify({'error': 'User not found'}), 404
         
         current_profile = current_user.get('profile', {})
-        current_completion = current_profile.get('completion_status', 0)
+        old_completion = current_profile.get('completion_status', 0)
         
         # Prepare update data
         update_data = {}
-        new_completion = current_completion
         
         # Handle each profile field
         if 'name' in data and data['name'] and data['name'].strip():
             update_data['profile.name'] = data['name'].strip()
-            if not current_profile.get('name'):
-                new_completion = max(new_completion, 25)
         
         if 'profession' in data and data['profession']:
             valid_professions = ['Student', 'Graduate', 'Post Graduate', 'Professional', 'Switch Career']
             if data['profession'] in valid_professions:
                 update_data['profile.profession'] = data['profession']
-                if not current_profile.get('profession'):
-                    new_completion = max(new_completion, 50)
         
         if 'career_choices' in data and isinstance(data['career_choices'], list):
             # Limit to 3 choices
             career_choices = data['career_choices'][:3]
             update_data['profile.career_choices'] = career_choices
-            if not current_profile.get('career_choices') and career_choices:
-                new_completion = max(new_completion, 75)
         
         if 'college_name' in data and data['college_name'] and data['college_name'].strip():
             update_data['profile.college_name'] = data['college_name'].strip()
-            if not current_profile.get('college_name'):
-                new_completion = max(new_completion, 90)
         
         if 'college_email' in data and data['college_email'] and data['college_email'].strip():
             college_email = data['college_email'].lower().strip()
             if Validator.validate_email(college_email):
                 update_data['profile.college_email'] = college_email
-                new_completion = 100
+        
+        if 'github_link' in data:
+            github_link = data['github_link'].strip() if data['github_link'] else ''
+            update_data['profile.github_link'] = github_link
+        
+        if 'linkedin_link' in data:
+            linkedin_link = data['linkedin_link'].strip() if data['linkedin_link'] else ''
+            update_data['profile.linkedin_link'] = linkedin_link
         
         if 'phone' in data and data['phone']:
             update_data['profile.phone'] = data['phone'].strip()
@@ -150,18 +151,22 @@ def update_profile():
         if 'profile_picture' in data:
             update_data['profile.profile_picture'] = data['profile_picture']
         
-        # Update completion status if changed
-        if new_completion > current_completion:
-            update_data['profile.completion_status'] = new_completion
-            update_data['profile.is_profile_complete'] = new_completion == 100
-            
-            # Calculate XP bonus
-            xp_bonus = 0
-            milestones = {25: 10, 50: 15, 75: 20, 100: 50}
-            
-            for milestone, bonus in milestones.items():
-                if current_completion < milestone <= new_completion:
-                    xp_bonus += bonus
+        # Create updated profile for completion calculation
+        updated_profile = current_profile.copy()
+        for key, value in update_data.items():
+            if key.startswith('profile.'):
+                field_name = key.replace('profile.', '')
+                updated_profile[field_name] = value
+        
+        # Calculate new completion status
+        new_completion = user_model.calculate_profile_completion(updated_profile)
+        update_data['profile.completion_status'] = new_completion
+        update_data['profile.is_profile_complete'] = new_completion == 100
+        
+        # Calculate XP bonus for milestones
+        milestones = user_model.get_completion_milestones(old_completion, new_completion)
+        if milestones:
+            xp_bonus = user_model.calculate_xp_bonus(milestones)
             
             if xp_bonus > 0:
                 current_xp = current_user.get('xp', {}).get('total_xp', 0)
@@ -186,14 +191,14 @@ def update_profile():
             'message': 'Profile updated successfully',
             'profile': updated_user.get('profile', {}),
             'xp': updated_user.get('xp', {}),
-            'completion_status': updated_user.get('profile', {}).get('completion_status', 0)
+            'completion_status': updated_user.get('profile', {}).get('completion_status', 0),
+            'milestones_reached': milestones if milestones else [],
+            'xp_earned': user_model.calculate_xp_bonus(milestones) if milestones else 0
         }), 200
         
     except Exception as e:
         logger.error(f"Profile update error: {str(e)}")
         return jsonify({'error': 'Profile update failed', 'details': str(e)}), 500
-
-# Add this updated endpoint to routes/user_routes.py
 
 @user_bp.route('/resumes', methods=['GET'])
 @auth_required
@@ -226,6 +231,14 @@ def get_user_resumes():
         
         # Get statistics
         statistics = resume_model.get_user_resume_statistics(user_id)
+        
+        # Update user's resume status if they have completed resumes
+        has_resume = statistics['completed'] > 0
+        current_user = user_model.get_user_by_id(user_id)
+        if current_user:
+            current_has_resume = current_user.get('profile', {}).get('has_resume', False)
+            if has_resume != current_has_resume:
+                user_model.update_resume_status(user_id, has_resume)
         
         # Prepare response
         response_data = {
@@ -316,7 +329,7 @@ def get_user_xp():
 @user_bp.route('/profile/completion', methods=['GET'])
 @auth_required
 def get_profile_completion():
-    """Get profile completion status"""
+    """Get profile completion status - Updated for new completion system"""
     try:
         if not user_model:
             return jsonify({'error': 'Database not available'}), 500
@@ -330,23 +343,183 @@ def get_profile_completion():
         profile = user.get('profile', {})
         completion_status = profile.get('completion_status', 0)
         
-        # Get next steps
+        # Get next steps based on new completion system
         next_steps = []
-        if completion_status < 25 or not profile.get('name'):
-            next_steps.append({'step': 'name', 'description': 'Add your name', 'completion': 25})
-        if completion_status < 50 or not profile.get('profession'):
-            next_steps.append({'step': 'profession', 'description': 'Select your profession', 'completion': 50})
-        if completion_status < 75 or not profile.get('career_choices'):
-            next_steps.append({'step': 'career_choices', 'description': 'Choose your career interests', 'completion': 75})
-        if completion_status < 100 or not profile.get('college_name') or not profile.get('college_email'):
-            next_steps.append({'step': 'college_info', 'description': 'Add your education details', 'completion': 100})
+        
+        # Basic profile steps (55% total)
+        if not profile.get('name'):
+            next_steps.append({
+                'step': 'name', 
+                'description': 'Add your name', 
+                'completion': 10,
+                'category': 'basic'
+            })
+        elif not profile.get('profession'):
+            next_steps.append({
+                'step': 'profession', 
+                'description': 'Select your profession', 
+                'completion': 20,
+                'category': 'basic'
+            })
+        elif not profile.get('career_choices') or len(profile.get('career_choices', [])) == 0:
+            next_steps.append({
+                'step': 'career_choices', 
+                'description': 'Choose your career interests', 
+                'completion': 30,
+                'category': 'basic'
+            })
+        elif not profile.get('college_name'):
+            next_steps.append({
+                'step': 'college_name', 
+                'description': 'Add your college/university name', 
+                'completion': 40,
+                'category': 'basic'
+            })
+        elif not profile.get('college_email'):
+            next_steps.append({
+                'step': 'college_email', 
+                'description': 'Add your college email', 
+                'completion': 55,
+                'category': 'basic'
+            })
+        
+        # Additional steps (45% total)
+        if completion_status >= 55:  # Only show these after basic profile is complete
+            if not profile.get('github_link'):
+                next_steps.append({
+                    'step': 'github_link', 
+                    'description': 'Add your GitHub profile link', 
+                    'completion': 70,
+                    'category': 'additional'
+                })
+            
+            if not profile.get('linkedin_link'):
+                next_steps.append({
+                    'step': 'linkedin_link', 
+                    'description': 'Add your LinkedIn profile link', 
+                    'completion': 85,
+                    'category': 'additional'
+                })
+            
+            if not profile.get('has_resume'):
+                next_steps.append({
+                    'step': 'resume_upload', 
+                    'description': 'Upload your resume', 
+                    'completion': 100,
+                    'category': 'additional'
+                })
+        
+        # Completion breakdown
+        completion_breakdown = {
+            'basic_profile': min(completion_status, 55),
+            'basic_profile_complete': completion_status >= 55,
+            'github_linked': bool(profile.get('github_link')),
+            'linkedin_linked': bool(profile.get('linkedin_link')),
+            'resume_uploaded': bool(profile.get('has_resume')),
+            'additional_completion': max(0, completion_status - 55) if completion_status > 55 else 0
+        }
         
         return jsonify({
             'completion_status': completion_status,
             'is_complete': profile.get('is_profile_complete', False),
-            'next_steps': next_steps
+            'next_steps': next_steps,
+            'completion_breakdown': completion_breakdown,
+            'milestones': {
+                'basic_profile_complete': completion_status >= 55,
+                'github_added': bool(profile.get('github_link')),
+                'linkedin_added': bool(profile.get('linkedin_link')),
+                'resume_uploaded': bool(profile.get('has_resume')),
+                'fully_complete': completion_status >= 100
+            }
         }), 200
         
     except Exception as e:
         logger.error(f"Get profile completion error: {str(e)}")
         return jsonify({'error': 'Failed to get profile completion', 'details': str(e)}), 500
+
+@user_bp.route('/profile/links', methods=['PUT'])
+@auth_required
+def update_profile_links():
+    """Update GitHub and LinkedIn links specifically"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+            
+        user_id = request.user_id
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        # Get current user data
+        current_user = user_model.get_user_by_id(user_id)
+        if not current_user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        current_profile = current_user.get('profile', {})
+        old_completion = current_profile.get('completion_status', 0)
+        
+        # Prepare update data
+        update_data = {}
+        
+        if 'github_link' in data:
+            github_link = data['github_link'].strip() if data['github_link'] else ''
+            # Basic GitHub URL validation
+            if github_link and not github_link.startswith(('http://', 'https://')):
+                github_link = 'https://' + github_link
+            update_data['profile.github_link'] = github_link
+        
+        if 'linkedin_link' in data:
+            linkedin_link = data['linkedin_link'].strip() if data['linkedin_link'] else ''
+            # Basic LinkedIn URL validation
+            if linkedin_link and not linkedin_link.startswith(('http://', 'https://')):
+                linkedin_link = 'https://' + linkedin_link
+            update_data['profile.linkedin_link'] = linkedin_link
+        
+        # Create updated profile for completion calculation
+        updated_profile = current_profile.copy()
+        for key, value in update_data.items():
+            if key.startswith('profile.'):
+                field_name = key.replace('profile.', '')
+                updated_profile[field_name] = value
+        
+        # Calculate new completion status
+        new_completion = user_model.calculate_profile_completion(updated_profile)
+        update_data['profile.completion_status'] = new_completion
+        update_data['profile.is_profile_complete'] = new_completion == 100
+        
+        # Calculate XP bonus for milestones
+        milestones = user_model.get_completion_milestones(old_completion, new_completion)
+        if milestones:
+            xp_bonus = user_model.calculate_xp_bonus(milestones)
+            
+            if xp_bonus > 0:
+                current_xp = current_user.get('xp', {}).get('total_xp', 0)
+                new_total_xp = current_xp + xp_bonus
+                new_level = (new_total_xp // 100) + 1
+                
+                update_data['xp.total_xp'] = new_total_xp
+                update_data['xp.level'] = new_level
+        
+        # Apply updates
+        if update_data:
+            success = user_model.update_user(user_id, update_data)
+            if not success:
+                return jsonify({'error': 'Failed to update profile links'}), 500
+        
+        # Get updated user data
+        updated_user = user_model.get_user_by_id(user_id)
+        
+        logger.info(f"Profile links updated for user: {user_id}")
+        
+        return jsonify({
+            'message': 'Profile links updated successfully',
+            'profile': updated_user.get('profile', {}),
+            'completion_status': updated_user.get('profile', {}).get('completion_status', 0),
+            'milestones_reached': milestones if milestones else [],
+            'xp_earned': user_model.calculate_xp_bonus(milestones) if milestones else 0
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Profile links update error: {str(e)}")
+        return jsonify({'error': 'Profile links update failed', 'details': str(e)}), 500

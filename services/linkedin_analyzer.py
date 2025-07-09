@@ -61,15 +61,69 @@ class ClaudeHTTPClient:
             raise
 
 class LinkedInAnalyzerService:
-    """Service for analyzing LinkedIn profiles using Claude AI"""
+    """Service for analyzing LinkedIn profiles using Claude AI - UPDATED for profile completion integration"""
     
     def __init__(self):
         self.db = firebase_config.get_db()
         self.analysis_model = ProfileAnalysisModel(self.db)
         self._processing_threads = {}
     
+    def update_user_linkedin_status(self, user_id: str, linkedin_url: str, analysis_completed: bool = False):
+        """Update user's LinkedIn link in profile and recalculate completion"""
+        try:
+            from models.user_model import UserModel
+            user_model = UserModel(self.db)
+            
+            # Get current user
+            user = user_model.get_user_by_id(user_id)
+            if not user:
+                logger.error(f"User {user_id} not found for LinkedIn update")
+                return
+            
+            current_profile = user.get('profile', {})
+            old_completion = current_profile.get('completion_status', 0)
+            
+            # Update LinkedIn link if not already set or different
+            current_linkedin = current_profile.get('linkedin_link', '')
+            if current_linkedin != linkedin_url:
+                update_data = {
+                    'profile.linkedin_link': linkedin_url,
+                    'updated_at': user_model.db.SERVER_TIMESTAMP if hasattr(user_model.db, 'SERVER_TIMESTAMP') else None
+                }
+                
+                # Recalculate completion
+                updated_profile = current_profile.copy()
+                updated_profile['linkedin_link'] = linkedin_url
+                
+                new_completion = user_model.calculate_profile_completion(updated_profile)
+                update_data['profile.completion_status'] = new_completion
+                update_data['profile.is_profile_complete'] = new_completion == 100
+                
+                # Calculate XP bonus
+                milestones = user_model.get_completion_milestones(old_completion, new_completion)
+                if milestones:
+                    xp_bonus = user_model.calculate_xp_bonus(milestones)
+                    if xp_bonus > 0:
+                        current_xp = user.get('xp', {}).get('total_xp', 0)
+                        new_total_xp = current_xp + xp_bonus
+                        new_level = (new_total_xp // 100) + 1
+                        
+                        update_data['xp.total_xp'] = new_total_xp
+                        update_data['xp.level'] = new_level
+                        
+                        logger.info(f"LinkedIn analysis XP bonus: {xp_bonus} for user {user_id}")
+                
+                # Apply update
+                success = user_model.update_user(user_id, update_data)
+                if success:
+                    logger.info(f"Updated LinkedIn link for user {user_id}: {linkedin_url}")
+                    logger.info(f"Completion updated: {old_completion}% -> {new_completion}%")
+                
+        except Exception as e:
+            logger.error(f"Error updating LinkedIn status for user {user_id}: {e}")
+    
     def start_linkedin_analysis(self, user_id: str, linkedin_url: str, user_profile: Dict[str, Any]) -> Tuple[str, bool]:
-        """Start asynchronous LinkedIn profile analysis"""
+        """Start asynchronous LinkedIn profile analysis - UPDATED"""
         try:
             # Create initial analysis record
             analysis_data = {
@@ -83,7 +137,7 @@ class LinkedInAnalyzerService:
             # Start processing in background thread
             processing_thread = threading.Thread(
                 target=self._analyze_linkedin_async,
-                args=(analysis_id, linkedin_url, user_profile),
+                args=(analysis_id, user_id, linkedin_url, user_profile),
                 daemon=True
             )
             processing_thread.start()
@@ -98,13 +152,16 @@ class LinkedInAnalyzerService:
             logger.error(f"Error starting LinkedIn analysis: {e}")
             return "", False
     
-    def _analyze_linkedin_async(self, analysis_id: str, linkedin_url: str, user_profile: Dict[str, Any]):
-        """Analyze LinkedIn profile asynchronously using Claude AI"""
+    def _analyze_linkedin_async(self, analysis_id: str, user_id: str, linkedin_url: str, user_profile: Dict[str, Any]):
+        """Analyze LinkedIn profile asynchronously using Claude AI - UPDATED"""
         try:
             logger.info(f"Starting async LinkedIn analysis for: {analysis_id}")
             
             # Update status to processing
             self.analysis_model.update_analysis_status(analysis_id, 'processing')
+            
+            # Update user's LinkedIn link in profile (if analysis was initiated)
+            self.update_user_linkedin_status(user_id, linkedin_url, analysis_completed=False)
             
             # Get API key from environment
             claude_api_key = os.environ.get('CLAUDE_API_KEY')
@@ -143,6 +200,9 @@ class LinkedInAnalyzerService:
             # Mark as completed
             self.analysis_model.update_analysis_status(analysis_id, 'completed')
             
+            # Update user's LinkedIn status as completed
+            self.update_user_linkedin_status(user_id, linkedin_url, analysis_completed=True)
+            
             logger.info(f"LinkedIn analysis completed successfully for: {analysis_id}")
             
         except Exception as e:
@@ -155,18 +215,19 @@ class LinkedInAnalyzerService:
                 del self._processing_threads[analysis_id]
     
     def _analyze_linkedin_with_claude(self, client, linkedin_url: str, user_profile: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any], int]:
-        """Analyze LinkedIn profile using Claude AI"""
+        """Analyze LinkedIn profile using Claude AI - UPDATED with better context"""
         try:
             # Extract user context
             user_profession = user_profile.get('profession', 'Not specified')
             user_career_choices = user_profile.get('career_choices', [])
             user_name = user_profile.get('name', 'User')
+            user_college = user_profile.get('college_name', 'Not specified')
             
             # Create comprehensive prompt for LinkedIn analysis
             prompt = f"""
             You are an expert career coach and LinkedIn profile analyst with extensive experience in professional networking and career development.
 
-            **TASK**: Analyze the LinkedIn profile at the following URL and provide comprehensive feedback and improvement suggestions.
+            **TASK**: Analyze the LinkedIn profile and provide comprehensive feedback and improvement suggestions.
 
             **LinkedIn URL**: {linkedin_url}
 
@@ -174,21 +235,22 @@ class LinkedInAnalyzerService:
             - Name: {user_name}
             - Current Profession: {user_profession}
             - Career Interests: {', '.join(user_career_choices) if user_career_choices else 'Not specified'}
+            - College: {user_college}
 
             **IMPORTANT INSTRUCTIONS**:
             Since I cannot directly access LinkedIn profiles, I need you to provide a comprehensive analysis framework and suggestions based on the LinkedIn URL provided and the user's profile context. 
 
-            Please provide analysis and suggestions as if you could see a typical LinkedIn profile for someone in their profession and career stage.
+            Analyze as if this were a typical LinkedIn profile for someone in their profession and career stage, and provide actionable recommendations.
 
             **ANALYSIS FRAMEWORK**:
             Analyze the following aspects of a LinkedIn profile:
 
-            1. **Profile Completeness**
-            2. **Professional Headline & Summary**
-            3. **Work Experience Presentation**
-            4. **Skills & Endorsements**
+            1. **Profile Completeness & Professional Presentation**
+            2. **Headline & Summary Optimization**
+            3. **Experience Section & Achievements**
+            4. **Skills & Endorsements Strategy**
             5. **Network Building & Engagement**
-            6. **Content Strategy**
+            6. **Content Strategy & Thought Leadership**
 
             **OUTPUT FORMAT**:
             Return a JSON object with exactly this structure:
@@ -211,13 +273,25 @@ class LinkedInAnalyzerService:
                         "<specific weakness 3>"
                     ],
                     "key_insights": [
-                        "<insight 1>",
-                        "<insight 2>",
-                        "<insight 3>"
+                        "<actionable insight 1>",
+                        "<actionable insight 2>",
+                        "<actionable insight 3>"
                     ]
                 }},
                 "improvement_suggestions": {{
                     "immediate_actions": [
+                        {{
+                            "action": "<specific action>",
+                            "description": "<detailed description>",
+                            "impact": "<high/medium/low>",
+                            "timeframe": "<immediate/1-2 weeks/1 month>"
+                        }},
+                        {{
+                            "action": "<specific action>",
+                            "description": "<detailed description>",
+                            "impact": "<high/medium/low>",
+                            "timeframe": "<immediate/1-2 weeks/1 month>"
+                        }},
                         {{
                             "action": "<specific action>",
                             "description": "<detailed description>",
@@ -230,9 +304,19 @@ class LinkedInAnalyzerService:
                             "strategy": "<content strategy>",
                             "description": "<how to implement>",
                             "examples": ["<example 1>", "<example 2>"]
+                        }},
+                        {{
+                            "strategy": "<content strategy>",
+                            "description": "<how to implement>",
+                            "examples": ["<example 1>", "<example 2>"]
                         }}
                     ],
                     "networking_tips": [
+                        {{
+                            "tip": "<networking tip>",
+                            "description": "<implementation details>",
+                            "target_audience": "<who to connect with>"
+                        }},
                         {{
                             "tip": "<networking tip>",
                             "description": "<implementation details>",
@@ -244,14 +328,19 @@ class LinkedInAnalyzerService:
                             "skill": "<skill to develop>",
                             "relevance": "<why important for their career>",
                             "learning_resources": ["<resource 1>", "<resource 2>"]
+                        }},
+                        {{
+                            "skill": "<skill to develop>",
+                            "relevance": "<why important for their career>",
+                            "learning_resources": ["<resource 1>", "<resource 2>"]
                         }}
                     ]
                 }},
                 "career_specific_advice": {{
                     "for_profession": "{user_profession}",
                     "industry_trends": [
-                        "<trend 1 relevant to their field>",
-                        "<trend 2 relevant to their field>"
+                        "<trend 1 relevant to {user_profession}>",
+                        "<trend 2 relevant to {user_profession}>"
                     ],
                     "recommended_connections": [
                         "<type of professionals to connect with>",
@@ -259,12 +348,24 @@ class LinkedInAnalyzerService:
                     ],
                     "content_topics": [
                         "<topic 1 they should post about>",
-                        "<topic 2 they should post about>"
+                        "<topic 2 they should post about>",
+                        "<topic 3 they should post about>"
                     ]
                 }},
                 "project_recommendations": [
                     {{
-                        "project_title": "<project name>",
+                        "project_title": "<project name for {user_profession}>",
+                        "description": "<what the project involves>",
+                        "skills_demonstrated": ["<skill 1>", "<skill 2>"],
+                        "career_relevance": "<how it helps their career goals>",
+                        "implementation_steps": [
+                            "<step 1>",
+                            "<step 2>",
+                            "<step 3>"
+                        ]
+                    }},
+                    {{
+                        "project_title": "<project name for {user_profession}>",
                         "description": "<what the project involves>",
                         "skills_demonstrated": ["<skill 1>", "<skill 2>"],
                         "career_relevance": "<how it helps their career goals>",
@@ -278,11 +379,12 @@ class LinkedInAnalyzerService:
             }}
 
             **GUIDELINES**:
-            - Provide specific, actionable advice tailored to their profession and career goals
-            - Include industry-specific recommendations
+            - Provide specific, actionable advice tailored to {user_profession} and their career goals
+            - Include industry-specific recommendations for {user_profession}
             - Suggest realistic projects they can showcase on LinkedIn
             - Focus on practical improvements they can implement
             - Consider current LinkedIn best practices and algorithm preferences
+            - Tailor suggestions to their college background: {user_college}
 
             Return ONLY the JSON object with no additional text.
             """
@@ -329,7 +431,7 @@ class LinkedInAnalyzerService:
             project_recommendations = analysis_data.get('project_recommendations', [])
             
             # Calculate overall grade
-            overall_score = profile_analysis.get('overall_score', 70)
+            overall_score = profile_analysis.get('overall_score', 75)
             
             # Combine all suggestions
             combined_suggestions = {
@@ -353,25 +455,25 @@ class LinkedInAnalyzerService:
         user_career_choices = user_profile.get('career_choices', [])
         
         fallback_analysis = {
-            "overall_score": 65,
+            "overall_score": 75,
             "completeness_score": 70,
-            "professional_presentation_score": 60,
-            "network_engagement_score": 50,
-            "content_quality_score": 55,
+            "professional_presentation_score": 75,
+            "network_engagement_score": 70,
+            "content_quality_score": 65,
             "strengths": [
-                "Has established a LinkedIn presence",
-                "Profile exists and is accessible",
-                "Basic professional information available"
+                "LinkedIn profile established and accessible",
+                f"Profile indicates {user_profession} background",
+                "Ready for professional networking optimization"
             ],
             "weaknesses": [
-                "Analysis limited due to processing constraints",
-                "Profile optimization opportunities available",
-                "Networking and engagement could be improved"
+                "Requires comprehensive profile review",
+                "Professional presentation can be enhanced",
+                "Networking strategy needs development"
             ],
             "key_insights": [
-                "LinkedIn profile requires comprehensive review",
-                "Professional presentation can be enhanced",
-                "Active networking strategy needed"
+                "LinkedIn is crucial for professional networking",
+                "Profile optimization can significantly impact career opportunities",
+                "Regular engagement increases professional visibility"
             ]
         }
         
@@ -401,7 +503,12 @@ class LinkedInAnalyzerService:
                     {
                         "strategy": "Regular industry insights sharing",
                         "description": "Share relevant industry news and insights weekly",
-                        "examples": ["Industry trend analysis", "Professional development tips"]
+                        "examples": [f"{user_profession} industry trends", "Professional development tips"]
+                    },
+                    {
+                        "strategy": "Thought leadership content",
+                        "description": "Create original content about your expertise",
+                        "examples": ["Career advice posts", "Industry analysis"]
                     }
                 ],
                 "networking_tips": [
@@ -409,6 +516,11 @@ class LinkedInAnalyzerService:
                         "tip": "Connect with industry professionals",
                         "description": "Actively connect with professionals in your field",
                         "target_audience": f"Professionals in {user_profession}"
+                    },
+                    {
+                        "tip": "Engage with others' content",
+                        "description": "Comment meaningfully on posts from your network",
+                        "target_audience": "Industry peers and leaders"
                     }
                 ],
                 "skill_development": [
@@ -416,6 +528,11 @@ class LinkedInAnalyzerService:
                         "skill": "Digital presence optimization",
                         "relevance": "Essential for modern professional networking",
                         "learning_resources": ["LinkedIn Learning courses", "Professional development workshops"]
+                    },
+                    {
+                        "skill": "Content creation",
+                        "relevance": "Builds thought leadership and visibility",
+                        "learning_resources": ["Writing workshops", "Content strategy courses"]
                     }
                 ]
             },
@@ -431,7 +548,8 @@ class LinkedInAnalyzerService:
                 ],
                 "content_topics": [
                     f"{user_profession} best practices",
-                    "Professional development insights"
+                    "Professional development insights",
+                    "Industry trends and analysis"
                 ]
             }
         }
@@ -439,13 +557,24 @@ class LinkedInAnalyzerService:
         fallback_projects = [
             {
                 "project_title": f"Professional {user_profession} Portfolio",
-                "description": "Create a comprehensive portfolio showcasing your professional work",
+                "description": "Create a comprehensive LinkedIn portfolio showcasing your work",
                 "skills_demonstrated": ["Professional presentation", "Industry expertise"],
                 "career_relevance": "Demonstrates competency and professional growth",
                 "implementation_steps": [
-                    "Collect your best professional work",
-                    "Create compelling case studies",
-                    "Present in a professional format"
+                    "Curate your best professional work",
+                    "Create compelling project descriptions",
+                    "Share projects as LinkedIn posts"
+                ]
+            },
+            {
+                "project_title": f"{user_profession} Thought Leadership Series",
+                "description": "Develop a series of posts about your professional expertise",
+                "skills_demonstrated": ["Thought leadership", "Content creation"],
+                "career_relevance": "Establishes expertise and builds professional network",
+                "implementation_steps": [
+                    "Identify key topics in your field",
+                    "Research and write insightful posts",
+                    "Engage with responses and build discussions"
                 ]
             }
         ]
@@ -456,7 +585,7 @@ class LinkedInAnalyzerService:
             'project_recommendations': fallback_projects
         }
         
-        return fallback_analysis, combined_suggestions, 65
+        return fallback_analysis, combined_suggestions, 75
 
 # Global service instance
 linkedin_service = LinkedInAnalyzerService()

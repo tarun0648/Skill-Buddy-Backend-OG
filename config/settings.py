@@ -58,22 +58,32 @@ class Config:
     UPLOAD_FOLDER = os.environ.get('UPLOAD_FOLDER', 'uploads')
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'doc', 'docx'}
     
-    # Profile Configuration
+    # UPDATED Profile Configuration
     PROFILE_COMPLETION_STEPS = {
-        'name': 25,
-        'profession': 50,
-        'career_choices': 75,
-        'college_info': 100
+        'name': 10,           # 10%
+        'profession': 10,     # 10%
+        'career_choices': 10, # 10%
+        'college_name': 10,   # 10%
+        'college_email': 15,  # 15% (Total basic profile: 55%)
+        'github_link': 15,    # 15%
+        'linkedin_link': 15,  # 15%
+        'resume_uploaded': 15 # 15%
+        # Total: 100%
     }
     
-    # XP System Configuration
+    # XP System Configuration - Updated for new completion system
     XP_REWARDS = {
         'registration': 10,
         'google_signin': 10,
-        'profile_step_25': 10,
-        'profile_step_50': 15,
-        'profile_step_75': 20,
-        'profile_complete': 50,
+        'profile_step_10': 5,   # Name
+        'profile_step_20': 5,   # Profession
+        'profile_step_30': 5,   # Career choices
+        'profile_step_40': 5,   # College name
+        'profile_step_55': 15,  # College email (basic profile complete)
+        'github_linked': 15,    # GitHub link added
+        'linkedin_linked': 15,  # LinkedIn link added
+        'resume_uploaded': 15,  # Resume uploaded
+        'profile_complete': 50, # Full profile complete (100%)
         'first_interview': 100,
         'interview_complete': 50,
         'daily_login': 5

@@ -19,6 +19,16 @@ class ResumeProcessingService:
         self.resume_model = ResumeModel(self.db)
         self._processing_threads = {}
     
+    def update_user_resume_status(self, user_id: str, has_resume: bool):
+        """Update user's resume status and recalculate profile completion"""
+        try:
+            from models.user_model import UserModel
+            user_model = UserModel(self.db)
+            user_model.update_resume_status(user_id, has_resume)
+            logger.info(f"Updated resume status for user {user_id}: {has_resume}")
+        except Exception as e:
+            logger.error(f"Error updating user resume status: {e}")
+    
     def start_resume_processing(self, user_id: str, file_path: str, filename: str, job_description: str = "") -> Tuple[str, bool]:
         """
         Start asynchronous resume processing
@@ -41,7 +51,7 @@ class ResumeProcessingService:
             # Start processing in background thread
             processing_thread = threading.Thread(
                 target=self._process_resume_async,
-                args=(resume_id, file_path, job_description),
+                args=(resume_id, user_id, file_path, job_description),
                 daemon=True
             )
             processing_thread.start()
@@ -56,7 +66,7 @@ class ResumeProcessingService:
             logger.error(f"Error starting resume processing: {e}")
             return "", False
     
-    def _process_resume_async(self, resume_id: str, file_path: str, job_description: str):
+    def _process_resume_async(self, resume_id: str, user_id: str, file_path: str, job_description: str):
         """Process resume asynchronously"""
         try:
             logger.info(f"Starting async processing for resume: {resume_id}")
@@ -76,6 +86,9 @@ class ResumeProcessingService:
                 error_message = extracted_data.get('error', 'Unknown processing error')
                 self.resume_model.update_resume_status(resume_id, 'failed', error_message)
                 logger.error(f"Resume processing failed for {resume_id}: {error_message}")
+                
+                # Update user's resume status - check if they have other completed resumes
+                self._update_user_resume_status_after_processing(user_id)
                 return
             
             # Check if it's not a resume
@@ -83,6 +96,9 @@ class ResumeProcessingService:
                 error_message = f"Document verification failed: {extracted_data.get('reason', 'Not a resume')}"
                 self.resume_model.update_resume_status(resume_id, 'failed', error_message)
                 logger.warning(f"Document is not a resume for {resume_id}: {error_message}")
+                
+                # Update user's resume status - check if they have other completed resumes
+                self._update_user_resume_status_after_processing(user_id)
                 return
             
             # Prepare complete resume data for Firebase
@@ -106,16 +122,31 @@ class ResumeProcessingService:
             # Mark as completed
             self.resume_model.update_resume_status(resume_id, 'completed')
             
+            # Update user's resume status to true since we have a completed resume
+            self.update_user_resume_status(user_id, True)
+            
             logger.info(f"Resume processing completed successfully for: {resume_id}")
             
         except Exception as e:
             logger.error(f"Error in async resume processing: {e}")
             self.resume_model.update_resume_status(resume_id, 'failed', str(e))
+            
+            # Update user's resume status - check if they have other completed resumes
+            self._update_user_resume_status_after_processing(user_id)
         
         finally:
             # Clean up thread tracking
             if resume_id in self._processing_threads:
                 del self._processing_threads[resume_id]
+    
+    def _update_user_resume_status_after_processing(self, user_id: str):
+        """Update user's resume status by checking if they have any completed resumes"""
+        try:
+            user_resumes = self.resume_model.get_user_resumes(user_id)
+            has_completed_resumes = any(r.get('processing_status') == 'completed' for r in user_resumes)
+            self.update_user_resume_status(user_id, has_completed_resumes)
+        except Exception as e:
+            logger.error(f"Error updating user resume status after processing: {e}")
     
     def get_processing_status(self, resume_id: str) -> Optional[Dict[str, Any]]:
         """Get processing status of a resume"""

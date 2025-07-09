@@ -1,4 +1,4 @@
-# routes/profile_analysis_routes.py
+# routes/profile_analysis_routes.py (UPDATED for profile completion integration)
 from flask import Blueprint, request, jsonify
 from config.firebase_config import firebase_config
 from services.linkedin_analyzer import linkedin_service
@@ -46,7 +46,7 @@ def auth_required(f):
 @profile_analysis_bp.route('/analyze/linkedin', methods=['POST'])
 @auth_required
 def analyze_linkedin_profile():
-    """Analyze LinkedIn profile using Claude AI"""
+    """Analyze LinkedIn profile using Claude AI - UPDATED to integrate with profile completion"""
     try:
         if not profile_analysis_model:
             return jsonify({'error': 'Database not available'}), 500
@@ -61,7 +61,7 @@ def analyze_linkedin_profile():
         
         # Validate LinkedIn URL format
         if not linkedin_url or 'linkedin.com/in/' not in linkedin_url:
-            return jsonify({'error': 'Invalid LinkedIn URL format'}), 400
+            return jsonify({'error': 'Invalid LinkedIn URL format. Please provide a valid LinkedIn profile URL.'}), 400
         
         # Get user profile for context
         user_doc = db.collection('users').document(user_id).get()
@@ -70,6 +70,59 @@ def analyze_linkedin_profile():
         
         user_data = user_doc.to_dict()
         user_profile = user_data.get('profile', {})
+        
+        # Update user's LinkedIn link in profile if different from current
+        current_linkedin = user_profile.get('linkedin_link', '')
+        if current_linkedin != linkedin_url:
+            logger.info(f"Updating LinkedIn link for user {user_id}: {current_linkedin} -> {linkedin_url}")
+            
+            # Update LinkedIn link in user profile
+            try:
+                from models.user_model import UserModel
+                user_model = UserModel(db)
+                
+                # Get current completion
+                old_completion = user_profile.get('completion_status', 0)
+                
+                # Update the profile
+                updated_profile = user_profile.copy()
+                updated_profile['linkedin_link'] = linkedin_url
+                
+                # Calculate new completion
+                new_completion = user_model.calculate_profile_completion(updated_profile)
+                
+                update_data = {
+                    'profile.linkedin_link': linkedin_url,
+                    'profile.completion_status': new_completion,
+                    'profile.is_profile_complete': new_completion == 100
+                }
+                
+                # Calculate XP bonus
+                milestones = user_model.get_completion_milestones(old_completion, new_completion)
+                if milestones:
+                    xp_bonus = user_model.calculate_xp_bonus(milestones)
+                    if xp_bonus > 0:
+                        current_xp = user_data.get('xp', {}).get('total_xp', 0)
+                        new_total_xp = current_xp + xp_bonus
+                        new_level = (new_total_xp // 100) + 1
+                        
+                        update_data['xp.total_xp'] = new_total_xp
+                        update_data['xp.level'] = new_level
+                        
+                        logger.info(f"LinkedIn link XP bonus: {xp_bonus} for user {user_id}")
+                
+                # Apply update
+                user_model.update_user(user_id, update_data)
+                
+                # Update local user_profile for analysis
+                user_profile['linkedin_link'] = linkedin_url
+                user_profile['completion_status'] = new_completion
+                
+                logger.info(f"LinkedIn link updated and completion recalculated: {old_completion}% -> {new_completion}%")
+                
+            except Exception as e:
+                logger.error(f"Error updating LinkedIn link: {e}")
+                # Continue with analysis even if update fails
         
         # Start LinkedIn analysis
         analysis_id, success = linkedin_service.start_linkedin_analysis(
@@ -87,7 +140,8 @@ def analyze_linkedin_profile():
             'message': 'LinkedIn analysis started successfully',
             'analysis_id': analysis_id,
             'status': 'pending',
-            'type': 'linkedin'
+            'type': 'linkedin',
+            'profile_updated': current_linkedin != linkedin_url  # Indicate if profile was updated
         }), 201
         
     except Exception as e:
@@ -97,7 +151,7 @@ def analyze_linkedin_profile():
 @profile_analysis_bp.route('/analyze/github', methods=['POST'])
 @auth_required
 def analyze_github_profile():
-    """Analyze GitHub profile using Claude AI and GitHub API"""
+    """Analyze GitHub profile using Claude AI and GitHub API - UPDATED to integrate with profile completion"""
     try:
         if not profile_analysis_model:
             return jsonify({'error': 'Database not available'}), 500
@@ -114,6 +168,14 @@ def analyze_github_profile():
         if not github_username or len(github_username) < 1:
             return jsonify({'error': 'Invalid GitHub username format'}), 400
         
+        # Remove @ symbol if present
+        if github_username.startswith('@'):
+            github_username = github_username[1:]
+        
+        # Extract username from URL if full URL provided
+        if 'github.com/' in github_username:
+            github_username = github_username.split('github.com/')[-1].split('/')[0]
+        
         # Get user profile for context
         user_doc = db.collection('users').document(user_id).get()
         if not user_doc.exists:
@@ -121,6 +183,61 @@ def analyze_github_profile():
         
         user_data = user_doc.to_dict()
         user_profile = user_data.get('profile', {})
+        
+        # Update user's GitHub link in profile if different from current
+        github_url = f"https://github.com/{github_username}"
+        current_github = user_profile.get('github_link', '')
+        
+        if current_github != github_url:
+            logger.info(f"Updating GitHub link for user {user_id}: {current_github} -> {github_url}")
+            
+            # Update GitHub link in user profile
+            try:
+                from models.user_model import UserModel
+                user_model = UserModel(db)
+                
+                # Get current completion
+                old_completion = user_profile.get('completion_status', 0)
+                
+                # Update the profile
+                updated_profile = user_profile.copy()
+                updated_profile['github_link'] = github_url
+                
+                # Calculate new completion
+                new_completion = user_model.calculate_profile_completion(updated_profile)
+                
+                update_data = {
+                    'profile.github_link': github_url,
+                    'profile.completion_status': new_completion,
+                    'profile.is_profile_complete': new_completion == 100
+                }
+                
+                # Calculate XP bonus
+                milestones = user_model.get_completion_milestones(old_completion, new_completion)
+                if milestones:
+                    xp_bonus = user_model.calculate_xp_bonus(milestones)
+                    if xp_bonus > 0:
+                        current_xp = user_data.get('xp', {}).get('total_xp', 0)
+                        new_total_xp = current_xp + xp_bonus
+                        new_level = (new_total_xp // 100) + 1
+                        
+                        update_data['xp.total_xp'] = new_total_xp
+                        update_data['xp.level'] = new_level
+                        
+                        logger.info(f"GitHub link XP bonus: {xp_bonus} for user {user_id}")
+                
+                # Apply update
+                user_model.update_user(user_id, update_data)
+                
+                # Update local user_profile for analysis
+                user_profile['github_link'] = github_url
+                user_profile['completion_status'] = new_completion
+                
+                logger.info(f"GitHub link updated and completion recalculated: {old_completion}% -> {new_completion}%")
+                
+            except Exception as e:
+                logger.error(f"Error updating GitHub link: {e}")
+                # Continue with analysis even if update fails
         
         # Start GitHub analysis
         analysis_id, success = github_service.start_github_analysis(
@@ -138,7 +255,9 @@ def analyze_github_profile():
             'message': 'GitHub analysis started successfully',
             'analysis_id': analysis_id,
             'status': 'pending',
-            'type': 'github'
+            'type': 'github',
+            'github_username': github_username,
+            'profile_updated': current_github != github_url  # Indicate if profile was updated
         }), 201
         
     except Exception as e:
@@ -194,7 +313,11 @@ def get_analysis_results(analysis_id):
             'analysis_results': analysis_data.get('analysis_results'),
             'suggestions': analysis_data.get('suggestions'),
             'grade': analysis_data.get('grade'),
-            'processed_at': analysis_data.get('processed_at')
+            'processed_at': analysis_data.get('processed_at'),
+            'profile_info': {
+                'linkedin_url': analysis_data.get('profile_url'),
+                'github_username': analysis_data.get('github_username')
+            }
         }), 200
         
     except Exception as e:
@@ -216,7 +339,8 @@ def get_user_analyses():
         
         return jsonify({
             'analyses': analyses,
-            'total_count': len(analyses)
+            'total_count': len(analyses),
+            'filter_type': analysis_type
         }), 200
         
     except Exception as e:
@@ -243,7 +367,11 @@ def get_improvement_suggestions(analysis_id):
             'analysis_id': analysis_id,
             'type': analysis_data.get('analysis_type'),
             'suggestions': suggestions,
-            'grade': analysis_data.get('grade')
+            'grade': analysis_data.get('grade'),
+            'profile_info': {
+                'linkedin_url': analysis_data.get('profile_url'),
+                'github_username': analysis_data.get('github_username')
+            }
         }), 200
         
     except Exception as e:
@@ -325,3 +453,71 @@ def delete_analysis(analysis_id):
     except Exception as e:
         logger.error(f"Error deleting analysis: {e}")
         return jsonify({'error': 'Failed to delete analysis', 'details': str(e)}), 500
+
+@profile_analysis_bp.route('/quick-analyze', methods=['POST'])
+@auth_required
+def quick_analyze():
+    """Quick analyze both LinkedIn and GitHub if user has links in profile"""
+    try:
+        if not profile_analysis_model:
+            return jsonify({'error': 'Database not available'}), 500
+            
+        user_id = request.user_id
+        
+        # Get user profile
+        user_doc = db.collection('users').document(user_id).get()
+        if not user_doc.exists:
+            return jsonify({'error': 'User profile not found'}), 404
+        
+        user_data = user_doc.to_dict()
+        user_profile = user_data.get('profile', {})
+        
+        linkedin_url = user_profile.get('linkedin_link', '').strip()
+        github_url = user_profile.get('github_link', '').strip()
+        
+        results = {
+            'linkedin_analysis': None,
+            'github_analysis': None,
+            'message': 'Quick analysis started for available profiles'
+        }
+        
+        # Start LinkedIn analysis if URL available
+        if linkedin_url and 'linkedin.com/in/' in linkedin_url:
+            analysis_id, success = linkedin_service.start_linkedin_analysis(
+                user_id=user_id,
+                linkedin_url=linkedin_url,
+                user_profile=user_profile
+            )
+            if success:
+                results['linkedin_analysis'] = {
+                    'analysis_id': analysis_id,
+                    'status': 'pending',
+                    'url': linkedin_url
+                }
+        
+        # Start GitHub analysis if URL available
+        if github_url and 'github.com/' in github_url:
+            github_username = github_url.split('github.com/')[-1].split('/')[0]
+            analysis_id, success = github_service.start_github_analysis(
+                user_id=user_id,
+                github_username=github_username,
+                user_profile=user_profile
+            )
+            if success:
+                results['github_analysis'] = {
+                    'analysis_id': analysis_id,
+                    'status': 'pending',
+                    'username': github_username
+                }
+        
+        if not results['linkedin_analysis'] and not results['github_analysis']:
+            return jsonify({
+                'message': 'No LinkedIn or GitHub links found in profile',
+                'suggestion': 'Add LinkedIn and GitHub links to your profile first'
+            }), 400
+        
+        return jsonify(results), 200
+        
+    except Exception as e:
+        logger.error(f"Quick analyze error: {e}")
+        return jsonify({'error': 'Quick analyze failed', 'details': str(e)}), 500

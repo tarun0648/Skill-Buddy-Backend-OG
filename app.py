@@ -1,4 +1,4 @@
-# app.py (Updated with Portfolio Analysis)
+# app.py (Updated with Profile Completion System)
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -127,7 +127,6 @@ except ImportError as e:
     print(f"✗ Profile analysis routes failed: {e}")
     profile_analysis_bp = None
 
-# NEW: Import and register portfolio analysis blueprint
 try:
     from routes.portfolio_analysis_routes import portfolio_analysis_bp
     app.register_blueprint(portfolio_analysis_bp, url_prefix='/api/portfolio-analysis')
@@ -135,6 +134,28 @@ try:
 except ImportError as e:
     print(f"✗ Portfolio analysis routes failed: {e}")
     portfolio_analysis_bp = None
+
+# Profile completion info endpoint
+@app.route('/api/profile-completion/info', methods=['GET'])
+def get_profile_completion_info():
+    """Get information about profile completion system"""
+    try:
+        from utils.profile_completion_utils import ProfileCompletionManager
+        
+        return jsonify({
+            'completion_system': {
+                'basic_profile_percentage': 55,
+                'additional_elements_percentage': 45,
+                'total_percentage': 100
+            },
+            'steps': ProfileCompletionManager.COMPLETION_STEPS,
+            'milestones': ProfileCompletionManager.get_milestones_info(),
+            'xp_rewards': ProfileCompletionManager.XP_REWARDS
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Error getting profile completion info: {e}")
+        return jsonify({'error': 'Failed to get profile completion info'}), 500
 
 # Update the status endpoint
 @app.route('/api/status', methods=['GET'])
@@ -149,7 +170,15 @@ def api_status():
                 'user_management': user_bp is not None,
                 'resume_processing': resume_bp is not None,
                 'profile_analysis': profile_analysis_bp is not None,
-                'portfolio_analysis': portfolio_analysis_bp is not None  # NEW
+                'portfolio_analysis': portfolio_analysis_bp is not None,
+                'profile_completion_system': True  # NEW
+            },
+            'profile_completion': {
+                'basic_profile_required': 55,
+                'github_link_bonus': 15,
+                'linkedin_link_bonus': 15,
+                'resume_upload_bonus': 15,
+                'total_possible': 100
             }
         }
         
@@ -184,7 +213,7 @@ def api_status():
             except Exception as e:
                 stats['profile_analysis_error'] = str(e)
         
-        # NEW: Try to get portfolio analysis statistics
+        # Try to get portfolio analysis statistics
         if portfolio_analysis_bp and db:
             try:
                 from models.portfolio_analysis_model import PortfolioAnalysisModel
@@ -213,14 +242,22 @@ def health_check():
         'message': 'Skill Buddy API is running',
         'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'status': 'healthy',
-        'version': '3.0.0',  # Updated version
+        'version': '3.1.0',  # Updated version for new completion system
         'features': [
             'Resume Processing',
             'User Management', 
             'LinkedIn Profile Analysis',
             'GitHub Profile Analysis',
-            'Portfolio Website Analysis'  # NEW
-        ]
+            'Portfolio Website Analysis',
+            'Enhanced Profile Completion System'  # NEW
+        ],
+        'profile_completion_system': {
+            'basic_profile': '55% (Name, Profession, Career Choices, College Name & Email)',
+            'github_link': '15% bonus',
+            'linkedin_link': '15% bonus', 
+            'resume_upload': '15% bonus',
+            'total': '100% for complete profile'
+        }
     })
 
 # Test authentication endpoint
@@ -232,6 +269,72 @@ def test_auth():
         'user_id': request.user_id,
         'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()
     })
+
+# Test profile completion endpoint
+@app.route('/api/test-profile-completion', methods=['GET'])
+@auth_required
+def test_profile_completion():
+    """Test endpoint to check profile completion system"""
+    try:
+        from utils.profile_completion_utils import ProfileCompletionManager
+        
+        # Mock profile data for testing
+        test_profiles = [
+            {
+                'name': 'Test User',
+                'description': 'Name only'
+            },
+            {
+                'name': 'Test User',
+                'profession': 'Student',
+                'career_choices': ['Software Engineering'],
+                'college_name': 'Test University',
+                'college_email': 'test@university.edu',
+                'description': 'Basic profile complete (55%)'
+            },
+            {
+                'name': 'Test User',
+                'profession': 'Student',
+                'career_choices': ['Software Engineering'],
+                'college_name': 'Test University',
+                'college_email': 'test@university.edu',
+                'github_link': 'https://github.com/testuser',
+                'linkedin_link': 'https://linkedin.com/in/testuser',
+                'has_resume': True,
+                'description': 'Complete profile (100%)'
+            }
+        ]
+        
+        results = []
+        for i, profile in enumerate(test_profiles):
+            description = profile.pop('description')
+            completion = ProfileCompletionManager.calculate_completion_percentage(profile)
+            breakdown = ProfileCompletionManager.get_completion_breakdown(profile)
+            next_steps = ProfileCompletionManager.get_next_steps(profile)
+            
+            results.append({
+                'test_case': i + 1,
+                'description': description,
+                'profile': profile,
+                'completion_percentage': completion,
+                'breakdown': breakdown,
+                'next_steps': next_steps
+            })
+        
+        return jsonify({
+            'message': 'Profile completion system test',
+            'user_id': request.user_id,
+            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'test_results': results,
+            'system_info': ProfileCompletionManager.get_milestones_info()
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Profile completion test error: {e}")
+        return jsonify({
+            'error': 'Profile completion test failed',
+            'details': str(e)
+        }), 500
 
 # Test profile analysis endpoint
 @app.route('/api/test-profile-analysis', methods=['GET'])
@@ -251,7 +354,7 @@ def test_profile_analysis():
             'features_status': {
                 'linkedin_analysis': profile_analysis_bp is not None,
                 'github_analysis': profile_analysis_bp is not None,
-                'portfolio_analysis': portfolio_analysis_bp is not None,  # NEW
+                'portfolio_analysis': portfolio_analysis_bp is not None,
                 'claude_integration': bool(claude_api_key)
             }
         }), 200
@@ -263,7 +366,7 @@ def test_profile_analysis():
             'details': str(e)
         }), 500
 
-# NEW: Portfolio analysis test endpoint
+# Portfolio analysis test endpoint
 @app.route('/api/test-portfolio-analysis', methods=['GET'])
 @auth_required
 def test_portfolio_analysis():
@@ -296,6 +399,78 @@ def test_portfolio_analysis():
             'error': 'Portfolio analysis test failed',
             'details': str(e)
         }), 500
+# Add this debug endpoint to app.py for testing
+
+@app.route('/api/debug/profile-completion/<user_id>', methods=['GET'])
+def debug_profile_completion(user_id):
+    """Debug endpoint to check profile completion calculation"""
+    try:
+        if not db:
+            return jsonify({'error': 'Database not available'}), 500
+        
+        # Get user data
+        doc_ref = db.collection('users').document(user_id)
+        doc = doc_ref.get()
+        
+        if not doc.exists:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_data = doc.to_dict()
+        profile = user_data.get('profile', {})
+        
+        # Import the completion manager
+        from utils.profile_completion_utils import ProfileCompletionManager
+        from models.user_model import UserModel
+        
+        user_model = UserModel(db)
+        
+        # Calculate completion using both methods
+        util_completion = ProfileCompletionManager.calculate_completion_percentage(profile)
+        model_completion = user_model.calculate_profile_completion(profile)
+        stored_completion = profile.get('completion_status', 0)
+        
+        # Get detailed breakdown
+        breakdown = ProfileCompletionManager.get_completion_breakdown(profile)
+        next_steps = ProfileCompletionManager.get_next_steps(profile)
+        
+        # Check each field individually
+        field_analysis = {}
+        for field in ['name', 'profession', 'career_choices', 'college_name', 'college_email', 'github_link', 'linkedin_link', 'has_resume']:
+            value = profile.get(field)
+            field_analysis[field] = {
+                'raw_value': value,
+                'type': type(value).__name__,
+                'string_value': str(value) if value is not None else 'None',
+                'stripped_value': str(value).strip() if value is not None else '',
+                'is_empty': not value or not str(value).strip() if field != 'has_resume' else not bool(value),
+                'evaluation': 'PASS' if (
+                    field == 'has_resume' and bool(value) or
+                    field == 'career_choices' and value and isinstance(value, list) and len([c for c in value if c and str(c).strip()]) > 0 or
+                    field not in ['has_resume', 'career_choices'] and value and str(value).strip()
+                ) else 'FAIL'
+            }
+        
+        return jsonify({
+            'user_id': user_id,
+            'profile_data': profile,
+            'completion_calculations': {
+                'utility_method': util_completion,
+                'model_method': model_completion,
+                'stored_value': stored_completion,
+                'all_match': util_completion == model_completion == stored_completion
+            },
+            'field_analysis': field_analysis,
+            'breakdown': breakdown,
+            'next_steps': next_steps,
+            'debug_info': {
+                'profile_keys': list(profile.keys()),
+                'has_all_fields': all(field in profile for field in ['name', 'profession', 'career_choices', 'college_name', 'college_email', 'github_link', 'linkedin_link', 'has_resume'])
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Debug profile completion error: {e}")
+        return jsonify({'error': 'Debug failed', 'details': str(e)}), 500
 
 # Error handlers
 @app.errorhandler(404)
@@ -322,7 +497,15 @@ if __name__ == '__main__':
     print("  ✓ User Management")
     print("  ✓ LinkedIn Profile Analysis")
     print("  ✓ GitHub Profile Analysis")
-    print("  ✓ Portfolio Website Analysis")  # NEW
+    print("  ✓ Portfolio Website Analysis")
+    print("  ✓ Enhanced Profile Completion System")
+    print("")
+    print("Profile Completion System:")
+    print("  • Basic Profile (55%): Name, Profession, Career Choices, College Info")
+    print("  • GitHub Link (+15%)")
+    print("  • LinkedIn Link (+15%)")
+    print("  • Resume Upload (+15%)")
+    print("  • Total: 100%")
     print("================================")
     
     app.run(host='0.0.0.0', port=port, debug=debug)

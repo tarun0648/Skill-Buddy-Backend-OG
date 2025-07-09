@@ -1,4 +1,4 @@
-# services/github_analyzer.py (FIXED for Firestore compatibility)
+# services/github_analyzer.py (UPDATED for profile completion integration)
 import os
 import json
 import threading
@@ -62,7 +62,7 @@ class ClaudeHTTPClient:
             raise
 
 class GitHubAnalyzerService:
-    """Service for analyzing GitHub profiles using GitHub API and Claude AI"""
+    """Service for analyzing GitHub profiles using GitHub API and Claude AI - UPDATED for profile completion"""
     
     def __init__(self):
         self.db = firebase_config.get_db()
@@ -70,8 +70,65 @@ class GitHubAnalyzerService:
         self._processing_threads = {}
         self.github_api_base = "https://api.github.com"
     
+    def update_user_github_status(self, user_id: str, github_username: str, analysis_completed: bool = False):
+        """Update user's GitHub link in profile and recalculate completion"""
+        try:
+            from models.user_model import UserModel
+            user_model = UserModel(self.db)
+            
+            # Get current user
+            user = user_model.get_user_by_id(user_id)
+            if not user:
+                logger.error(f"User {user_id} not found for GitHub update")
+                return
+            
+            current_profile = user.get('profile', {})
+            old_completion = current_profile.get('completion_status', 0)
+            
+            # Create GitHub URL from username
+            github_url = f"https://github.com/{github_username}"
+            
+            # Update GitHub link if not already set or different
+            current_github = current_profile.get('github_link', '')
+            if current_github != github_url:
+                update_data = {
+                    'profile.github_link': github_url,
+                    'updated_at': user_model.db.SERVER_TIMESTAMP if hasattr(user_model.db, 'SERVER_TIMESTAMP') else None
+                }
+                
+                # Recalculate completion
+                updated_profile = current_profile.copy()
+                updated_profile['github_link'] = github_url
+                
+                new_completion = user_model.calculate_profile_completion(updated_profile)
+                update_data['profile.completion_status'] = new_completion
+                update_data['profile.is_profile_complete'] = new_completion == 100
+                
+                # Calculate XP bonus
+                milestones = user_model.get_completion_milestones(old_completion, new_completion)
+                if milestones:
+                    xp_bonus = user_model.calculate_xp_bonus(milestones)
+                    if xp_bonus > 0:
+                        current_xp = user.get('xp', {}).get('total_xp', 0)
+                        new_total_xp = current_xp + xp_bonus
+                        new_level = (new_total_xp // 100) + 1
+                        
+                        update_data['xp.total_xp'] = new_total_xp
+                        update_data['xp.level'] = new_level
+                        
+                        logger.info(f"GitHub analysis XP bonus: {xp_bonus} for user {user_id}")
+                
+                # Apply update
+                success = user_model.update_user(user_id, update_data)
+                if success:
+                    logger.info(f"Updated GitHub link for user {user_id}: {github_url}")
+                    logger.info(f"Completion updated: {old_completion}% -> {new_completion}%")
+                
+        except Exception as e:
+            logger.error(f"Error updating GitHub status for user {user_id}: {e}")
+    
     def start_github_analysis(self, user_id: str, github_username: str, user_profile: Dict[str, Any]) -> Tuple[str, bool]:
-        """Start asynchronous GitHub profile analysis"""
+        """Start asynchronous GitHub profile analysis - UPDATED"""
         try:
             # Create initial analysis record
             analysis_data = {
@@ -85,7 +142,7 @@ class GitHubAnalyzerService:
             # Start processing in background thread
             processing_thread = threading.Thread(
                 target=self._analyze_github_async,
-                args=(analysis_id, github_username, user_profile),
+                args=(analysis_id, user_id, github_username, user_profile),
                 daemon=True
             )
             processing_thread.start()
@@ -100,13 +157,16 @@ class GitHubAnalyzerService:
             logger.error(f"Error starting GitHub analysis: {e}")
             return "", False
     
-    def _analyze_github_async(self, analysis_id: str, github_username: str, user_profile: Dict[str, Any]):
-        """Analyze GitHub profile asynchronously using GitHub API and Claude AI"""
+    def _analyze_github_async(self, analysis_id: str, user_id: str, github_username: str, user_profile: Dict[str, Any]):
+        """Analyze GitHub profile asynchronously using GitHub API and Claude AI - UPDATED"""
         try:
             logger.info(f"Starting async GitHub analysis for: {analysis_id}")
             
             # Update status to processing
             self.analysis_model.update_analysis_status(analysis_id, 'processing')
+            
+            # Update user's GitHub link in profile (if analysis was initiated)
+            self.update_user_github_status(user_id, github_username, analysis_completed=False)
             
             # Get GitHub data using GitHub API
             github_data = self._fetch_github_data(github_username)
@@ -155,6 +215,9 @@ class GitHubAnalyzerService:
             # Mark as completed
             self.analysis_model.update_analysis_status(analysis_id, 'completed')
             
+            # Update user's GitHub status as completed
+            self.update_user_github_status(user_id, github_username, analysis_completed=True)
+            
             logger.info(f"GitHub analysis completed successfully for: {analysis_id}")
             
         except Exception as e:
@@ -191,15 +254,15 @@ class GitHubAnalyzerService:
         
         # Handle arrays by converting to simple lists
         if 'strengths' in analysis_results:
-            simplified['strengths'] = [str(s) for s in analysis_results['strengths'][:5]]  # Limit to 5
+            simplified['strengths'] = [str(s) for s in analysis_results['strengths'][:5]]
         
         if 'weaknesses' in analysis_results:
-            simplified['weaknesses'] = [str(w) for w in analysis_results['weaknesses'][:5]]  # Limit to 5
+            simplified['weaknesses'] = [str(w) for w in analysis_results['weaknesses'][:5]]
         
         if 'top_languages' in analysis_results:
             top_langs = analysis_results['top_languages']
             if isinstance(top_langs, list):
-                simplified['top_languages'] = [str(lang) for lang in top_langs[:5]]  # Limit to 5
+                simplified['top_languages'] = [str(lang) for lang in top_langs[:5]]
         
         return simplified
     
@@ -219,7 +282,7 @@ class GitHubAnalyzerService:
                 # Handle immediate actions
                 if 'immediate_actions' in imp_sugs and isinstance(imp_sugs['immediate_actions'], list):
                     simplified['improvement_suggestions']['immediate_actions'] = []
-                    for action in imp_sugs['immediate_actions'][:3]:  # Limit to 3
+                    for action in imp_sugs['immediate_actions'][:3]:
                         if isinstance(action, dict):
                             simple_action = {
                                 'action': str(action.get('action', ''))[:200],
@@ -229,28 +292,28 @@ class GitHubAnalyzerService:
                             }
                             simplified['improvement_suggestions']['immediate_actions'].append(simple_action)
                 
-                # Handle other suggestion types with similar simplification
+                # Handle other suggestion types
                 for key in ['repository_improvements', 'skill_development', 'community_engagement']:
                     if key in imp_sugs and isinstance(imp_sugs[key], list):
                         simplified['improvement_suggestions'][key] = []
-                        for item in imp_sugs[key][:3]:  # Limit to 3 items
+                        for item in imp_sugs[key][:3]:
                             if isinstance(item, dict):
                                 simple_item = {}
                                 for k, v in item.items():
                                     if isinstance(v, list):
-                                        simple_item[k] = [str(x)[:100] for x in v[:3]]  # Limit list items
+                                        simple_item[k] = [str(x)[:100] for x in v[:3]]
                                     else:
-                                        simple_item[k] = str(v)[:300]  # Limit string length
+                                        simple_item[k] = str(v)[:300]
                                 simplified['improvement_suggestions'][key].append(simple_item)
         
         # Handle project recommendations
         if 'project_recommendations' in suggestions and isinstance(suggestions['project_recommendations'], list):
             simplified['project_recommendations'] = []
-            for project in suggestions['project_recommendations'][:3]:  # Limit to 3 projects
+            for project in suggestions['project_recommendations'][:2]:
                 if isinstance(project, dict):
                     simple_project = {
                         'project_title': str(project.get('project_title', ''))[:100],
-                        'description': str(project.get('description', ''))[:500],
+                        'description': str(project.get('description', ''))[:400],
                         'complexity': str(project.get('complexity', 'intermediate'))[:20],
                         'estimated_duration': str(project.get('estimated_duration', ''))[:50],
                         'career_relevance': str(project.get('career_relevance', ''))[:300]
@@ -296,7 +359,7 @@ class GitHubAnalyzerService:
                 if isinstance(value, (int, float)):
                     simplified[field] = value
                 elif isinstance(value, str):
-                    simplified[field] = value[:200]  # Limit string length
+                    simplified[field] = value[:200]
                 elif value is None:
                     simplified[field] = None
                 else:
@@ -398,7 +461,7 @@ class GitHubAnalyzerService:
                     'repos_with_description': len([r for r in processed_repos if r['description']]),
                     'repos_with_topics': len([r for r in processed_repos if r['topics']])
                 },
-                'repositories': processed_repos[:10],  # Top 10 repositories
+                'repositories': processed_repos[:10],
                 'profile_completeness': {
                     'has_name': bool(user_data.get('name')),
                     'has_bio': bool(user_data.get('bio')),
@@ -440,12 +503,13 @@ class GitHubAnalyzerService:
             return False
     
     def _analyze_github_with_claude(self, client, github_data: Dict[str, Any], user_profile: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any], int]:
-        """Analyze GitHub profile using Claude AI"""
+        """Analyze GitHub profile using Claude AI - UPDATED with better context"""
         try:
             # Extract user context
             user_profession = user_profile.get('profession', 'Not specified')
             user_career_choices = user_profile.get('career_choices', [])
             user_name = user_profile.get('name', 'User')
+            user_college = user_profile.get('college_name', 'Not specified')
             
             # Extract GitHub stats for context
             user_stats = github_data.get('user_stats', {})
@@ -455,6 +519,7 @@ class GitHubAnalyzerService:
             # Create a simplified GitHub data summary for the prompt
             github_summary = {
                 "user_stats": {
+                    "username": user_stats.get('username'),
                     "public_repos": user_stats.get('public_repos', 0),
                     "followers": user_stats.get('followers', 0),
                     "following": user_stats.get('following', 0),
@@ -478,24 +543,25 @@ class GitHubAnalyzerService:
                         "stars": repo.get('stars', 0),
                         "has_description": bool(repo.get('description'))
                     }
-                    for repo in repositories[:5]  # Top 5 repos only
+                    for repo in repositories[:5]
                 ]
             }
             
             # Create comprehensive prompt for GitHub analysis
             prompt = f"""
-            You are an expert software engineering career coach and GitHub profile analyst.
+            You are an expert software engineering career coach and GitHub profile analyst with deep knowledge of technical hiring and developer career growth.
 
             **User Context**:
             - Name: {user_name}
             - Profession: {user_profession}
             - Career Interests: {', '.join(user_career_choices) if user_career_choices else 'Not specified'}
+            - College: {user_college}
 
             **GitHub Profile Summary**:
             {json.dumps(github_summary, indent=2)}
 
             **Analysis Task**: 
-            Analyze this GitHub profile and provide a comprehensive assessment with improvement suggestions.
+            Analyze this GitHub profile and provide a comprehensive assessment with improvement suggestions tailored to their career goals and profession.
 
             **Return this exact JSON structure**:
             {{
@@ -511,18 +577,25 @@ class GitHubAnalyzerService:
                 "account_age_days": {user_stats.get('account_age_days', 0)},
                 "top_languages": {[lang[0] for lang in repo_analysis.get('top_languages', [])][:3]},
                 "strengths": [
-                    "strength 1",
-                    "strength 2", 
-                    "strength 3"
+                    "specific strength 1 based on their {user_profession} background",
+                    "specific strength 2 related to their GitHub activity", 
+                    "specific strength 3 considering their career goals"
                 ],
                 "weaknesses": [
-                    "weakness 1",
-                    "weakness 2"
+                    "specific weakness 1 that could impact their {user_profession} career",
+                    "specific weakness 2 in their GitHub presentation"
                 ],
-                "grade_explanation": "explanation of the grade"
+                "grade_explanation": "detailed explanation of the overall score considering their {user_profession} background and career goals"
             }}
 
-            Focus on practical, actionable insights. Return ONLY valid JSON.
+            **Guidelines**:
+            - Focus on practical, actionable insights for someone in {user_profession}
+            - Consider how their GitHub profile supports their career goals in {user_career_choices}
+            - Evaluate technical skills demonstration relevant to their profession
+            - Assess professional presentation and industry standards
+            - Consider their college background: {user_college}
+
+            Return ONLY valid JSON with the exact structure above.
             """
 
             # Call Claude API
@@ -530,7 +603,7 @@ class GitHubAnalyzerService:
                 model="claude-3-sonnet-20240229",
                 max_tokens=2000,
                 temperature=0.3,
-                system="You are a GitHub profile analyst. Return only valid JSON with the exact structure requested.",
+                system="You are a GitHub profile analyst and software engineering career coach. Return only valid JSON with the exact structure requested.",
                 messages=[
                     {
                         "role": "user",
@@ -560,8 +633,8 @@ class GitHubAnalyzerService:
                     logger.error("Could not find JSON block in response")
                     return self._create_fallback_github_analysis(github_data, user_profile)
             
-            # Create simplified suggestions
-            suggestions = self._create_simplified_suggestions(user_profession, user_stats, repo_analysis)
+            # Create enhanced suggestions
+            suggestions = self._create_enhanced_suggestions(user_profession, user_career_choices, user_stats, repo_analysis)
             
             # Calculate overall grade
             overall_score = analysis_data.get('overall_score', 70)
@@ -573,46 +646,94 @@ class GitHubAnalyzerService:
             logger.error(f"Error in GitHub analysis with Claude: {e}")
             return self._create_fallback_github_analysis(github_data, user_profile)
     
-    def _create_simplified_suggestions(self, user_profession: str, user_stats: Dict[str, Any], repo_analysis: Dict[str, Any]) -> Dict[str, Any]:
-        """Create simplified suggestions that are Firestore-friendly"""
+    def _create_enhanced_suggestions(self, user_profession: str, user_career_choices: List[str], user_stats: Dict[str, Any], repo_analysis: Dict[str, Any]) -> Dict[str, Any]:
+        """Create enhanced suggestions based on user profile and GitHub data"""
         return {
             "improvement_suggestions": {
                 "immediate_actions": [
                     {
-                        "action": "Complete profile information",
-                        "description": "Add bio, location, and company information to your GitHub profile",
+                        "action": "Complete GitHub profile information",
+                        "description": "Add bio, location, and company information to showcase your professional identity",
                         "impact": "high",
                         "timeframe": "immediate"
                     },
                     {
-                        "action": "Add repository descriptions",
-                        "description": "Write clear descriptions for all your repositories",
+                        "action": "Add comprehensive README files",
+                        "description": "Create detailed README files for all repositories with project descriptions, setup instructions, and usage examples",
                         "impact": "high", 
                         "timeframe": "1-2 weeks"
+                    },
+                    {
+                        "action": "Pin important repositories",
+                        "description": "Pin your best repositories that showcase your skills relevant to your career goals",
+                        "impact": "medium",
+                        "timeframe": "immediate"
                     }
                 ],
                 "repository_improvements": [
                     {
-                        "improvement": "README documentation",
-                        "description": "Create comprehensive README files for all projects",
-                        "examples": ["Project overview", "Setup instructions", "Usage examples"]
+                        "improvement": "Documentation enhancement",
+                        "description": "Improve documentation for all projects with clear explanations",
+                        "examples": ["API documentation", "Code comments", "Usage examples"]
+                    },
+                    {
+                        "improvement": "Code quality optimization",
+                        "description": "Refactor code to follow best practices and add proper error handling",
+                        "examples": ["Clean code principles", "Error handling", "Testing"]
+                    }
+                ],
+                "skill_development": [
+                    {
+                        "skill": f"Advanced {user_profession} technologies",
+                        "relevance": f"Essential for career growth in {user_profession}",
+                        "learning_resources": ["Online courses", "Official documentation", "Community tutorials"]
+                    },
+                    {
+                        "skill": "Open source contribution",
+                        "relevance": "Demonstrates collaboration skills and community engagement",
+                        "learning_resources": ["GitHub guides", "Open source projects", "Contribution guidelines"]
                     }
                 ]
             },
             "project_recommendations": [
                 {
                     "project_title": f"{user_profession} Portfolio Project",
-                    "description": "Create a project that showcases your professional skills",
-                    "technical_skills": ["Relevant technologies", "Best practices"],
-                    "career_relevance": f"Demonstrates {user_profession} capabilities",
+                    "description": f"Create a comprehensive project that demonstrates your {user_profession} expertise",
+                    "technical_skills": [f"Technologies relevant to {user_profession}", "Best practices", "Documentation"],
+                    "career_relevance": f"Showcases your capabilities to potential employers in {user_profession}",
                     "complexity": "intermediate",
-                    "estimated_duration": "2-4 weeks"
+                    "estimated_duration": "4-6 weeks",
+                    "key_features": ["Professional presentation", "Clean code", "Proper documentation"],
+                    "learning_outcomes": ["Technical skills", "Project management", "Professional presentation"]
+                },
+                {
+                    "project_title": "Open Source Contribution",
+                    "description": "Contribute to open source projects relevant to your field",
+                    "technical_skills": ["Collaboration", "Code review", "Version control"],
+                    "career_relevance": "Demonstrates ability to work in team environments",
+                    "complexity": "beginner",
+                    "estimated_duration": "ongoing",
+                    "key_features": ["Community engagement", "Code quality", "Documentation"],
+                    "learning_outcomes": ["Collaboration skills", "Industry exposure", "Network building"]
                 }
             ],
             "career_specific_advice": {
                 "for_profession": user_profession,
-                "focus_areas": ["Code quality", "Documentation", "Project diversity"],
-                "recommended_technologies": ["Modern frameworks", "Industry standards"]
+                "focus_areas": [
+                    f"Technologies specifically relevant to {user_profession}",
+                    "Industry best practices and standards",
+                    "Professional portfolio development"
+                ],
+                "recommended_technologies": [
+                    f"Popular tools in {user_profession}",
+                    "Emerging technologies in the field",
+                    "Industry-standard frameworks"
+                ],
+                "networking_opportunities": [
+                    "Open source communities",
+                    f"{user_profession} focused groups",
+                    "Technical conferences and meetups"
+                ]
             }
         }
     
@@ -622,6 +743,7 @@ class GitHubAnalyzerService:
         
         user_stats = github_data.get('user_stats', {})
         repo_analysis = github_data.get('repository_analysis', {})
+        user_profession = user_profile.get('profession', 'Developer')
         
         # Calculate basic score
         repo_count = user_stats.get('public_repos', 0)
@@ -629,9 +751,9 @@ class GitHubAnalyzerService:
         followers = user_stats.get('followers', 0)
         
         base_score = 50
-        base_score += min(repo_count * 2, 20)  # Up to 20 points for repos
-        base_score += min(stars, 15)  # Up to 15 points for stars
-        base_score += min(followers, 15)  # Up to 15 points for followers
+        base_score += min(repo_count * 2, 20)
+        base_score += min(stars, 15)
+        base_score += min(followers, 15)
         
         total_score = min(base_score, 100)
         
@@ -648,19 +770,20 @@ class GitHubAnalyzerService:
             "account_age_days": user_stats.get('account_age_days', 0),
             "top_languages": [lang[0] for lang in repo_analysis.get('top_languages', [])][:3],
             "strengths": [
-                f"Has {repo_count} public repositories",
-                f"Earned {stars} total stars",
-                f"Active GitHub presence"
+                f"Has {repo_count} public repositories showing active development",
+                f"Earned {stars} total stars indicating code quality",
+                f"GitHub presence established for {user_profession} career"
             ],
             "weaknesses": [
-                "Analysis requires manual review",
-                "Profile could be optimized further"
+                "Profile requires comprehensive optimization",
+                "Repository documentation could be enhanced"
             ],
-            "grade_explanation": f"Score based on {repo_count} repositories, {stars} stars, and {followers} followers"
+            "grade_explanation": f"Score of {total_score} based on {repo_count} repositories, {stars} stars, and {followers} followers. Profile shows potential for {user_profession} career growth with focused improvements."
         }
         
-        suggestions = self._create_simplified_suggestions(
-            user_profile.get('profession', 'Developer'),
+        suggestions = self._create_enhanced_suggestions(
+            user_profession,
+            user_profile.get('career_choices', []),
             user_stats,
             repo_analysis
         )

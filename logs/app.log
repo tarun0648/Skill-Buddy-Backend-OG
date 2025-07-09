@@ -481,3 +481,199 @@
 2025-07-08 14:48:02,467 - services.portfolio_analyzer - INFO - Portfolio analysis completed successfully for: IIyIulBcLSJB243sccAF
 2025-07-08 14:48:44,120 - werkzeug - INFO - 127.0.0.1 - - [08/Jul/2025 14:48:44] "[31m[1mPOST /api/portfolio-analysis/results/IIyIulBcLSJB243sccAF HTTP/1.1[0m" 405 -
 2025-07-08 14:48:49,593 - werkzeug - INFO - 127.0.0.1 - - [08/Jul/2025 14:48:49] "GET /api/portfolio-analysis/results/IIyIulBcLSJB243sccAF HTTP/1.1" 200 -
+2025-07-08 20:40:03,014 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-08 20:40:03,044 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-08 20:45:03,824 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 20:45:03] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 500 -
+2025-07-08 20:46:26,699 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 20:46:26] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 500 -
+2025-07-08 20:47:24,211 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 20:47:24] "[35m[1mPOST /api/auth/login HTTP/1.1[0m" 500 -
+2025-07-08 20:55:53,191 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 20:55:53] "[35m[1mPOST /api/auth/login HTTP/1.1[0m" 500 -
+2025-07-08 20:59:51,298 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-08 20:59:51,298 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-08 21:00:38,790 - models.user_model - INFO - Updated user: XEw5kvtChuJnLqxPlQj4
+2025-07-08 21:00:38,791 - routes.auth_routes - INFO - User logged in: taruns0648@gmail.com
+2025-07-08 21:00:38,793 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:00:38] "POST /api/auth/login HTTP/1.1" 200 -
+2025-07-08 21:00:58,236 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:00:58] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-08 21:01:10,756 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:01:10] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-08 21:01:11,147 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:01:11] "GET /api/user/xp HTTP/1.1" 200 -
+2025-07-08 21:01:11,413 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:01:11] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-08 21:01:23,441 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:01:23] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-08 21:01:40,851 - routes.user_routes - INFO - Profile updated for user: XEw5kvtChuJnLqxPlQj4
+2025-07-08 21:01:40,852 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:01:40] "PUT /api/user/profile HTTP/1.1" 200 -
+2025-07-08 21:02:09,015 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:09] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-08 21:02:09,235 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:09] "GET /api/user/xp HTTP/1.1" 200 -
+2025-07-08 21:02:09,515 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:09] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-08 21:02:23,448 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:23] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-08 21:02:23,713 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:23] "GET /api/user/xp HTTP/1.1" 200 -
+2025-07-08 21:02:23,913 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:23] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-08 21:02:26,030 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:02:26] "[33mPOST /api/auth/logout HTTP/1.1[0m" 404 -
+2025-07-08 21:03:02,849 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:03:02] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-08 21:03:40,340 - models.user_model - INFO - Created user: qPiIcGZ6HjGnYfFLNL1X
+2025-07-08 21:03:40,429 - routes.auth_routes - INFO - User registered successfully: test10@gmail.com
+2025-07-08 21:03:40,431 - werkzeug - INFO - 172.20.10.1 - - [08/Jul/2025 21:03:40] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-09 12:33:54,419 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-09 12:33:54,434 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-09 12:38:23,687 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:38:23] "GET / HTTP/1.1" 200 -
+2025-07-09 12:39:13,825 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:39:13] "GET /api/status HTTP/1.1" 200 -
+2025-07-09 12:39:55,617 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:39:55] "GET /api/test-auth HTTP/1.1" 200 -
+2025-07-09 12:40:25,099 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:40:25] "GET /api/test-profile-analysis HTTP/1.1" 200 -
+2025-07-09 12:42:53,670 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:42:53] "[31m[1mGET /api/auth/register HTTP/1.1[0m" 405 -
+2025-07-09 12:43:00,581 - routes.auth_routes - ERROR - Registration error: 400 Bad Request: The browser (or proxy) sent a request that this server could not understand.
+2025-07-09 12:43:00,582 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:43:00] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 500 -
+2025-07-09 12:43:13,045 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:43:13] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-09 12:43:23,663 - models.user_model - INFO - Created user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:43:23,792 - routes.auth_routes - INFO - User registered successfully: test9@example.com
+2025-07-09 12:43:23,793 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:43:23] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-09 12:44:30,264 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:44:30] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-09 12:46:12,686 - models.user_model - INFO - Updated user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:46:12,784 - routes.user_routes - INFO - Profile updated for user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:46:12,786 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:46:12] "PUT /api/user/profile HTTP/1.1" 200 -
+2025-07-09 12:46:53,256 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:46:53] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 12:49:31,771 - models.resume_model - INFO - Created resume record: yJkg3Mt9BXQFxjZLFAXz for user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:49:31,771 - services.resume_processing_service - INFO - Starting async processing for resume: yJkg3Mt9BXQFxjZLFAXz
+2025-07-09 12:49:31,772 - services.resume_processing_service - INFO - Started resume processing for resume_id: yJkg3Mt9BXQFxjZLFAXz
+2025-07-09 12:49:31,934 - models.resume_model - INFO - Updated resume status: yJkg3Mt9BXQFxjZLFAXz -> processing
+2025-07-09 12:49:32,045 - models.user_model - INFO - Updated user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:49:32,045 - routes.resume_routes - INFO - Updated resume status for user 092WtASJyFPYjugzqGmg: True
+2025-07-09 12:49:32,045 - routes.resume_routes - INFO - Resume upload successful for user 092WtASJyFPYjugzqGmg, resume_id: yJkg3Mt9BXQFxjZLFAXz
+2025-07-09 12:49:32,046 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:49:32] "[35m[1mPOST /api/resume/upload HTTP/1.1[0m" 201 -
+2025-07-09 12:49:33,902 - services.resume_extractor_cl - INFO - Processing resume file: uploads/resumes\1327e2c0-d67a-4c03-a068-7074bd31aade_Tarun_Resume.pdf
+2025-07-09 12:49:33,902 - services.resume_extractor_cl - INFO - Starting Resume Parsing Process
+2025-07-09 12:49:33,903 - services.resume_extractor_cl - INFO - Claude HTTP client initialized successfully
+2025-07-09 12:49:33,903 - services.resume_extractor_cl - INFO - Extracting text from PDF...
+2025-07-09 12:49:33,986 - services.resume_extractor_cl - INFO - Text extraction completed in 0.08 seconds
+2025-07-09 12:49:33,986 - services.resume_extractor_cl - INFO - Extracted 1794 characters from PDF
+2025-07-09 12:49:33,986 - services.resume_extractor_cl - INFO - Verifying document is a resume...
+2025-07-09 12:49:36,964 - services.resume_extractor_cl - INFO - Verification completed in 2.98 seconds
+2025-07-09 12:49:36,964 - services.resume_extractor_cl - INFO - Verification result: Resume (Confidence: 95%)
+2025-07-09 12:49:36,965 - services.resume_extractor_cl - INFO - Sending request to Claude API for resume parsing...
+2025-07-09 12:49:46,444 - services.resume_extractor_cl - INFO - Claude API response received in 9.48 seconds
+2025-07-09 12:49:46,445 - services.resume_extractor_cl - INFO - Successfully parsed JSON response
+2025-07-09 12:49:46,446 - services.resume_extractor_cl - INFO - Saving extracted data to JSON file...
+2025-07-09 12:49:46,450 - services.resume_extractor_cl - INFO - Extracted resume data saved to: uploads/resumes\1327e2c0-d67a-4c03-a068-7074bd31aade_Tarun_Resume_extracted_resume.json
+2025-07-09 12:49:46,451 - services.resume_extractor_cl - INFO - Resume Parsing Complete
+2025-07-09 12:49:46,706 - services.resume_questions - INFO - Generating interview questions based on resume data
+2025-07-09 12:49:53,883 - services.resume_questions - INFO - Received response from Claude API
+2025-07-09 12:49:53,883 - services.resume_questions - INFO - Successfully generated 5 interview questions
+2025-07-09 12:49:53,901 - services.resume_summarizer - INFO - Starting resume comparison with job description
+2025-07-09 12:49:58,844 - services.resume_summarizer - INFO - Received response from Claude API
+2025-07-09 12:49:58,845 - services.resume_summarizer - INFO - Successfully generated resume analysis with match score: 75
+2025-07-09 12:49:58,957 - models.resume_model - INFO - Updated resume with processed data: yJkg3Mt9BXQFxjZLFAXz
+2025-07-09 12:49:59,073 - models.resume_model - INFO - Updated resume status: yJkg3Mt9BXQFxjZLFAXz -> completed
+2025-07-09 12:49:59,244 - models.user_model - INFO - Updated user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:49:59,244 - services.resume_processing_service - INFO - Updated resume status for user 092WtASJyFPYjugzqGmg: True
+2025-07-09 12:49:59,245 - services.resume_processing_service - INFO - Resume processing completed successfully for: yJkg3Mt9BXQFxjZLFAXz
+2025-07-09 12:50:29,291 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:50:29] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 12:52:08,229 - models.profile_analysis_model - INFO - Created profile analysis record: GuwpXXbCM7faz3pUV1Q4 for user: 092WtASJyFPYjugzqGmg
+2025-07-09 12:52:08,230 - services.linkedin_analyzer - INFO - Starting async LinkedIn analysis for: GuwpXXbCM7faz3pUV1Q4
+2025-07-09 12:52:08,230 - services.linkedin_analyzer - INFO - Started LinkedIn analysis for analysis_id: GuwpXXbCM7faz3pUV1Q4
+2025-07-09 12:52:08,234 - routes.profile_analysis_routes - INFO - LinkedIn analysis started for user 092WtASJyFPYjugzqGmg, analysis_id: GuwpXXbCM7faz3pUV1Q4
+2025-07-09 12:52:08,235 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:52:08] "[35m[1mPOST /api/profile-analysis/analyze/linkedin HTTP/1.1[0m" 201 -
+2025-07-09 12:52:08,315 - models.profile_analysis_model - INFO - Updated analysis status: GuwpXXbCM7faz3pUV1Q4 -> processing
+2025-07-09 12:52:30,450 - services.linkedin_analyzer - INFO - Received LinkedIn analysis response from Claude API
+2025-07-09 12:52:30,451 - services.linkedin_analyzer - INFO - Successfully generated LinkedIn analysis with score: 75
+2025-07-09 12:52:30,581 - models.profile_analysis_model - INFO - Updated analysis with results: GuwpXXbCM7faz3pUV1Q4
+2025-07-09 12:52:30,665 - models.profile_analysis_model - INFO - Updated analysis status: GuwpXXbCM7faz3pUV1Q4 -> completed
+2025-07-09 12:52:30,666 - services.linkedin_analyzer - INFO - LinkedIn analysis completed successfully for: GuwpXXbCM7faz3pUV1Q4
+2025-07-09 12:52:50,261 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:52:50] "[31m[1mPOST /api/user/profile/completion HTTP/1.1[0m" 405 -
+2025-07-09 12:52:55,259 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:52:55] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 12:55:28,942 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 12:55:28] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 13:06:14,709 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-09 13:06:14,709 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-09 13:06:28,975 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:06:28] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 13:51:52,434 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-09 13:51:52,435 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-09 13:52:01,564 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:52:01] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 13:54:16,579 - routes.profile_analysis_routes - INFO - Updating LinkedIn link for user 092WtASJyFPYjugzqGmg:  -> https://www.linkedin.com/in/tarun-s-98886a367
+2025-07-09 13:54:16,580 - models.user_model - INFO - Calculating completion for profile: {'has_resume': True, 'is_profile_complete': False, 'github_link': '', 'career_choices': ['Software Engineer', 'Product Manager'], 'profession': 'Graduate', 'phone': '+1234567890', 'completion_status': 70, 'profile_picture': '', 'college_email': 'updated@university.edu', 'linkedin_link': 'https://www.linkedin.com/in/tarun-s-98886a367', 'college_name': 'Test University', 'name': 'Updated Test User'}
+2025-07-09 13:54:16,580 - models.user_model - INFO - Added 10% for name
+2025-07-09 13:54:16,581 - models.user_model - INFO - Added 10% for profession
+2025-07-09 13:54:16,581 - models.user_model - INFO - Added 10% for career choices
+2025-07-09 13:54:16,581 - models.user_model - INFO - Added 10% for college name
+2025-07-09 13:54:16,582 - models.user_model - INFO - Added 15% for college email
+2025-07-09 13:54:16,583 - models.user_model - INFO - Added 15% for LinkedIn link: https://www.linkedin.com/in/tarun-s-98886a367
+2025-07-09 13:54:16,583 - models.user_model - INFO - Added 15% for resume
+2025-07-09 13:54:16,583 - models.user_model - INFO - Final completion percentage: 85
+2025-07-09 13:54:16,583 - routes.profile_analysis_routes - INFO - LinkedIn link XP bonus: 15 for user 092WtASJyFPYjugzqGmg
+2025-07-09 13:54:16,732 - models.user_model - INFO - Updated user: 092WtASJyFPYjugzqGmg
+2025-07-09 13:54:16,733 - routes.profile_analysis_routes - INFO - LinkedIn link updated and completion recalculated: 70% -> 85%
+2025-07-09 13:54:16,881 - models.profile_analysis_model - INFO - Created profile analysis record: Ld2hlB9hz8jvK17SKqKK for user: 092WtASJyFPYjugzqGmg
+2025-07-09 13:54:16,882 - services.linkedin_analyzer - INFO - Starting async LinkedIn analysis for: Ld2hlB9hz8jvK17SKqKK
+2025-07-09 13:54:16,882 - services.linkedin_analyzer - INFO - Started LinkedIn analysis for analysis_id: Ld2hlB9hz8jvK17SKqKK
+2025-07-09 13:54:16,884 - routes.profile_analysis_routes - INFO - LinkedIn analysis started for user 092WtASJyFPYjugzqGmg, analysis_id: Ld2hlB9hz8jvK17SKqKK
+2025-07-09 13:54:16,885 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:54:16] "[35m[1mPOST /api/profile-analysis/analyze/linkedin HTTP/1.1[0m" 201 -
+2025-07-09 13:54:16,984 - models.profile_analysis_model - INFO - Updated analysis status: Ld2hlB9hz8jvK17SKqKK -> processing
+2025-07-09 13:54:44,696 - services.linkedin_analyzer - INFO - Received LinkedIn analysis response from Claude API
+2025-07-09 13:54:44,698 - services.linkedin_analyzer - INFO - Successfully generated LinkedIn analysis with score: 65
+2025-07-09 13:54:44,823 - models.profile_analysis_model - INFO - Updated analysis with results: Ld2hlB9hz8jvK17SKqKK
+2025-07-09 13:54:44,926 - models.profile_analysis_model - INFO - Updated analysis status: Ld2hlB9hz8jvK17SKqKK -> completed
+2025-07-09 13:54:45,013 - services.linkedin_analyzer - INFO - LinkedIn analysis completed successfully for: Ld2hlB9hz8jvK17SKqKK
+2025-07-09 13:55:37,867 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:55:37] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 13:56:19,272 - routes.profile_analysis_routes - INFO - Updating GitHub link for user 092WtASJyFPYjugzqGmg:  -> https://github.com/octocat
+2025-07-09 13:56:19,273 - models.user_model - INFO - Calculating completion for profile: {'has_resume': True, 'is_profile_complete': False, 'github_link': 'https://github.com/octocat', 'career_choices': ['Software Engineer', 'Product Manager'], 'profession': 'Graduate', 'phone': '+1234567890', 'completion_status': 85, 'profile_picture': '', 'college_email': 'updated@university.edu', 'college_name': 'Test University', 'linkedin_link': 'https://www.linkedin.com/in/tarun-s-98886a367', 'name': 'Updated Test User'}
+2025-07-09 13:56:19,274 - models.user_model - INFO - Added 10% for name
+2025-07-09 13:56:19,274 - models.user_model - INFO - Added 10% for profession
+2025-07-09 13:56:19,275 - models.user_model - INFO - Added 10% for career choices
+2025-07-09 13:56:19,275 - models.user_model - INFO - Added 10% for college name
+2025-07-09 13:56:19,275 - models.user_model - INFO - Added 15% for college email
+2025-07-09 13:56:19,276 - models.user_model - INFO - Added 15% for GitHub link: https://github.com/octocat
+2025-07-09 13:56:19,276 - models.user_model - INFO - Added 15% for LinkedIn link: https://www.linkedin.com/in/tarun-s-98886a367
+2025-07-09 13:56:19,277 - models.user_model - INFO - Added 15% for resume
+2025-07-09 13:56:19,278 - models.user_model - INFO - Final completion percentage: 100
+2025-07-09 13:56:19,278 - routes.profile_analysis_routes - INFO - GitHub link XP bonus: 50 for user 092WtASJyFPYjugzqGmg
+2025-07-09 13:56:19,382 - models.user_model - INFO - Updated user: 092WtASJyFPYjugzqGmg
+2025-07-09 13:56:19,383 - routes.profile_analysis_routes - INFO - GitHub link updated and completion recalculated: 85% -> 100%
+2025-07-09 13:56:19,483 - models.profile_analysis_model - INFO - Created profile analysis record: yDAe2VyRhKl78vCmMR8R for user: 092WtASJyFPYjugzqGmg
+2025-07-09 13:56:19,483 - services.github_analyzer - INFO - Starting async GitHub analysis for: yDAe2VyRhKl78vCmMR8R
+2025-07-09 13:56:19,483 - services.github_analyzer - INFO - Started GitHub analysis for analysis_id: yDAe2VyRhKl78vCmMR8R
+2025-07-09 13:56:19,487 - routes.profile_analysis_routes - INFO - GitHub analysis started for user 092WtASJyFPYjugzqGmg, analysis_id: yDAe2VyRhKl78vCmMR8R
+2025-07-09 13:56:19,489 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:56:19] "[35m[1mPOST /api/profile-analysis/analyze/github HTTP/1.1[0m" 201 -
+2025-07-09 13:56:19,582 - models.profile_analysis_model - INFO - Updated analysis status: yDAe2VyRhKl78vCmMR8R -> processing
+2025-07-09 13:56:19,667 - services.github_analyzer - INFO - Fetching GitHub data for username: octocat
+2025-07-09 13:56:21,447 - services.github_analyzer - INFO - Successfully fetched GitHub data for octocat
+2025-07-09 13:56:28,320 - services.github_analyzer - INFO - Received GitHub analysis response from Claude API
+2025-07-09 13:56:28,321 - services.github_analyzer - WARNING - Initial JSON parsing failed, attempting to extract JSON from response
+2025-07-09 13:56:28,322 - services.github_analyzer - INFO - Successfully generated GitHub analysis with score: 65
+2025-07-09 13:56:28,417 - models.profile_analysis_model - INFO - Updated analysis with results: yDAe2VyRhKl78vCmMR8R
+2025-07-09 13:56:28,503 - models.profile_analysis_model - INFO - Updated analysis status: yDAe2VyRhKl78vCmMR8R -> completed
+2025-07-09 13:56:28,588 - services.github_analyzer - INFO - GitHub analysis completed successfully for: yDAe2VyRhKl78vCmMR8R
+2025-07-09 13:57:19,147 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:57:19] "[31m[1mPOST /api/user/profile/completion HTTP/1.1[0m" 405 -
+2025-07-09 13:57:22,803 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 13:57:22] "GET /api/user/profile/completion HTTP/1.1" 200 -
+2025-07-09 14:51:36,695 - routes.profile_analysis_routes - INFO - Updating LinkedIn link for user 092WtASJyFPYjugzqGmg: https://www.linkedin.com/in/tarun-s-98886a367 -> https://www.linkedin.com/in/sidharth-hussain-787647286
+2025-07-09 14:51:36,698 - models.user_model - INFO - Calculating completion for profile: {'has_resume': True, 'career_choices': ['Software Engineer', 'Product Manager'], 'github_link': 'https://github.com/octocat', 'is_profile_complete': True, 'profession': 'Graduate', 'phone': '+1234567890', 'completion_status': 100, 'profile_picture': '', 'college_email': 'updated@university.edu', 'college_name': 'Test University', 'linkedin_link': 'https://www.linkedin.com/in/sidharth-hussain-787647286', 'name': 'Updated Test User'}
+2025-07-09 14:51:36,699 - models.user_model - INFO - Added 10% for name
+2025-07-09 14:51:36,699 - models.user_model - INFO - Added 10% for profession
+2025-07-09 14:51:36,700 - models.user_model - INFO - Added 10% for career choices
+2025-07-09 14:51:36,701 - models.user_model - INFO - Added 10% for college name
+2025-07-09 14:51:36,701 - models.user_model - INFO - Added 15% for college email
+2025-07-09 14:51:36,702 - models.user_model - INFO - Added 15% for GitHub link: https://github.com/octocat
+2025-07-09 14:51:36,703 - models.user_model - INFO - Added 15% for LinkedIn link: https://www.linkedin.com/in/sidharth-hussain-787647286
+2025-07-09 14:51:36,703 - models.user_model - INFO - Added 15% for resume
+2025-07-09 14:51:36,703 - models.user_model - INFO - Final completion percentage: 100
+2025-07-09 14:51:36,795 - models.user_model - INFO - Updated user: 092WtASJyFPYjugzqGmg
+2025-07-09 14:51:36,795 - routes.profile_analysis_routes - INFO - LinkedIn link updated and completion recalculated: 100% -> 100%
+2025-07-09 14:51:36,898 - models.profile_analysis_model - INFO - Created profile analysis record: yLz1geogJfX66cnWUAl8 for user: 092WtASJyFPYjugzqGmg
+2025-07-09 14:51:36,899 - services.linkedin_analyzer - INFO - Starting async LinkedIn analysis for: yLz1geogJfX66cnWUAl8
+2025-07-09 14:51:36,899 - services.linkedin_analyzer - INFO - Started LinkedIn analysis for analysis_id: yLz1geogJfX66cnWUAl8
+2025-07-09 14:51:36,902 - routes.profile_analysis_routes - INFO - LinkedIn analysis started for user 092WtASJyFPYjugzqGmg, analysis_id: yLz1geogJfX66cnWUAl8
+2025-07-09 14:51:36,913 - werkzeug - INFO - 127.0.0.1 - - [09/Jul/2025 14:51:36] "[35m[1mPOST /api/profile-analysis/analyze/linkedin HTTP/1.1[0m" 201 -
+2025-07-09 14:51:36,999 - models.profile_analysis_model - INFO - Updated analysis status: yLz1geogJfX66cnWUAl8 -> processing
+2025-07-09 14:52:08,569 - services.linkedin_analyzer - INFO - Received LinkedIn analysis response from Claude API
+2025-07-09 14:52:08,569 - services.linkedin_analyzer - INFO - Successfully generated LinkedIn analysis with score: 65
+2025-07-09 14:52:09,431 - models.profile_analysis_model - INFO - Updated analysis with results: yLz1geogJfX66cnWUAl8
+2025-07-09 14:52:09,526 - models.profile_analysis_model - INFO - Updated analysis status: yLz1geogJfX66cnWUAl8 -> completed
+2025-07-09 14:52:09,609 - services.linkedin_analyzer - INFO - LinkedIn analysis completed successfully for: yLz1geogJfX66cnWUAl8

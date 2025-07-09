@@ -47,10 +47,20 @@ def auth_required(f):
     
     return decorated
 
+def update_user_resume_status(user_id: str, has_resume: bool):
+    """Update user's resume status and recalculate profile completion"""
+    try:
+        from models.user_model import UserModel
+        user_model = UserModel(db)
+        user_model.update_resume_status(user_id, has_resume)
+        logger.info(f"Updated resume status for user {user_id}: {has_resume}")
+    except Exception as e:
+        logger.error(f"Error updating user resume status: {e}")
+
 @resume_bp.route('/upload', methods=['POST'])
 @auth_required
 def upload_resume():
-    """Upload and process resume with real processing"""
+    """Upload and process resume with real processing - Updated to track profile completion"""
     try:
         user_id = request.user_id
         
@@ -101,12 +111,16 @@ def upload_resume():
                 pass
             return jsonify({'error': 'Failed to start resume processing'}), 500
         
+        # Update user's resume status immediately (optimistic update)
+        update_user_resume_status(user_id, True)
+        
         logger.info(f"Resume upload successful for user {user_id}, resume_id: {resume_id}")
         
         return jsonify({
             'message': 'Resume uploaded successfully. Processing started.',
             'resume_id': resume_id,
-            'status': 'pending'
+            'status': 'pending',
+            'profile_updated': True  # Indicate that profile completion was updated
         }), 201
         
     except Exception as e:
@@ -260,7 +274,7 @@ def reprocess_resume(resume_id):
 @resume_bp.route('/delete/<resume_id>', methods=['DELETE'])
 @auth_required
 def delete_resume(resume_id):
-    """Delete a resume and its associated data"""
+    """Delete a resume and its associated data - Updated to handle profile completion"""
     try:
         user_id = request.user_id
         
@@ -300,8 +314,18 @@ def delete_resume(resume_id):
         success = resume_model.delete_resume(resume_id)
         
         if success:
+            # Check if user still has other completed resumes
+            user_resumes = resume_model.get_user_resumes(user_id)
+            has_resumes = any(r.get('processing_status') == 'completed' for r in user_resumes)
+            
+            # Update user's resume status
+            update_user_resume_status(user_id, has_resumes)
+            
             logger.info(f"Successfully deleted resume: {resume_id}")
-            return jsonify({'message': 'Resume deleted successfully'}), 200
+            return jsonify({
+                'message': 'Resume deleted successfully',
+                'profile_updated': True  # Indicate that profile completion was updated
+            }), 200
         else:
             return jsonify({'error': 'Failed to delete resume from database'}), 500
         
