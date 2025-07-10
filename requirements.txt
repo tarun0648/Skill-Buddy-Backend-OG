@@ -58,7 +58,7 @@ Flask-Caching==2.1.0
 # Enhanced logging
 structlog==23.2.0
 
-# NEW: Portfolio Analysis Dependencies
+# Portfolio Analysis Dependencies
 soupsieve==2.5
 cssselect==1.2.0
 pyquery==2.0.0
@@ -86,3 +86,24 @@ markdown==3.5.1
 # Domain and URL utilities
 tldextract==5.1.1
 validators==0.22.0
+
+# COMMUNITY PLATFORM DEPENDENCIES
+# UUID generation (built-in but explicitly listed)
+uuid
+
+# Additional datetime utilities
+pytz==2023.3
+
+# For community data processing
+pandas
+numpy
+
+# For community notifications (future use)
+APScheduler==3.10.4
+
+# For community content moderation (future use)
+profanity-check==1.0.3
+
+# For community analytics (future use)
+matplotlib==3.8.0
+seaborn==0.12.2

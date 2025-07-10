@@ -1,4 +1,4 @@
-# app.py (Updated with Profile Completion System)
+# app.py (FIXED - Status endpoint community stats)
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -135,6 +135,15 @@ except ImportError as e:
     print(f"✗ Portfolio analysis routes failed: {e}")
     portfolio_analysis_bp = None
 
+# NEW: Community Platform Routes
+try:
+    from routes.community_routes import community_bp
+    app.register_blueprint(community_bp, url_prefix='/api/community')
+    print("✓ Community platform routes loaded")
+except ImportError as e:
+    print(f"✗ Community platform routes failed: {e}")
+    community_bp = None
+
 # Profile completion info endpoint
 @app.route('/api/profile-completion/info', methods=['GET'])
 def get_profile_completion_info():
@@ -157,7 +166,7 @@ def get_profile_completion_info():
         logger.error(f"Error getting profile completion info: {e}")
         return jsonify({'error': 'Failed to get profile completion info'}), 500
 
-# Update the status endpoint
+# Update the status endpoint - FIXED community stats
 @app.route('/api/status', methods=['GET'])
 def api_status():
     try:
@@ -171,7 +180,8 @@ def api_status():
                 'resume_processing': resume_bp is not None,
                 'profile_analysis': profile_analysis_bp is not None,
                 'portfolio_analysis': portfolio_analysis_bp is not None,
-                'profile_completion_system': True  # NEW
+                'profile_completion_system': True,
+                'community_platform': community_bp is not None  # NEW
             },
             'profile_completion': {
                 'basic_profile_required': 55,
@@ -225,6 +235,18 @@ def api_status():
             except Exception as e:
                 stats['portfolio_analysis_error'] = str(e)
         
+        # FIXED: Try to get community statistics
+        if community_bp and db:
+            try:
+                from models.community_model import CommunityModel
+                
+                community_model = CommunityModel(db)
+                community_stats = community_model.get_community_statistics()
+                
+                stats['community_statistics'] = community_stats
+            except Exception as e:
+                stats['community_error'] = str(e)
+        
         return jsonify(stats), 200
         
     except Exception as e:
@@ -239,17 +261,18 @@ def api_status():
 @app.route('/', methods=['GET'])
 def health_check():
     return jsonify({
-        'message': 'Skill Buddy API is running',
+        'message': 'Skill Buddy API with Community Platform is running',
         'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'status': 'healthy',
-        'version': '3.1.0',  # Updated version for new completion system
+        'version': '4.0.0',  # Updated version for community platform
         'features': [
             'Resume Processing',
             'User Management', 
             'LinkedIn Profile Analysis',
             'GitHub Profile Analysis',
             'Portfolio Website Analysis',
-            'Enhanced Profile Completion System'  # NEW
+            'Enhanced Profile Completion System',
+            'Community Platform'  # NEW
         ],
         'profile_completion_system': {
             'basic_profile': '55% (Name, Profession, Career Choices, College Name & Email)',
@@ -257,6 +280,13 @@ def health_check():
             'linkedin_link': '15% bonus', 
             'resume_upload': '15% bonus',
             'total': '100% for complete profile'
+        },
+        'community_features': {  # NEW
+            'posts': 'Create and share posts with the community',
+            'likes': 'Like posts from other users',
+            'replies': 'Reply to posts and engage in discussions',
+            'user_profiles': 'Integrated with existing user system',
+            'real_time_updates': 'All interactions stored in Firestore'
         }
     })
 
@@ -269,6 +299,61 @@ def test_auth():
         'user_id': request.user_id,
         'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()
     })
+
+# NEW: Test community platform endpoint - FIXED
+@app.route('/api/test-community', methods=['GET'])
+@auth_required
+def test_community():
+    """Test endpoint to check community platform integration"""
+    try:
+        from models.user_model import UserModel
+        
+        user_id = request.user_id
+        user_model = UserModel(db)
+        user = user_model.get_user_by_id(user_id)
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_profile = user.get('profile', {})
+        
+        # FIXED: Check community stats without complex queries
+        try:
+            posts_ref = db.collection('community_posts')\
+                .where(filter=firestore.FieldFilter('user_id', '==', user_id))\
+                .where(filter=firestore.FieldFilter('is_active', '==', True))
+            user_posts = posts_ref.get()
+            user_posts_count = len(user_posts)
+        except Exception as e:
+            logger.warning(f"Could not get user posts count: {e}")
+            user_posts_count = 0
+        
+        return jsonify({
+            'message': 'Community platform integration test',
+            'user_id': user_id,
+            'user_name': user_profile.get('name', 'Anonymous'),
+            'user_profession': user_profile.get('profession', 'Student'),
+            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'community_status': {
+                'can_create_posts': True,
+                'can_like_posts': True,
+                'can_reply_to_posts': True,
+                'user_posts_count': user_posts_count
+            },
+            'features_available': {
+                'post_creation': community_bp is not None,
+                'user_authentication': True,
+                'firestore_integration': db is not None,
+                'real_time_updates': True
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Community test error: {e}")
+        return jsonify({
+            'error': 'Community platform test failed',
+            'details': str(e)
+        }), 500
 
 # Test profile completion endpoint
 @app.route('/api/test-profile-completion', methods=['GET'])
@@ -399,8 +484,8 @@ def test_portfolio_analysis():
             'error': 'Portfolio analysis test failed',
             'details': str(e)
         }), 500
-# Add this debug endpoint to app.py for testing
 
+# Add this debug endpoint to app.py for testing
 @app.route('/api/debug/profile-completion/<user_id>', methods=['GET'])
 def debug_profile_completion(user_id):
     """Debug endpoint to check profile completion calculation"""
@@ -489,7 +574,7 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
     
-    print("=== Skill Buddy API Starting ===")
+    print("=== Skill Buddy API with Community Platform Starting ===")
     print(f"Port: {port}")
     print(f"Debug: {debug}")
     print("Features:")
@@ -499,6 +584,7 @@ if __name__ == '__main__':
     print("  ✓ GitHub Profile Analysis")
     print("  ✓ Portfolio Website Analysis")
     print("  ✓ Enhanced Profile Completion System")
+    print("  ✓ Community Platform (FIXED)")
     print("")
     print("Profile Completion System:")
     print("  • Basic Profile (55%): Name, Profession, Career Choices, College Info")
@@ -506,6 +592,13 @@ if __name__ == '__main__':
     print("  • LinkedIn Link (+15%)")
     print("  • Resume Upload (+15%)")
     print("  • Total: 100%")
-    print("================================")
+    print("")
+    print("Community Platform Features (FIXED):")
+    print("  • Create and share posts")
+    print("  • Like posts from other users")
+    print("  • Reply to posts and engage in discussions")
+    print("  • Integrated with existing user authentication")
+    print("  • Optimized queries to avoid Firestore index requirements")
+    print("========================================================")
     
     app.run(host='0.0.0.0', port=port, debug=debug)

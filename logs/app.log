@@ -677,3 +677,186 @@
 2025-07-09 14:52:09,431 - models.profile_analysis_model - INFO - Updated analysis with results: yLz1geogJfX66cnWUAl8
 2025-07-09 14:52:09,526 - models.profile_analysis_model - INFO - Updated analysis status: yLz1geogJfX66cnWUAl8 -> completed
 2025-07-09 14:52:09,609 - services.linkedin_analyzer - INFO - LinkedIn analysis completed successfully for: yLz1geogJfX66cnWUAl8
+2025-07-10 09:14:57,508 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-10 09:14:57,549 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-10 09:17:22,232 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:17:22] "GET / HTTP/1.1" 200 -
+2025-07-10 09:18:01,212 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:18:01] "GET /api/test-social HTTP/1.1" 200 -
+2025-07-10 09:19:30,442 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:19:30] "GET /api/social/categories HTTP/1.1" 200 -
+2025-07-10 09:20:38,696 - models.social_model - INFO - Created post: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:20:38,801 - routes.social_routes - INFO - Post created successfully: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:20:38,801 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:20:38] "[35m[1mPOST /api/social/posts HTTP/1.1[0m" 201 -
+2025-07-10 09:21:50,434 - models.social_model - INFO - Created post: 49042a3b-d72e-4678-8324-fca22d932a5f by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:21:50,526 - routes.social_routes - INFO - Post created successfully: 49042a3b-d72e-4678-8324-fca22d932a5f by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:21:50,528 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:21:50] "[35m[1mPOST /api/social/posts HTTP/1.1[0m" 201 -
+2025-07-10 09:22:46,792 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:22:46,792 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:22:46] "GET /api/social/posts HTTP/1.1" 200 -
+2025-07-10 09:23:34,851 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:23:34,852 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:23:34] "GET /api/social/posts HTTP/1.1" 200 -
+2025-07-10 09:24:59,967 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGgwKCGNhdGVnb3J5EAEaDQoJaXNfYWN0aXZlEAEaDgoKY3JlYXRlZF9hdBACGgwKCF9fbmFtZV9fEAI
+2025-07-10 09:24:59,968 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:24:59] "GET /api/social/posts?category=career_advice&limit=5 HTTP/1.1" 200 -
+2025-07-10 09:25:39,232 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:25:39,235 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:25:39] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:26:04,442 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:26:04] "POST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/like HTTP/1.1" 200 -
+2025-07-10 09:26:13,275 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:26:13,275 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:26:13] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:26:34,882 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:26:34] "POST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/like HTTP/1.1" 200 -
+2025-07-10 09:26:38,761 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:26:38] "POST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/like HTTP/1.1" 200 -
+2025-07-10 09:26:41,173 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:26:41] "POST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/like HTTP/1.1" 200 -
+2025-07-10 09:26:59,153 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:26:59] "POST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/like HTTP/1.1" 200 -
+2025-07-10 09:27:34,517 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:27:34] "[31m[1mPOST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1[0m" 405 -
+2025-07-10 09:28:10,496 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:28:10,497 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:28:10] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:28:49,807 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:28:49,808 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:28:49] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/replies HTTP/1.1" 200 -
+2025-07-10 09:28:56,341 - models.social_model - INFO - Created reply: 4bcda45b-d2db-4369-b1c6-a74f68c7ab14 for post: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:28:56,424 - routes.social_routes - INFO - Reply created: 4bcda45b-d2db-4369-b1c6-a74f68c7ab14 on post: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:28:56,426 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:28:56] "[35m[1mPOST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/replies HTTP/1.1[0m" 201 -
+2025-07-10 09:29:31,949 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:29:31] "[31m[1mPOST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1[0m" 405 -
+2025-07-10 09:29:35,437 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:29:35,439 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:29:35] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:29:52,592 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:29:52,593 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:29:52] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:31:02,585 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:31:02,585 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:31:02] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/replies HTTP/1.1" 200 -
+2025-07-10 09:31:06,073 - models.social_model - INFO - Created reply: 43821299-bf81-4acb-9bff-e3cf891c5037 for post: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:31:06,178 - routes.social_routes - INFO - Reply created: 43821299-bf81-4acb-9bff-e3cf891c5037 on post: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:31:06,180 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:31:06] "[35m[1mPOST /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/replies HTTP/1.1[0m" 201 -
+2025-07-10 09:31:26,423 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:31:26,425 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:31:26] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:31:48,347 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:31:48,347 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:31:48] "GET /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970/replies HTTP/1.1" 200 -
+2025-07-10 09:32:21,393 - models.social_model - ERROR - Error getting user posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGgsKB3VzZXJfaWQQARoOCgpjcmVhdGVkX2F0EAIaDAoIX19uYW1lX18QAg
+2025-07-10 09:32:21,394 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:32:21] "GET /api/social/user/posts HTTP/1.1" 200 -
+2025-07-10 09:32:46,872 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:32:46] "GET /api/social/user/activity HTTP/1.1" 200 -
+2025-07-10 09:33:39,242 - models.social_model - INFO - Created post: 1b53aabe-dcec-41e5-a0ca-b5f63396260a by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:33:39,366 - routes.social_routes - INFO - Post created successfully: 1b53aabe-dcec-41e5-a0ca-b5f63396260a by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:33:39,367 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:33:39] "[35m[1mPOST /api/social/posts HTTP/1.1[0m" 201 -
+2025-07-10 09:34:07,427 - models.social_model - INFO - Created post: 22221aeb-4510-45b3-82a3-49e7bb538c0a by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:34:07,508 - routes.social_routes - INFO - Post created successfully: 22221aeb-4510-45b3-82a3-49e7bb538c0a by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:34:07,509 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:34:07] "[35m[1mPOST /api/social/posts HTTP/1.1[0m" 201 -
+2025-07-10 09:34:55,055 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:34:55] "[31m[1mGET /api/social/posts HTTP/1.1[0m" 401 -
+2025-07-10 09:35:34,933 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:35:34] "[31m[1mPOST /api/social/posts HTTP/1.1[0m" 400 -
+2025-07-10 09:36:31,219 - models.social_model - INFO - Deleted post: 8a99d917-de5c-4f1a-9d17-f273bece3970
+2025-07-10 09:36:31,219 - routes.social_routes - INFO - Post deleted: 8a99d917-de5c-4f1a-9d17-f273bece3970 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:36:31,221 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:36:31] "DELETE /api/social/posts/8a99d917-de5c-4f1a-9d17-f273bece3970 HTTP/1.1" 200 -
+2025-07-10 09:36:45,958 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:36:45,959 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:36:45] "GET /api/social/posts HTTP/1.1" 200 -
+2025-07-10 09:38:23,061 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:38:23] "GET /api/social/user/activity HTTP/1.1" 200 -
+2025-07-10 09:47:10,737 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-10 09:47:10,737 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-10 09:48:11,512 - models.social_model - INFO - Created post: a8f4f777-ac00-4563-bef6-22a6da7f56f7 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:48:11,598 - routes.social_routes - INFO - Post created successfully: a8f4f777-ac00-4563-bef6-22a6da7f56f7 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:48:11,600 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:48:11] "[35m[1mPOST /api/social/posts HTTP/1.1[0m" 201 -
+2025-07-10 09:49:03,589 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:49:03,590 - routes.social_routes - INFO - Retrieved 0 posts (page: 1, limit: 10, category: None, tag: None)
+2025-07-10 09:49:03,590 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:49:03] "GET /api/social/posts HTTP/1.1" 200 -
+2025-07-10 09:49:59,547 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:49:59,547 - routes.social_routes - INFO - Retrieved 0 posts (page: 1, limit: 10, category: None, tag: None)
+2025-07-10 09:49:59,548 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:49:59] "GET /api/social/posts HTTP/1.1" 200 -
+2025-07-10 09:50:36,147 - models.social_model - INFO - Created reply: 90b41bc3-8dfd-40d7-8dcf-6a99ef78f73c for post: a8f4f777-ac00-4563-bef6-22a6da7f56f7 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:50:36,249 - routes.social_routes - INFO - Reply created: 90b41bc3-8dfd-40d7-8dcf-6a99ef78f73c on post: a8f4f777-ac00-4563-bef6-22a6da7f56f7 by user: 092WtASJyFPYjugzqGmg
+2025-07-10 09:50:36,250 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:50:36] "[35m[1mPOST /api/social/posts/a8f4f777-ac00-4563-bef6-22a6da7f56f7/replies HTTP/1.1[0m" 201 -
+2025-07-10 09:50:47,411 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:50:47] "[31m[1mPOST /api/social/posts/a8f4f777-ac00-4563-bef6-22a6da7f56f7 HTTP/1.1[0m" 405 -
+2025-07-10 09:50:51,542 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:50:51,543 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:50:51] "GET /api/social/posts/a8f4f777-ac00-4563-bef6-22a6da7f56f7 HTTP/1.1" 200 -
+2025-07-10 09:53:33,259 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:53:33,260 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:53:33] "GET /api/social/posts/a8f4f777-ac00-4563-bef6-22a6da7f56f7 HTTP/1.1" 200 -
+2025-07-10 09:53:53,063 - models.social_model - ERROR - Error getting user posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGgsKB3VzZXJfaWQQARoOCgpjcmVhdGVkX2F0EAIaDAoIX19uYW1lX18QAg
+2025-07-10 09:53:53,064 - routes.social_routes - INFO - Retrieved 0 user posts for user 092WtASJyFPYjugzqGmg
+2025-07-10 09:53:53,065 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:53:53] "GET /api/social/user/posts HTTP/1.1" 200 -
+2025-07-10 09:54:19,157 - models.social_model - ERROR - Error getting user posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGgsKB3VzZXJfaWQQARoOCgpjcmVhdGVkX2F0EAIaDAoIX19uYW1lX18QAg
+2025-07-10 09:54:19,157 - routes.social_routes - INFO - Retrieved 0 user posts for user 092WtASJyFPYjugzqGmg
+2025-07-10 09:54:19,158 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:54:19] "GET /api/social/user/posts HTTP/1.1" 200 -
+2025-07-10 09:54:45,794 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGgwKCGNhdGVnb3J5EAEaDQoJaXNfYWN0aXZlEAEaDgoKY3JlYXRlZF9hdBACGgwKCF9fbmFtZV9fEAI
+2025-07-10 09:54:45,794 - routes.social_routes - INFO - Retrieved 0 posts (page: 1, limit: 5, category: general, tag: None)
+2025-07-10 09:54:45,795 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:54:45] "GET /api/social/posts?category=general&limit=5 HTTP/1.1" 200 -
+2025-07-10 09:55:14,374 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 09:55:14,442 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:55:14] "GET /api/social/debug/post/a8f4f777-ac00-4563-bef6-22a6da7f56f7 HTTP/1.1" 200 -
+2025-07-10 09:55:55,433 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:55:55] "[31m[1mGET /api/social/admin/sync-reply-counts HTTP/1.1[0m" 405 -
+2025-07-10 09:56:09,957 - models.social_model - INFO - Synced reply counts for 4 posts
+2025-07-10 09:56:09,958 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:56:09] "POST /api/social/admin/sync-reply-counts HTTP/1.1" 200 -
+2025-07-10 09:56:51,686 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:56:51,686 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:56:51] "GET /api/social/posts/search?q=hello&page=1&limit=10 HTTP/1.1" 200 -
+2025-07-10 09:56:57,525 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 09:56:57,526 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:56:57] "GET /api/social/posts/search?q=hello&page=1&limit=10 HTTP/1.1" 200 -
+2025-07-10 09:57:18,743 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 09:57:18] "GET /api/social/stats HTTP/1.1" 200 -
+2025-07-10 10:02:19,997 - models.social_model - INFO - Created reply: 9cbc43f1-4ecb-4dd6-afa5-1bff2f355621 for post: 49042a3b-d72e-4678-8324-fca22d932a5f by user: 092WtASJyFPYjugzqGmg
+2025-07-10 10:02:20,102 - routes.social_routes - INFO - Reply created: 9cbc43f1-4ecb-4dd6-afa5-1bff2f355621 on post: 49042a3b-d72e-4678-8324-fca22d932a5f by user: 092WtASJyFPYjugzqGmg
+2025-07-10 10:02:20,104 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:02:20] "[35m[1mPOST /api/social/posts/49042a3b-d72e-4678-8324-fca22d932a5f/replies HTTP/1.1[0m" 201 -
+2025-07-10 10:02:41,392 - models.social_model - ERROR - Error getting post replies: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Clhwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3JlcGxpZXMvaW5kZXhlcy9fEAEaDQoJaXNfYWN0aXZlEAEaCwoHcG9zdF9pZBABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-10 10:02:41,393 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:02:41] "GET /api/social/posts/49042a3b-d72e-4678-8324-fca22d932a5f HTTP/1.1" 200 -
+2025-07-10 10:04:31,838 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-10 10:04:31,838 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-10 10:04:39,108 - routes.social_routes - INFO - Getting posts with query params: {}
+2025-07-10 10:04:39,108 - routes.social_routes - INFO - Query params: page=1, limit=10, category=None, tag=None, user_only=False
+2025-07-10 10:04:39,108 - models.social_model - INFO - Getting posts: limit=10, page=1, category=None, tag=None
+2025-07-10 10:04:39,209 - models.social_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClZwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvc29jaWFsX3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 10:04:40,043 - routes.social_routes - INFO - Got 0 general posts
+2025-07-10 10:04:40,043 - routes.social_routes - WARNING - No posts returned from model
+2025-07-10 10:04:40,043 - routes.social_routes - INFO - Returning response with 0 posts
+2025-07-10 10:04:40,044 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:04:40] "GET /api/social/posts HTTP/1.1" 200 -
+2025-07-10 10:26:35,419 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-10 10:26:35,419 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-10 10:35:22,923 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-10 10:35:22,924 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-10 10:35:47,065 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:35:47] "GET /api/test-community HTTP/1.1" 200 -
+2025-07-10 10:36:33,893 - models.community_model - INFO - Post created: d755d562-7e1e-46ce-aaf9-e42935fd439b by user: 092WtASJyFPYjugzqGmg
+2025-07-10 10:36:33,966 - routes.community_routes - INFO - Post created by user 092WtASJyFPYjugzqGmg: d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:36:33,967 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:36:33] "[35m[1mPOST /api/community/posts HTTP/1.1[0m" 201 -
+2025-07-10 10:38:05,450 - models.community_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Cllwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvY29tbXVuaXR5X3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 10:38:05,451 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:38:05] "GET /api/community/posts?limit=10&page=1 HTTP/1.1" 200 -
+2025-07-10 10:38:26,839 - models.community_model - ERROR - Error getting posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Cllwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvY29tbXVuaXR5X3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 10:38:26,840 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:38:26] "GET /api/community/posts?limit=10&page=1 HTTP/1.1" 200 -
+2025-07-10 10:38:50,306 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:38:50] "[33mGET /api/community/posts/{{POST_ID}} HTTP/1.1[0m" 404 -
+2025-07-10 10:39:01,458 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:39:01] "GET /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b HTTP/1.1" 200 -
+2025-07-10 10:39:14,139 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:39:14] "[31m[1mGET /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/like HTTP/1.1[0m" 405 -
+2025-07-10 10:39:19,964 - models.community_model - INFO - User 092WtASJyFPYjugzqGmg liked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:39:20,058 - routes.community_routes - INFO - User 092WtASJyFPYjugzqGmg liked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:39:20,060 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:39:20] "POST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/like HTTP/1.1" 200 -
+2025-07-10 10:39:22,653 - models.community_model - INFO - User 092WtASJyFPYjugzqGmg unliked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:39:22,730 - routes.community_routes - INFO - User 092WtASJyFPYjugzqGmg unliked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:39:22,730 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:39:22] "POST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/like HTTP/1.1" 200 -
+2025-07-10 10:39:24,513 - models.community_model - INFO - User 092WtASJyFPYjugzqGmg liked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:39:24,585 - routes.community_routes - INFO - User 092WtASJyFPYjugzqGmg liked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:39:24,587 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:39:24] "POST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/like HTTP/1.1" 200 -
+2025-07-10 10:40:08,098 - models.community_model - INFO - User 092WtASJyFPYjugzqGmg replied to post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:40:08,189 - routes.community_routes - INFO - User 092WtASJyFPYjugzqGmg replied to post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 10:40:08,191 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:40:08] "[35m[1mPOST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/replies HTTP/1.1[0m" 201 -
+2025-07-10 10:40:40,746 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:40:40] "GET /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/replies HTTP/1.1" 200 -
+2025-07-10 10:41:42,167 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:41:42] "[33mGET /api/community/api/community/my-posts HTTP/1.1[0m" 404 -
+2025-07-10 10:41:55,616 - models.community_model - ERROR - Error getting user posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Cllwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvY29tbXVuaXR5X3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGgsKB3VzZXJfaWQQARoOCgpjcmVhdGVkX2F0EAIaDAoIX19uYW1lX18QAg
+2025-07-10 10:41:55,617 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:41:55] "GET /api/community/my-posts HTTP/1.1" 200 -
+2025-07-10 10:42:23,635 - models.community_model - ERROR - Error getting trending posts: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=Cllwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvY29tbXVuaXR5X3Bvc3RzL2luZGV4ZXMvXxABGg0KCWlzX2FjdGl2ZRABGg4KCmNyZWF0ZWRfYXQQAhoMCghfX25hbWVfXxAC
+2025-07-10 10:42:23,635 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:42:23] "GET /api/community/trending?limit=10&days=7 HTTP/1.1" 200 -
+2025-07-10 10:42:45,216 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:42:45] "GET /api/community/stats HTTP/1.1" 200 -
+2025-07-10 10:56:22,712 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-10 10:56:22,713 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-10 10:56:32,765 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:56:32] "GET /api/community/stats HTTP/1.1" 200 -
+2025-07-10 10:56:40,324 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 10:56:40] "GET /api/community/posts HTTP/1.1" 200 -
+2025-07-10 11:31:41,754 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:31:41] "[31m[1mGET /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/like HTTP/1.1[0m" 405 -
+2025-07-10 11:31:46,949 - models.community_model - INFO - User 7iZlV73VpA7bMQIazqLq liked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 11:31:47,200 - routes.community_routes - INFO - User 7iZlV73VpA7bMQIazqLq liked post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 11:31:47,201 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:31:47] "POST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/like HTTP/1.1" 200 -
+2025-07-10 11:32:43,618 - models.community_model - INFO - User 7iZlV73VpA7bMQIazqLq replied to post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 11:32:43,734 - routes.community_routes - INFO - User 7iZlV73VpA7bMQIazqLq replied to post d755d562-7e1e-46ce-aaf9-e42935fd439b
+2025-07-10 11:32:43,735 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:32:43] "[35m[1mPOST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/replies HTTP/1.1[0m" 201 -
+2025-07-10 11:33:00,978 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:33:00] "[31m[1mPOST /api/community/posts HTTP/1.1[0m" 400 -
+2025-07-10 11:33:06,265 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:33:06] "GET /api/community/posts HTTP/1.1" 200 -
