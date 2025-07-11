@@ -556,7 +556,142 @@ def debug_profile_completion(user_id):
     except Exception as e:
         logger.error(f"Debug profile completion error: {e}")
         return jsonify({'error': 'Debug failed', 'details': str(e)}), 500
+@app.route('/api/debug/email-config', methods=['GET'])
+def debug_email_config():
+    """Debug email configuration - shows what's loaded"""
+    try:
+        from services.email_service import email_service
+        
+        debug_info = email_service.get_debug_info()
+        
+        # Add environment variable check
+        import os
+        env_vars = {
+            'SMTP_SERVER': os.environ.get('SMTP_SERVER'),
+            'SMTP_PORT': os.environ.get('SMTP_PORT'), 
+            'SMTP_USERNAME': os.environ.get('SMTP_USERNAME'),
+            'SMTP_PASSWORD_EXISTS': bool(os.environ.get('SMTP_PASSWORD')),
+            'SMTP_USE_TLS': os.environ.get('SMTP_USE_TLS'),
+            'FROM_EMAIL': os.environ.get('FROM_EMAIL'),
+            'FROM_NAME': os.environ.get('FROM_NAME')
+        }
+        
+        return jsonify({
+            'email_service_debug': debug_info,
+            'environment_variables': env_vars,
+            'recommendations': get_email_config_recommendations(debug_info, env_vars)
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Debug failed',
+            'details': str(e)
+        }), 500
 
+@app.route('/api/debug/test-email-connection', methods=['POST'])
+def debug_test_email_connection():
+    """Test email connection with detailed feedback"""
+    try:
+        from services.email_service import email_service
+        
+        if not email_service.enabled:
+            return jsonify({
+                'success': False,
+                'error': 'Email service is disabled',
+                'debug_info': email_service.get_debug_info(),
+                'solution': 'Check SMTP_USERNAME and SMTP_PASSWORD environment variables'
+            }), 400
+        
+        # Test connection
+        connection_result = email_service.test_connection()
+        
+        return jsonify({
+            'success': connection_result,
+            'message': 'Connection test successful' if connection_result else 'Connection test failed',
+            'debug_info': email_service.get_debug_info()
+        }), 200 if connection_result else 400
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'solution': 'Check SMTP credentials and network connectivity'
+        }), 500
+
+@app.route('/api/debug/send-test-email', methods=['POST'])
+def debug_send_test_email():
+    """Send a test email with detailed debugging"""
+    try:
+        from services.email_service import email_service
+        
+        data = request.get_json()
+        test_email = data.get('email') if data else None
+        
+        if not test_email:
+            return jsonify({'error': 'Email address required'}), 400
+        
+        if not email_service.enabled:
+            return jsonify({
+                'success': False,
+                'error': 'Email service is disabled',
+                'debug_info': email_service.get_debug_info()
+            }), 400
+        
+        # Send test email
+        subject = "Test Email from Skill Buddy"
+        html_content = f"""
+        <h2>🎉 Email Test Successful!</h2>
+        <p>This is a test email from your Skill Buddy application.</p>
+        <p><strong>Timestamp:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        <p>If you received this email, your SMTP configuration is working correctly!</p>
+        """
+        
+        text_content = f"""
+        Email Test Successful!
+        
+        This is a test email from your Skill Buddy application.
+        Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        
+        If you received this email, your SMTP configuration is working correctly!
+        """
+        
+        success = email_service.send_email([test_email], subject, html_content, text_content)
+        
+        return jsonify({
+            'success': success,
+            'message': 'Test email sent successfully' if success else 'Test email failed',
+            'email': test_email,
+            'debug_info': email_service.get_debug_info()
+        }), 200 if success else 400
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e),
+            'debug_info': email_service.get_debug_info()
+        }), 500
+
+def get_email_config_recommendations(debug_info, env_vars):
+    """Generate configuration recommendations based on debug info"""
+    recommendations = []
+    
+    if not debug_info['enabled']:
+        if not env_vars['SMTP_USERNAME']:
+            recommendations.append("Set SMTP_USERNAME environment variable")
+        if not env_vars['SMTP_PASSWORD_EXISTS']:
+            recommendations.append("Set SMTP_PASSWORD environment variable")
+    
+    if env_vars['SMTP_SERVER'] == 'smtp.gmail.com' and env_vars['SMTP_PASSWORD_EXISTS']:
+        recommendations.append("For Gmail: Use App Password instead of regular password")
+        recommendations.append("Enable 2-Factor Authentication in Google Account")
+    
+    if debug_info['smtp_port'] not in [587, 465]:
+        recommendations.append("Use port 587 (TLS) or 465 (SSL) for most email providers")
+    
+    if not env_vars.get('FROM_EMAIL'):
+        recommendations.append("Set FROM_EMAIL environment variable")
+    
+    return recommendations
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):

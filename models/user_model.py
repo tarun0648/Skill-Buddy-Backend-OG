@@ -1,4 +1,4 @@
-# models/user_model.py (FIXED)
+# models/user_model.py (UPDATED with Password Reset Support)
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 import logging
@@ -49,7 +49,12 @@ class UserModel:
                     'notifications': True,
                     'email_updates': True,
                     'privacy_level': 'normal'
-                }
+                },
+                # Password reset fields
+                'password_reset_token': None,
+                'password_reset_expires': None,
+                'password_reset_requested_at': None,
+                'password_changed_at': None
             }
             
             # Add password hash if provided
@@ -70,6 +75,35 @@ class UserModel:
         except Exception as e:
             logger.error(f"Error creating user: {e}")
             raise Exception(f"Failed to create user: {str(e)}")
+    
+    def get_user_by_reset_token(self, hashed_token: str) -> Optional[Dict[str, Any]]:
+        """Get user by password reset token"""
+        try:
+            # Query users collection for the reset token
+            query = self.db.collection(self.collection_name).where('password_reset_token', '==', hashed_token).limit(1)
+            docs = query.get()
+            
+            if docs:
+                doc = docs[0]
+                user_data = doc.to_dict()
+                user_data['id'] = doc.id
+                
+                # Convert Firebase timestamps
+                timestamp_fields = ['created_at', 'last_login', 'password_reset_expires', 'password_reset_requested_at', 'password_changed_at']
+                for field in timestamp_fields:
+                    if user_data.get(field):
+                        if hasattr(user_data[field], 'isoformat'):
+                            user_data[field] = user_data[field].isoformat()
+                        else:
+                            user_data[field] = str(user_data[field])
+                
+                return user_data
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error getting user by reset token: {e}")
+            return None
     
     def calculate_profile_completion(self, profile: Dict[str, Any]) -> int:
         """Calculate profile completion percentage based on new requirements - FIXED"""
@@ -163,10 +197,13 @@ class UserModel:
                 user_data['id'] = user_id
                 
                 # Convert Firebase timestamps to ISO strings
-                if user_data.get('created_at'):
-                    user_data['created_at'] = user_data['created_at'].isoformat() if hasattr(user_data['created_at'], 'isoformat') else str(user_data['created_at'])
-                if user_data.get('last_login'):
-                    user_data['last_login'] = user_data['last_login'].isoformat() if hasattr(user_data['last_login'], 'isoformat') else str(user_data['last_login'])
+                timestamp_fields = ['created_at', 'last_login', 'password_reset_expires', 'password_reset_requested_at', 'password_changed_at']
+                for field in timestamp_fields:
+                    if user_data.get(field):
+                        if hasattr(user_data[field], 'isoformat'):
+                            user_data[field] = user_data[field].isoformat()
+                        else:
+                            user_data[field] = str(user_data[field])
                     
                 return user_data
             
@@ -188,10 +225,13 @@ class UserModel:
                 user_data['id'] = doc.id
                 
                 # Convert Firebase timestamps
-                if user_data.get('created_at'):
-                    user_data['created_at'] = user_data['created_at'].isoformat() if hasattr(user_data['created_at'], 'isoformat') else str(user_data['created_at'])
-                if user_data.get('last_login'):
-                    user_data['last_login'] = user_data['last_login'].isoformat() if hasattr(user_data['last_login'], 'isoformat') else str(user_data['last_login'])
+                timestamp_fields = ['created_at', 'last_login', 'password_reset_expires', 'password_reset_requested_at', 'password_changed_at']
+                for field in timestamp_fields:
+                    if user_data.get(field):
+                        if hasattr(user_data[field], 'isoformat'):
+                            user_data[field] = user_data[field].isoformat()
+                        else:
+                            user_data[field] = str(user_data[field])
                     
                 return user_data
             
@@ -257,6 +297,25 @@ class UserModel:
                     update_data['xp.level'] = new_level
                     
                     logger.info(f"XP bonus awarded: {xp_bonus}, new total: {new_total_xp}")
+                    
+                    # Send milestone email if major milestone reached
+                    try:
+                        from services.email_service import email_service
+                        user_profile = user.get('profile', {})
+                        user_name = user_profile.get('name', 'User')
+                        user_email = user.get('email', '')
+                        
+                        # Send email for significant milestones (55%, 85%, 100%)
+                        significant_milestones = [milestone for milestone in milestones if milestone in [55, 85, 100]]
+                        if significant_milestones and email_service.enabled and user_email:
+                            for milestone in significant_milestones:
+                                milestone_xp = self.calculate_xp_bonus([milestone])
+                                email_service.send_profile_completion_milestone_email(
+                                    user_email, user_name, milestone, milestone_xp
+                                )
+                                logger.info(f"Milestone email sent for {milestone}% completion")
+                    except Exception as e:
+                        logger.error(f"Error sending milestone email: {e}")
             
             success = self.update_user(user_id, update_data)
             if success:
@@ -266,6 +325,46 @@ class UserModel:
             
         except Exception as e:
             logger.error(f"Error updating resume status: {e}")
+            return False
+    
+    def update_profile_with_milestone_email(self, user_id: str, update_data: Dict[str, Any], old_completion: int) -> bool:
+        """Update user profile and send milestone emails when appropriate"""
+        try:
+            # Update the user
+            success = self.update_user(user_id, update_data)
+            if not success:
+                return False
+            
+            # Check for milestone emails
+            new_completion = update_data.get('profile.completion_status')
+            if new_completion and old_completion != new_completion:
+                milestones = self.get_completion_milestones(old_completion, new_completion)
+                
+                # Send email for significant milestones
+                significant_milestones = [m for m in milestones if m in [55, 85, 100]]
+                if significant_milestones:
+                    try:
+                        from services.email_service import email_service
+                        user = self.get_user_by_id(user_id)
+                        if user and email_service.enabled:
+                            user_profile = user.get('profile', {})
+                            user_name = user_profile.get('name', 'User')
+                            user_email = user.get('email', '')
+                            
+                            if user_email:
+                                for milestone in significant_milestones:
+                                    milestone_xp = self.calculate_xp_bonus([milestone])
+                                    email_service.send_profile_completion_milestone_email(
+                                        user_email, user_name, milestone, milestone_xp
+                                    )
+                                    logger.info(f"Milestone email sent for {milestone}% completion")
+                    except Exception as e:
+                        logger.error(f"Error sending milestone email: {e}")
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error updating profile with milestone email: {e}")
             return False
     
     def delete_user(self, user_id: str) -> bool:

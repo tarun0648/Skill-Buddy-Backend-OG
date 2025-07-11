@@ -860,3 +860,100 @@
 2025-07-10 11:32:43,735 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:32:43] "[35m[1mPOST /api/community/posts/d755d562-7e1e-46ce-aaf9-e42935fd439b/replies HTTP/1.1[0m" 201 -
 2025-07-10 11:33:00,978 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:33:00] "[31m[1mPOST /api/community/posts HTTP/1.1[0m" 400 -
 2025-07-10 11:33:06,265 - werkzeug - INFO - 127.0.0.1 - - [10/Jul/2025 11:33:06] "GET /api/community/posts HTTP/1.1" 200 -
+2025-07-11 12:05:27,837 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.19:5000
+2025-07-11 12:05:27,867 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-11 15:32:22,380 - services.email_service - WARNING - SMTP credentials not configured. Email functionality will be disabled.
+2025-07-11 15:32:25,548 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.206.134.63:5000
+2025-07-11 15:32:25,548 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-11 15:35:31,007 - models.user_model - INFO - Created user: H2qp1ex83UFRetElPnsd
+2025-07-11 15:35:31,239 - routes.auth_routes - INFO - User registered successfully: sathyak1979@gmail.com
+2025-07-11 15:35:31,245 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:35:31] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-11 15:47:05,440 - services.email_service - WARNING - SMTP credentials not configured. Email functionality will be disabled.
+2025-07-11 15:47:07,468 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.206.134.63:5000
+2025-07-11 15:47:07,468 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-11 15:48:38,153 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-11 15:48:38,674 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.206.134.63:5000
+2025-07-11 15:48:38,675 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-11 15:48:38,684 - werkzeug - INFO -  * Restarting with stat
+2025-07-11 15:48:39,644 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-11 15:48:39,837 - werkzeug - WARNING -  * Debugger is active!
+2025-07-11 15:48:39,839 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-11 15:49:01,891 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:49:01] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-11 15:49:34,357 - models.user_model - INFO - Created user: 2nH0GtndDBZ18xGtKouj
+2025-07-11 15:49:34,477 - routes.auth_routes - INFO - User registered successfully: maths0648@gmail.com
+2025-07-11 15:49:34,478 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:49:34] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-11 15:51:11,278 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:51:11] "[31m[1mPOST /api/auth/reset-password HTTP/1.1[0m" 400 -
+2025-07-11 15:51:27,969 - services.email_service - INFO - SMTP connection test successful
+2025-07-11 15:51:32,129 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-11 15:51:32,130 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:51:32] "POST /api/auth/test-email HTTP/1.1" 200 -
+2025-07-11 15:54:44,599 - models.user_model - INFO - Created user: r2l1mNvn5aQPUopM99Pb
+2025-07-11 15:54:45,122 - routes.auth_routes - INFO - User registered successfully: shobhasathya648@gmail.com
+2025-07-11 15:54:45,124 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:54:45] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-11 15:55:08,667 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:55:08] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-11 15:55:28,133 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:55:28] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-11 15:55:40,331 - models.user_model - INFO - Updated user: r2l1mNvn5aQPUopM99Pb
+2025-07-11 15:55:40,332 - routes.auth_routes - INFO - User logged in: shobhasathya648@gmail.com
+2025-07-11 15:55:40,332 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:55:40] "POST /api/auth/login HTTP/1.1" 200 -
+2025-07-11 15:58:37,594 - models.user_model - INFO - Updated user: r2l1mNvn5aQPUopM99Pb
+2025-07-11 15:58:40,919 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-11 15:58:40,919 - routes.auth_routes - INFO - Password change notification sent to shobhasathya648@gmail.com
+2025-07-11 15:58:40,920 - routes.auth_routes - INFO - Password changed for user: r2l1mNvn5aQPUopM99Pb
+2025-07-11 15:58:40,923 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 15:58:40] "POST /api/auth/change-password HTTP/1.1" 200 -
+2025-07-11 16:00:09,522 - models.user_model - INFO - Calculating completion for profile: {'has_resume': False, 'career_choices': ['Software Engineering'], 'github_link': 'https://github.com/username', 'is_profile_complete': False, 'completion_status': 0, 'phone': '', 'profession': 'Student', 'profile_picture': '', 'college_email': 'user@university.edu', 'college_name': 'University Name', 'linkedin_link': 'https://linkedin.com/in/username', 'name': 'Updated Name'}
+2025-07-11 16:00:09,522 - models.user_model - INFO - Added 10% for name
+2025-07-11 16:00:09,522 - models.user_model - INFO - Added 10% for profession
+2025-07-11 16:00:09,523 - models.user_model - INFO - Added 10% for career choices
+2025-07-11 16:00:09,523 - models.user_model - INFO - Added 10% for college name
+2025-07-11 16:00:09,523 - models.user_model - INFO - Added 15% for college email
+2025-07-11 16:00:09,523 - models.user_model - INFO - Added 15% for GitHub link: https://github.com/username
+2025-07-11 16:00:09,523 - models.user_model - INFO - Added 15% for LinkedIn link: https://linkedin.com/in/username
+2025-07-11 16:00:09,523 - models.user_model - INFO - Final completion percentage: 85
+2025-07-11 16:00:09,658 - models.user_model - INFO - Updated user: r2l1mNvn5aQPUopM99Pb
+2025-07-11 16:00:13,088 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-11 16:00:13,088 - models.user_model - INFO - Milestone email sent for 55% completion
+2025-07-11 16:00:16,282 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-11 16:00:16,283 - models.user_model - INFO - Milestone email sent for 85% completion
+2025-07-11 16:00:16,383 - routes.user_routes - INFO - Profile updated for user: r2l1mNvn5aQPUopM99Pb
+2025-07-11 16:00:16,384 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:00:16] "PUT /api/user/profile HTTP/1.1" 200 -
+2025-07-11 16:02:15,140 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:02:15] "[31m[1mPOST /api/user/profile HTTP/1.1[0m" 405 -
+2025-07-11 16:02:33,618 - models.user_model - INFO - Created user: veIGtDo5lB2xBgVCWvcz
+2025-07-11 16:02:39,479 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-11 16:02:39,479 - routes.auth_routes - INFO - Welcome email sent to pensil0648@gmail.com
+2025-07-11 16:02:39,664 - routes.auth_routes - INFO - User registered successfully: pensil0648@gmail.com
+2025-07-11 16:02:39,664 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:02:39] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-11 16:03:48,687 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:03:48] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 400 -
+2025-07-11 16:04:00,176 - models.user_model - INFO - Created user: dJGVQzoTGCtcVlZzEgiS
+2025-07-11 16:04:00,355 - routes.auth_routes - INFO - User registered successfully: upsc0648@gmail.com
+2025-07-11 16:04:00,356 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:04:00] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-11 16:09:40,818 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\services\\email_service.py', reloading
+2025-07-11 16:09:44,182 - werkzeug - INFO -  * Restarting with stat
+2025-07-11 16:09:47,236 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-11 16:09:47,550 - werkzeug - WARNING -  * Debugger is active!
+2025-07-11 16:09:47,569 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-11 16:10:07,899 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\utils\\validation.py', reloading
+2025-07-11 16:10:08,046 - werkzeug - INFO -  * Restarting with stat
+2025-07-11 16:10:09,683 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-11 16:10:09,909 - werkzeug - WARNING -  * Debugger is active!
+2025-07-11 16:10:09,912 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-11 16:10:17,494 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\routes\\auth_routes.py', reloading
+2025-07-11 16:10:17,639 - werkzeug - INFO -  * Restarting with stat
+2025-07-11 16:10:18,709 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-11 16:10:18,888 - werkzeug - WARNING -  * Debugger is active!
+2025-07-11 16:10:18,891 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-11 16:11:19,560 - models.user_model - INFO - Created user: Ow9wvvKBKGlJ5IuIjtIb
+2025-07-11 16:11:23,076 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-11 16:11:23,076 - routes.auth_routes - INFO - Welcome email sent to sathyanarayanak417@gmail.com
+2025-07-11 16:11:23,173 - routes.auth_routes - INFO - User registered successfully: sathyanarayanak417@gmail.com
+2025-07-11 16:11:23,175 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:11:23] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -

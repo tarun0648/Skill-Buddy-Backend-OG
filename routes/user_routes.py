@@ -1,10 +1,12 @@
-# routes/user_routes.py
+# routes/user_routes.py (COMPLETE with Email Integration)
 from flask import Blueprint, request, jsonify
 from config.firebase_config import firebase_config
 from models.user_model import UserModel
 from utils.validation import Validator
+from services.email_service import email_service
 import logging
 from datetime import datetime
+import os
 
 # Create blueprint
 user_bp = Blueprint('user', __name__)
@@ -81,7 +83,12 @@ def get_profile():
             'sso_provider': user.get('sso_provider', 'email'),
             'is_verified': user.get('is_verified', False),
             'created_at': user.get('created_at'),
-            'last_login': user.get('last_login')
+            'last_login': user.get('last_login'),
+            'settings': user.get('settings', {
+                'notifications': True,
+                'email_updates': True,
+                'privacy_level': 'normal'
+            })
         }
         
         return jsonify({'user': safe_user_data}), 200
@@ -93,7 +100,7 @@ def get_profile():
 @user_bp.route('/profile', methods=['PUT'])
 @auth_required
 def update_profile():
-    """Update user profile endpoint - Updated for new completion system"""
+    """Update user profile endpoint - Updated for new completion system with email notifications"""
     try:
         if not user_model:
             return jsonify({'error': 'Database not available'}), 500
@@ -165,6 +172,7 @@ def update_profile():
         
         # Calculate XP bonus for milestones
         milestones = user_model.get_completion_milestones(old_completion, new_completion)
+        xp_earned = 0
         if milestones:
             xp_bonus = user_model.calculate_xp_bonus(milestones)
             
@@ -175,10 +183,11 @@ def update_profile():
                 
                 update_data['xp.total_xp'] = new_total_xp
                 update_data['xp.level'] = new_level
+                xp_earned = xp_bonus
         
-        # Apply updates
+        # Apply updates with milestone email integration
         if update_data:
-            success = user_model.update_user(user_id, update_data)
+            success = user_model.update_profile_with_milestone_email(user_id, update_data, old_completion)
             if not success:
                 return jsonify({'error': 'Failed to update profile'}), 500
         
@@ -193,12 +202,99 @@ def update_profile():
             'xp': updated_user.get('xp', {}),
             'completion_status': updated_user.get('profile', {}).get('completion_status', 0),
             'milestones_reached': milestones if milestones else [],
-            'xp_earned': user_model.calculate_xp_bonus(milestones) if milestones else 0
+            'xp_earned': xp_earned,
+            'email_notifications_sent': email_service.enabled and len([m for m in milestones if m in [55, 85, 100]]) > 0
         }), 200
         
     except Exception as e:
         logger.error(f"Profile update error: {str(e)}")
         return jsonify({'error': 'Profile update failed', 'details': str(e)}), 500
+
+@user_bp.route('/settings', methods=['GET'])
+@auth_required
+def get_user_settings():
+    """Get user settings"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+            
+        user_id = request.user_id
+        user = user_model.get_user_by_id(user_id)
+        
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        settings = user.get('settings', {
+            'notifications': True,
+            'email_updates': True,
+            'privacy_level': 'normal'
+        })
+        
+        # Add email service status
+        settings['email_service_enabled'] = email_service.enabled
+        
+        return jsonify({'settings': settings}), 200
+        
+    except Exception as e:
+        logger.error(f"Get settings error: {str(e)}")
+        return jsonify({'error': 'Failed to get settings', 'details': str(e)}), 500
+
+@user_bp.route('/settings', methods=['PUT'])
+@auth_required
+def update_user_settings():
+    """Update user settings"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+            
+        user_id = request.user_id
+        data = request.get_json()
+        
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        # Get current user
+        user = user_model.get_user_by_id(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        current_settings = user.get('settings', {})
+        
+        # Update settings
+        update_data = {}
+        
+        if 'notifications' in data:
+            update_data['settings.notifications'] = bool(data['notifications'])
+        
+        if 'email_updates' in data:
+            update_data['settings.email_updates'] = bool(data['email_updates'])
+        
+        if 'privacy_level' in data:
+            valid_levels = ['private', 'normal', 'public']
+            if data['privacy_level'] in valid_levels:
+                update_data['settings.privacy_level'] = data['privacy_level']
+        
+        # Apply updates
+        if update_data:
+            success = user_model.update_user(user_id, update_data)
+            if not success:
+                return jsonify({'error': 'Failed to update settings'}), 500
+        
+        # Get updated settings
+        updated_user = user_model.get_user_by_id(user_id)
+        updated_settings = updated_user.get('settings', {})
+        updated_settings['email_service_enabled'] = email_service.enabled
+        
+        logger.info(f"Settings updated for user: {user_id}")
+        
+        return jsonify({
+            'message': 'Settings updated successfully',
+            'settings': updated_settings
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Settings update error: {str(e)}")
+        return jsonify({'error': 'Settings update failed', 'details': str(e)}), 500
 
 @user_bp.route('/resumes', methods=['GET'])
 @auth_required
@@ -430,7 +526,8 @@ def get_profile_completion():
                 'linkedin_added': bool(profile.get('linkedin_link')),
                 'resume_uploaded': bool(profile.get('has_resume')),
                 'fully_complete': completion_status >= 100
-            }
+            },
+            'email_notifications_enabled': email_service.enabled and user.get('settings', {}).get('email_updates', True)
         }), 200
         
     except Exception as e:
@@ -440,7 +537,7 @@ def get_profile_completion():
 @user_bp.route('/profile/links', methods=['PUT'])
 @auth_required
 def update_profile_links():
-    """Update GitHub and LinkedIn links specifically"""
+    """Update GitHub and LinkedIn links specifically with email notifications"""
     try:
         if not user_model:
             return jsonify({'error': 'Database not available'}), 500
@@ -490,6 +587,7 @@ def update_profile_links():
         
         # Calculate XP bonus for milestones
         milestones = user_model.get_completion_milestones(old_completion, new_completion)
+        xp_earned = 0
         if milestones:
             xp_bonus = user_model.calculate_xp_bonus(milestones)
             
@@ -500,10 +598,11 @@ def update_profile_links():
                 
                 update_data['xp.total_xp'] = new_total_xp
                 update_data['xp.level'] = new_level
+                xp_earned = xp_bonus
         
-        # Apply updates
+        # Apply updates with milestone email integration
         if update_data:
-            success = user_model.update_user(user_id, update_data)
+            success = user_model.update_profile_with_milestone_email(user_id, update_data, old_completion)
             if not success:
                 return jsonify({'error': 'Failed to update profile links'}), 500
         
@@ -517,9 +616,55 @@ def update_profile_links():
             'profile': updated_user.get('profile', {}),
             'completion_status': updated_user.get('profile', {}).get('completion_status', 0),
             'milestones_reached': milestones if milestones else [],
-            'xp_earned': user_model.calculate_xp_bonus(milestones) if milestones else 0
+            'xp_earned': xp_earned,
+            'email_notifications_sent': email_service.enabled and len([m for m in milestones if m in [55, 85, 100]]) > 0
         }), 200
         
     except Exception as e:
         logger.error(f"Profile links update error: {str(e)}")
         return jsonify({'error': 'Profile links update failed', 'details': str(e)}), 500
+
+@user_bp.route('/test-milestone-email', methods=['POST'])
+@auth_required
+def test_milestone_email():
+    """Test milestone email functionality (for development/testing)"""
+    try:
+        if not email_service.enabled:
+            return jsonify({'error': 'Email service is not configured'}), 503
+        
+        user_id = request.user_id
+        data = request.get_json()
+        
+        milestone = data.get('milestone', 55) if data else 55
+        xp_earned = data.get('xp_earned', 15) if data else 15
+        
+        # Get user data
+        user = user_model.get_user_by_id(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        user_profile = user.get('profile', {})
+        user_name = user_profile.get('name', 'Test User')
+        user_email = user.get('email', '')
+        
+        if not user_email:
+            return jsonify({'error': 'User email not found'}), 400
+        
+        # Send test milestone email
+        success = email_service.send_profile_completion_milestone_email(
+            user_email, user_name, milestone, xp_earned
+        )
+        
+        if success:
+            return jsonify({
+                'message': 'Test milestone email sent successfully',
+                'email': user_email,
+                'milestone': milestone,
+                'xp_earned': xp_earned
+            }), 200
+        else:
+            return jsonify({'error': 'Failed to send test milestone email'}), 500
+        
+    except Exception as e:
+        logger.error(f"Test milestone email error: {str(e)}")
+        return jsonify({'error': 'Test email failed', 'details': str(e)}), 500
