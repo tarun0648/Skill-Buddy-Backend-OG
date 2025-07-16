@@ -957,3 +957,185 @@
 2025-07-11 16:11:23,076 - routes.auth_routes - INFO - Welcome email sent to sathyanarayanak417@gmail.com
 2025-07-11 16:11:23,173 - routes.auth_routes - INFO - User registered successfully: sathyanarayanak417@gmail.com
 2025-07-11 16:11:23,175 - werkzeug - INFO - 127.0.0.1 - - [11/Jul/2025 16:11:23] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-14 11:32:16,455 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-14 11:32:22,028 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-14 11:32:22,029 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-14 11:32:22,066 - werkzeug - INFO -  * Restarting with stat
+2025-07-14 11:32:24,298 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-14 11:32:24,478 - werkzeug - WARNING -  * Debugger is active!
+2025-07-14 11:32:24,584 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 12:29:26,341 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:29:26,406 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:29:29,296 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-15 12:29:29,297 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 12:29:29,324 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 12:29:30,354 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:29:30,355 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:29:30,524 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 12:29:30,527 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 12:32:09,498 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:32:09] "[33mPOST /auth/phone/send-otp HTTP/1.1[0m" 404 -
+2025-07-15 12:32:19,325 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:32:19] "[33mPOST /auth/phone/send-otp HTTP/1.1[0m" 404 -
+2025-07-15 12:32:58,796 - services.otp_service - ERROR - Error checking OTP rate limit: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClNwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvb3RwX2NvZGVzL2luZGV4ZXMvXxABGhAKDHBob25lX251bWJlchABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-15 12:32:58,797 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:32:58] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:34:20,055 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:34:20] "[31m[1mPOST /api/status HTTP/1.1[0m" 405 -
+2025-07-15 12:34:27,883 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:34:27] "GET /api/status HTTP/1.1" 200 -
+2025-07-15 12:35:14,059 - services.otp_service - ERROR - Error checking OTP rate limit: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClNwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvb3RwX2NvZGVzL2luZGV4ZXMvXxABGhAKDHBob25lX251bWJlchABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-15 12:35:14,060 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:35:14] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:35:20,995 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:35:20] "[33mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 404 -
+2025-07-15 12:36:05,999 - services.otp_service - ERROR - Error checking OTP rate limit: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClNwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvb3RwX2NvZGVzL2luZGV4ZXMvXxABGhAKDHBob25lX251bWJlchABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-15 12:36:06,000 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:36:06] "[31m[1mPOST /api/auth/phone/resend-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:37:54,475 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\app.py', reloading
+2025-07-15 12:37:58,186 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 12:38:08,452 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:38:08,466 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:38:09,820 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 12:38:09,823 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 12:39:29,558 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:39:29,560 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:39:29,751 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-15 12:39:29,751 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 12:39:29,753 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 12:39:30,687 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:39:30,689 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:39:30,862 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 12:39:30,865 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 12:39:40,005 - services.otp_service - ERROR - Error checking OTP rate limit: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClNwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvb3RwX2NvZGVzL2luZGV4ZXMvXxABGhAKDHBob25lX251bWJlchABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-15 12:39:40,008 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:39:40] "[31m[1mPOST /api/auth/phone/resend-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:40:02,508 - services.otp_service - ERROR - Error checking OTP rate limit: 400 The query requires an index. You can create it here: https://console.firebase.google.com/v1/r/project/skill-buddy-ecfe5/firestore/indexes?create_composite=ClNwcm9qZWN0cy9za2lsbC1idWRkeS1lY2ZlNS9kYXRhYmFzZXMvKGRlZmF1bHQpL2NvbGxlY3Rpb25Hcm91cHMvb3RwX2NvZGVzL2luZGV4ZXMvXxABGhAKDHBob25lX251bWJlchABGg4KCmNyZWF0ZWRfYXQQARoMCghfX25hbWVfXxAB
+2025-07-15 12:40:02,508 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:40:02] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:46:26,166 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\services\\otp_service.py', reloading
+2025-07-15 12:46:28,720 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 12:46:49,131 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:46:52,922 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:46:54,638 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 12:46:54,667 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 12:47:10,665 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:47:10,666 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:47:10,892 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-15 12:47:10,892 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 12:47:10,893 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 12:47:13,349 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 12:47:13,351 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 12:47:13,548 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 12:47:13,551 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 12:47:26,555 - services.otp_service - INFO - SMS sent successfully via Twilio to +919480620648
+2025-07-15 12:47:27,049 - services.otp_service - INFO - OTP stored for phone: +919480620648
+2025-07-15 12:47:27,049 - routes.auth_routes - INFO - OTP sent for signup to +919480620648 via sms
+2025-07-15 12:47:27,051 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:47:27] "POST /api/auth/phone/send-otp HTTP/1.1" 200 -
+2025-07-15 12:48:57,039 - services.otp_service - ERROR - Error verifying OTP: can't compare offset-naive and offset-aware datetimes
+2025-07-15 12:48:57,040 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:48:57] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:49:11,380 - services.otp_service - ERROR - Error verifying OTP: can't compare offset-naive and offset-aware datetimes
+2025-07-15 12:49:11,383 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:49:11] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:49:17,595 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:49:17] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 12:50:34,768 - services.otp_service - ERROR - Error verifying OTP: can't compare offset-naive and offset-aware datetimes
+2025-07-15 12:50:34,770 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 12:50:34] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:00:01,910 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 13:00:01,912 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 13:00:02,138 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-15 13:00:02,138 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 13:00:02,140 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 13:00:03,166 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 13:00:03,167 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 13:00:03,385 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:00:03,388 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 13:00:08,129 - services.otp_service - ERROR - Error checking OTP rate limit: can't compare offset-naive and offset-aware datetimes
+2025-07-15 13:00:08,131 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:00:08] "[31m[1mPOST /api/auth/phone/resend-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:00:27,862 - services.otp_service - ERROR - Error checking OTP rate limit: can't compare offset-naive and offset-aware datetimes
+2025-07-15 13:00:27,863 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:00:27] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:02:05,921 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:02:05] "[33mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 404 -
+2025-07-15 13:02:14,962 - services.otp_service - ERROR - Error checking OTP rate limit: can't compare offset-naive and offset-aware datetimes
+2025-07-15 13:02:14,963 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:02:14] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:02:36,863 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\services\\otp_service.py', reloading
+2025-07-15 13:02:39,017 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 13:02:41,342 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 13:02:41,521 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 13:02:41,765 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:02:41,771 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 13:02:48,920 - services.otp_service - ERROR - Error checking OTP rate limit: can't compare offset-naive and offset-aware datetimes
+2025-07-15 13:02:48,937 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:02:48] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:06:45,069 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\services\\otp_service.py', reloading
+2025-07-15 13:06:47,227 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 13:06:48,420 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 13:06:48,477 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 13:06:48,806 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:06:48,809 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 13:06:51,081 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\services\\otp_service.py', reloading
+2025-07-15 13:06:51,265 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 13:06:52,978 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 13:06:53,002 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 13:06:53,209 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:06:53,211 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 13:07:15,035 - services.otp_service - ERROR - Error checking OTP rate limit: can't compare offset-naive and offset-aware datetimes
+2025-07-15 13:07:15,040 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:07:15] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:07:37,149 - services.otp_service - ERROR - Error checking OTP rate limit: can't compare offset-naive and offset-aware datetimes
+2025-07-15 13:07:37,150 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:07:37] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 13:08:01,445 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\services\\otp_service.py', reloading
+2025-07-15 13:08:03,579 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 13:08:06,827 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 13:08:06,882 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 13:08:07,085 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 13:08:07,087 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 13:08:22,852 - services.otp_service - INFO - SMS sent successfully via Twilio to +919480620648
+2025-07-15 13:08:23,151 - services.otp_service - INFO - OTP stored for phone: +919480620648
+2025-07-15 13:08:23,152 - routes.auth_routes - INFO - OTP sent for signup to +919480620648 via sms
+2025-07-15 13:08:23,156 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:08:23] "POST /api/auth/phone/send-otp HTTP/1.1" 200 -
+2025-07-15 13:09:18,726 - models.user_model - INFO - Created user: BHKOMETK92PgADYEXGOi with auth method: phone
+2025-07-15 13:09:18,834 - routes.auth_routes - INFO - User registered successfully via phone: +919480620648
+2025-07-15 13:09:18,835 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:09:18] "[35m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 201 -
+2025-07-15 13:10:36,877 - services.otp_service - INFO - SMS sent successfully via Twilio to +919480620648
+2025-07-15 13:10:37,058 - services.otp_service - INFO - OTP stored for phone: +919480620648
+2025-07-15 13:10:37,060 - routes.auth_routes - INFO - OTP resent for signup to +919480620648 via sms
+2025-07-15 13:10:37,061 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:10:37] "POST /api/auth/phone/resend-otp HTTP/1.1" 200 -
+2025-07-15 13:14:20,628 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 13:14:20] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 16:49:33,800 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 16:49:34,006 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 16:49:35,242 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-15 16:49:35,243 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-15 16:49:35,254 - werkzeug - INFO -  * Restarting with stat
+2025-07-15 16:49:36,289 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-15 16:49:36,291 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-15 16:49:36,504 - werkzeug - WARNING -  * Debugger is active!
+2025-07-15 16:49:36,795 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-15 16:52:58,711 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:52:58] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 409 -
+2025-07-15 16:53:16,396 - services.otp_service - ERROR - Twilio SMS failed: {"code":21608,"message":"The number +91974200XXXX is unverified. Trial accounts cannot send messages to unverified numbers; verify +91974200XXXX at twilio.com/user/account/phone-numbers/verified, or purchase a Twilio number to send messages to unverified numbers","more_info":"https://www.twilio.com/docs/errors/21608","status":400}
+2025-07-15 16:53:16,427 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:53:16] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 16:53:59,057 - services.otp_service - INFO - SMS sent successfully via Twilio to +919480620648
+2025-07-15 16:53:59,536 - services.otp_service - INFO - OTP stored for phone: +919480620648
+2025-07-15 16:53:59,569 - routes.auth_routes - INFO - OTP sent for login to +919480620648 via sms
+2025-07-15 16:53:59,609 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:53:59] "POST /api/auth/phone/send-otp HTTP/1.1" 200 -
+2025-07-15 16:55:12,108 - models.user_model - INFO - Updated user: BHKOMETK92PgADYEXGOi
+2025-07-15 16:55:12,108 - routes.auth_routes - INFO - User logged in via phone: +919480620648
+2025-07-15 16:55:12,109 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:55:12] "POST /api/auth/phone/verify-otp HTTP/1.1" 200 -
+2025-07-15 16:56:32,086 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:56:32] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 16:56:57,660 - services.otp_service - INFO - SMS sent successfully via Twilio to +919480620648
+2025-07-15 16:56:57,858 - services.otp_service - INFO - OTP stored for phone: +919480620648
+2025-07-15 16:56:57,858 - routes.auth_routes - INFO - OTP sent for login to +919480620648 via sms
+2025-07-15 16:56:57,860 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:56:57] "POST /api/auth/phone/send-otp HTTP/1.1" 200 -
+2025-07-15 16:57:25,025 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:57:25] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 409 -
+2025-07-15 16:57:33,994 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:57:33] "[31m[1mPOST /api/auth/phone/send-otp HTTP/1.1[0m" 400 -
+2025-07-15 16:57:47,885 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:57:47] "[31m[1mPOST /api/auth/phone/verify-otp HTTP/1.1[0m" 400 -
+2025-07-15 16:58:14,682 - models.user_model - INFO - Updated user: BHKOMETK92PgADYEXGOi
+2025-07-15 16:58:14,683 - routes.auth_routes - INFO - User logged in via phone: +919480620648
+2025-07-15 16:58:14,683 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:58:14] "POST /api/auth/phone/verify-otp HTTP/1.1" 200 -
+2025-07-15 16:58:28,322 - services.otp_service - INFO - SMS sent successfully via Twilio to +919480620648
+2025-07-15 16:58:28,608 - services.otp_service - INFO - OTP stored for phone: +919480620648
+2025-07-15 16:58:28,609 - routes.auth_routes - INFO - OTP resent for login to +919480620648 via sms
+2025-07-15 16:58:28,609 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:58:28] "POST /api/auth/phone/resend-otp HTTP/1.1" 200 -

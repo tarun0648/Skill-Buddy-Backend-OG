@@ -1,4 +1,4 @@
-# app.py (FIXED - Status endpoint community stats)
+# app.py (UPDATED - Added OTP/Phone Authentication Support)
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -38,7 +38,7 @@ CORS(app, origins=[
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
-    default_limits=["200 per day", "50 per hour"]
+    default_limits=["20000 per day", "5000 per hour"]
 )
 
 # Initialize Firebase Admin SDK
@@ -98,7 +98,7 @@ def auth_required(f):
 try:
     from routes.auth_routes import auth_bp
     app.register_blueprint(auth_bp, url_prefix='/api/auth')
-    print("✓ Auth routes loaded")
+    print("✓ Auth routes loaded (with Phone OTP support)")
 except ImportError as e:
     print(f"✗ Auth routes failed: {e}")
     auth_bp = None
@@ -135,7 +135,6 @@ except ImportError as e:
     print(f"✗ Portfolio analysis routes failed: {e}")
     portfolio_analysis_bp = None
 
-# NEW: Community Platform Routes
 try:
     from routes.community_routes import community_bp
     app.register_blueprint(community_bp, url_prefix='/api/community')
@@ -166,7 +165,7 @@ def get_profile_completion_info():
         logger.error(f"Error getting profile completion info: {e}")
         return jsonify({'error': 'Failed to get profile completion info'}), 500
 
-# Update the status endpoint - FIXED community stats
+# Updated status endpoint with OTP service status
 @app.route('/api/status', methods=['GET'])
 def api_status():
     try:
@@ -176,12 +175,13 @@ def api_status():
             'database_connected': db is not None,
             'features_available': {
                 'authentication': auth_bp is not None,
+                'phone_otp_auth': True,  # NEW
                 'user_management': user_bp is not None,
                 'resume_processing': resume_bp is not None,
                 'profile_analysis': profile_analysis_bp is not None,
                 'portfolio_analysis': portfolio_analysis_bp is not None,
                 'profile_completion_system': True,
-                'community_platform': community_bp is not None  # NEW
+                'community_platform': community_bp is not None
             },
             'profile_completion': {
                 'basic_profile_required': 55,
@@ -191,6 +191,21 @@ def api_status():
                 'total_possible': 100
             }
         }
+        
+        # Check OTP service status
+        try:
+            from services.otp_service import otp_service
+            otp_debug = otp_service.get_debug_info()
+            stats['otp_service'] = {
+                'enabled': otp_debug['sms_enabled'] or otp_debug['whatsapp_enabled'],
+                'sms_enabled': otp_debug['sms_enabled'],
+                'whatsapp_enabled': otp_debug['whatsapp_enabled'],
+                'twilio_configured': otp_debug['twilio_configured'],
+                'msg91_configured': otp_debug['msg91_configured'],
+                'whatsapp_configured': otp_debug['whatsapp_configured']
+            }
+        except Exception as e:
+            stats['otp_service'] = {'enabled': False, 'error': str(e)}
         
         # Try to get statistics if available
         if resume_bp and db:
@@ -235,7 +250,7 @@ def api_status():
             except Exception as e:
                 stats['portfolio_analysis_error'] = str(e)
         
-        # FIXED: Try to get community statistics
+        # Try to get community statistics
         if community_bp and db:
             try:
                 from models.community_model import CommunityModel
@@ -261,10 +276,10 @@ def api_status():
 @app.route('/', methods=['GET'])
 def health_check():
     return jsonify({
-        'message': 'Skill Buddy API with Community Platform is running',
+        'message': 'Skill Buddy API with Phone OTP Authentication is running',
         'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'status': 'healthy',
-        'version': '4.0.0',  # Updated version for community platform
+        'version': '4.1.0',  # Updated version for phone auth
         'features': [
             'Resume Processing',
             'User Management', 
@@ -272,8 +287,21 @@ def health_check():
             'GitHub Profile Analysis',
             'Portfolio Website Analysis',
             'Enhanced Profile Completion System',
-            'Community Platform'  # NEW
+            'Community Platform',
+            'Phone OTP Authentication'  # NEW
         ],
+        'authentication_methods': {  # NEW
+            'email_password': 'Traditional email/password authentication',
+            'phone_otp': 'Phone number with OTP verification',
+            'google_sso': 'Google Single Sign-On (existing)'
+        },
+        'otp_features': {  # NEW
+            'sms_support': 'SMS OTP via Twilio or MSG91',
+            'whatsapp_support': 'WhatsApp OTP via WhatsApp Business API',
+            'auto_signup': 'Automatic account creation with OTP verification',
+            'rate_limiting': 'Built-in rate limiting for OTP requests',
+            'international_support': 'International phone number formatting'
+        },
         'profile_completion_system': {
             'basic_profile': '55% (Name, Profession, Career Choices, College Name & Email)',
             'github_link': '15% bonus',
@@ -281,7 +309,7 @@ def health_check():
             'resume_upload': '15% bonus',
             'total': '100% for complete profile'
         },
-        'community_features': {  # NEW
+        'community_features': {
             'posts': 'Create and share posts with the community',
             'likes': 'Like posts from other users',
             'replies': 'Reply to posts and engage in discussions',
@@ -300,7 +328,50 @@ def test_auth():
         'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()
     })
 
-# NEW: Test community platform endpoint - FIXED
+# NEW: Test OTP service endpoint
+@app.route('/api/test-otp-service', methods=['GET'])
+@auth_required
+def test_otp_service():
+    """Test endpoint to check OTP service integration"""
+    try:
+        from services.otp_service import otp_service
+        
+        user_id = request.user_id
+        
+        # Get OTP service debug info
+        debug_info = otp_service.get_debug_info()
+        
+        return jsonify({
+            'message': 'OTP service integration test',
+            'user_id': user_id,
+            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+            'otp_service_status': debug_info,
+            'features_available': {
+                'sms_sending': debug_info['sms_enabled'],
+                'whatsapp_sending': debug_info['whatsapp_enabled'],
+                'twilio_integration': debug_info['twilio_configured'],
+                'msg91_integration': debug_info['msg91_configured'],
+                'whatsapp_integration': debug_info['whatsapp_configured'],
+                'otp_verification': True,
+                'rate_limiting': True,
+                'phone_formatting': True
+            },
+            'otp_configuration': {
+                'otp_length': debug_info['otp_length'],
+                'expiry_minutes': debug_info['otp_expiry_minutes'],
+                'max_attempts': debug_info['max_attempts'],
+                'rate_limit_minutes': debug_info['rate_limit_minutes']
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"OTP service test error: {e}")
+        return jsonify({
+            'error': 'OTP service test failed',
+            'details': str(e)
+        }), 500
+
+# Test community platform endpoint
 @app.route('/api/test-community', methods=['GET'])
 @auth_required
 def test_community():
@@ -317,7 +388,7 @@ def test_community():
         
         user_profile = user.get('profile', {})
         
-        # FIXED: Check community stats without complex queries
+        # Check community stats without complex queries
         try:
             posts_ref = db.collection('community_posts')\
                 .where(filter=firestore.FieldFilter('user_id', '==', user_id))\
@@ -333,6 +404,8 @@ def test_community():
             'user_id': user_id,
             'user_name': user_profile.get('name', 'Anonymous'),
             'user_profession': user_profile.get('profession', 'Student'),
+            'auth_method': user.get('sso_provider', 'unknown'),
+            'phone_verified': user.get('is_verified', False) and user.get('sso_provider') == 'phone',
             'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
             'community_status': {
                 'can_create_posts': True,
@@ -538,6 +611,8 @@ def debug_profile_completion(user_id):
         return jsonify({
             'user_id': user_id,
             'profile_data': profile,
+            'auth_method': user_data.get('sso_provider', 'unknown'),
+            'phone_verified': user_data.get('is_verified', False) and user_data.get('sso_provider') == 'phone',
             'completion_calculations': {
                 'utility_method': util_completion,
                 'model_method': model_completion,
@@ -556,6 +631,7 @@ def debug_profile_completion(user_id):
     except Exception as e:
         logger.error(f"Debug profile completion error: {e}")
         return jsonify({'error': 'Debug failed', 'details': str(e)}), 500
+
 @app.route('/api/debug/email-config', methods=['GET'])
 def debug_email_config():
     """Debug email configuration - shows what's loaded"""
@@ -642,7 +718,7 @@ def debug_send_test_email():
         html_content = f"""
         <h2>🎉 Email Test Successful!</h2>
         <p>This is a test email from your Skill Buddy application.</p>
-        <p><strong>Timestamp:</strong> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+        <p><strong>Timestamp:</strong> {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
         <p>If you received this email, your SMTP configuration is working correctly!</p>
         """
         
@@ -650,7 +726,7 @@ def debug_send_test_email():
         Email Test Successful!
         
         This is a test email from your Skill Buddy application.
-        Timestamp: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+        Timestamp: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
         
         If you received this email, your SMTP configuration is working correctly!
         """
@@ -692,6 +768,7 @@ def get_email_config_recommendations(debug_info, env_vars):
         recommendations.append("Set FROM_EMAIL environment variable")
     
     return recommendations
+
 # Error handlers
 @app.errorhandler(404)
 def not_found(error):
@@ -709,7 +786,7 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') == 'development'
     
-    print("=== Skill Buddy API with Community Platform Starting ===")
+    print("=== Skill Buddy API with Phone OTP Authentication Starting ===")
     print(f"Port: {port}")
     print(f"Debug: {debug}")
     print("Features:")
@@ -719,7 +796,20 @@ if __name__ == '__main__':
     print("  ✓ GitHub Profile Analysis")
     print("  ✓ Portfolio Website Analysis")
     print("  ✓ Enhanced Profile Completion System")
-    print("  ✓ Community Platform (FIXED)")
+    print("  ✓ Community Platform")
+    print("  ✓ Phone OTP Authentication (NEW)")
+    print("")
+    print("Authentication Methods:")
+    print("  • Email/Password (Traditional)")
+    print("  • Phone/OTP (NEW)")
+    print("  • Google SSO (Existing)")
+    print("")
+    print("OTP Features:")
+    print("  • SMS via Twilio or MSG91")
+    print("  • WhatsApp via WhatsApp Business API")
+    print("  • International phone number support")
+    print("  • Rate limiting and security features")
+    print("  • Automatic signup with phone verification")
     print("")
     print("Profile Completion System:")
     print("  • Basic Profile (55%): Name, Profession, Career Choices, College Info")
@@ -728,11 +818,11 @@ if __name__ == '__main__':
     print("  • Resume Upload (+15%)")
     print("  • Total: 100%")
     print("")
-    print("Community Platform Features (FIXED):")
+    print("Community Platform Features:")
     print("  • Create and share posts")
     print("  • Like posts from other users")
     print("  • Reply to posts and engage in discussions")
-    print("  • Integrated with existing user authentication")
+    print("  • Integrated with all authentication methods")
     print("  • Optimized queries to avoid Firestore index requirements")
     print("========================================================")
     

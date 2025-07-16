@@ -1,9 +1,10 @@
-# routes/auth_routes.py (UPDATED - No Name Required)
+# routes/auth_routes.py (UPDATED - Added Phone OTP Authentication)
 from flask import Blueprint, request, jsonify
 from config.firebase_config import firebase_config
 from models.user_model import UserModel
 from utils.validation import Validator
 from services.email_service import email_service
+from services.otp_service import otp_service
 from datetime import datetime, timedelta
 import logging
 import secrets
@@ -30,6 +31,8 @@ def generate_reset_token():
 def hash_token(token):
     """Hash a token for secure storage"""
     return hashlib.sha256(token.encode()).hexdigest()
+
+# ==================== EMAIL AUTHENTICATION ====================
 
 @auth_bp.route('/register', methods=['POST'])
 def register():
@@ -186,6 +189,189 @@ def login():
         logger.error(f"Login error: {str(e)}")
         print(f"[DEBUG] Login error: {str(e)}")
         return jsonify({'error': 'Login failed', 'details': str(e)}), 500
+
+# ==================== PHONE OTP AUTHENTICATION ====================
+
+@auth_bp.route('/phone/send-otp', methods=['POST'])
+def send_phone_otp():
+    """Send OTP to phone number for login/signup"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+            
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        phone = data.get('phone', '').strip()
+        purpose = data.get('purpose', 'login')  # 'login' or 'signup'
+        method = data.get('method', 'sms')  # 'sms' or 'whatsapp'
+        
+        if not phone:
+            return jsonify({'error': 'Phone number is required'}), 400
+        
+        if purpose not in ['login', 'signup']:
+            return jsonify({'error': 'Purpose must be either login or signup'}), 400
+        
+        if method not in ['sms', 'whatsapp']:
+            return jsonify({'error': 'Method must be either sms or whatsapp'}), 400
+        
+        # Validate phone number
+        if not otp_service.is_valid_phone_number(phone):
+            return jsonify({'error': 'Invalid phone number format'}), 400
+        
+        formatted_phone = otp_service.format_phone_number(phone)
+        
+        # Check if user exists for login/signup flow
+        existing_user = user_model.get_user_by_phone(formatted_phone)
+        
+        if purpose == 'login' and not existing_user:
+            return jsonify({'error': 'No account found with this phone number. Please sign up first.'}), 404
+        
+        if purpose == 'signup' and existing_user:
+            return jsonify({'error': 'Account already exists with this phone number. Please login instead.'}), 409
+        
+        # Send OTP
+        success, message = otp_service.send_otp(formatted_phone, purpose, method)
+        
+        if success:
+            logger.info(f"OTP sent for {purpose} to {formatted_phone} via {method}")
+            return jsonify({
+                'message': message,
+                'phone': formatted_phone,
+                'purpose': purpose,
+                'method': method,
+                'expires_in_minutes': otp_service.otp_expiry_minutes
+            }), 200
+        else:
+            return jsonify({'error': message}), 400
+            
+    except Exception as e:
+        logger.error(f"Send phone OTP error: {str(e)}")
+        return jsonify({'error': 'Failed to send OTP', 'details': str(e)}), 500
+
+@auth_bp.route('/phone/verify-otp', methods=['POST'])
+def verify_phone_otp():
+    """Verify OTP and complete login/signup"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+            
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        phone = data.get('phone', '').strip()
+        otp = data.get('otp', '').strip()
+        purpose = data.get('purpose', 'login')
+        name = data.get('name', '').strip()  # For signup
+        
+        if not phone or not otp:
+            return jsonify({'error': 'Phone number and OTP are required'}), 400
+        
+        if purpose not in ['login', 'signup']:
+            return jsonify({'error': 'Purpose must be either login or signup'}), 400
+        
+        formatted_phone = otp_service.format_phone_number(phone)
+        
+        # Verify OTP
+        otp_valid, otp_message = otp_service.verify_otp(formatted_phone, otp, purpose)
+        
+        if not otp_valid:
+            return jsonify({'error': otp_message}), 400
+        
+        # OTP is valid, proceed with login/signup
+        if purpose == 'signup':
+            # Create new user account
+            user_data = {
+                'phone': formatted_phone,
+                'name': name,
+                'sso_provider': 'phone',
+                'is_verified': True,  # Phone is already verified via OTP
+                'initial_xp': 10  # Registration bonus
+            }
+            
+            user_id = user_model.create_user(user_data)
+            
+            # Get user data for response
+            user = user_model.get_user_by_id(user_id)
+            
+            logger.info(f"User registered successfully via phone: {formatted_phone}")
+            
+            return jsonify({
+                'message': 'Account created and login successful',
+                'user_id': user_id,
+                'user': {
+                    'id': user_id,
+                    'phone': formatted_phone,
+                    'profile': user.get('profile', {}) if user else {}
+                },
+                'is_new_user': True
+            }), 201
+            
+        else:  # purpose == 'login'
+            # Find existing user
+            user = user_model.get_user_by_phone(formatted_phone)
+            
+            if not user:
+                return jsonify({'error': 'Account not found'}), 404
+            
+            # Update last login
+            user_model.update_user(user['id'], {'last_login': datetime.utcnow()})
+            
+            logger.info(f"User logged in via phone: {formatted_phone}")
+            
+            return jsonify({
+                'message': 'Login successful',
+                'user_id': user['id'],
+                'user': {
+                    'id': user['id'],
+                    'phone': formatted_phone,
+                    'profile': user.get('profile', {})
+                },
+                'is_new_user': False
+            }), 200
+            
+    except Exception as e:
+        logger.error(f"Verify phone OTP error: {str(e)}")
+        return jsonify({'error': 'OTP verification failed', 'details': str(e)}), 500
+
+@auth_bp.route('/phone/resend-otp', methods=['POST'])
+def resend_phone_otp():
+    """Resend OTP to phone number"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No JSON data provided'}), 400
+        
+        phone = data.get('phone', '').strip()
+        purpose = data.get('purpose', 'login')
+        method = data.get('method', 'sms')
+        
+        if not phone:
+            return jsonify({'error': 'Phone number is required'}), 400
+        
+        formatted_phone = otp_service.format_phone_number(phone)
+        
+        # Send new OTP
+        success, message = otp_service.send_otp(formatted_phone, purpose, method)
+        
+        if success:
+            logger.info(f"OTP resent for {purpose} to {formatted_phone} via {method}")
+            return jsonify({
+                'message': 'OTP resent successfully',
+                'phone': formatted_phone,
+                'method': method,
+                'expires_in_minutes': otp_service.otp_expiry_minutes
+            }), 200
+        else:
+            return jsonify({'error': message}), 400
+            
+    except Exception as e:
+        logger.error(f"Resend phone OTP error: {str(e)}")
+        return jsonify({'error': 'Failed to resend OTP', 'details': str(e)}), 500
+
+# ==================== EXISTING EMAIL ENDPOINTS ====================
 
 @auth_bp.route('/change-password', methods=['POST'])
 def change_password():
@@ -431,6 +617,8 @@ def reset_password():
         logger.error(f"Reset password error: {str(e)}")
         return jsonify({'error': 'Failed to reset password', 'details': str(e)}), 500
 
+# ==================== TESTING AND DEBUG ENDPOINTS ====================
+
 @auth_bp.route('/test-email', methods=['POST'])
 def test_email():
     """Test email functionality (for development/testing)"""
@@ -467,3 +655,92 @@ def test_email():
     except Exception as e:
         logger.error(f"Test email error: {str(e)}")
         return jsonify({'error': 'Email test failed', 'details': str(e)}), 500
+
+@auth_bp.route('/test-otp', methods=['POST'])
+def test_otp():
+    """Test OTP functionality (for development/testing)"""
+    try:
+        data = request.get_json()
+        phone = data.get('phone') if data else None
+        method = data.get('method', 'sms')
+        
+        if not phone:
+            return jsonify({'error': 'Phone number required for testing'}), 400
+        
+        if not otp_service.sms_enabled and not otp_service.whatsapp_enabled:
+            return jsonify({'error': 'OTP service is not configured'}), 503
+        
+        # Send test OTP
+        success, message = otp_service.send_otp(phone, 'login', method)
+        
+        if success:
+            return jsonify({
+                'message': 'Test OTP sent successfully',
+                'phone': otp_service.format_phone_number(phone),
+                'method': method,
+                'expires_in_minutes': otp_service.otp_expiry_minutes,
+                'service_debug_info': otp_service.get_debug_info()
+            }), 200
+        else:
+            return jsonify({
+                'error': f'Failed to send test OTP: {message}',
+                'service_debug_info': otp_service.get_debug_info()
+            }), 500
+        
+    except Exception as e:
+        logger.error(f"Test OTP error: {str(e)}")
+        return jsonify({'error': 'OTP test failed', 'details': str(e)}), 500
+
+@auth_bp.route('/debug/otp-config', methods=['GET'])
+def debug_otp_config():
+    """Debug OTP configuration - shows what's loaded"""
+    try:
+        debug_info = otp_service.get_debug_info()
+        
+        # Add environment variable check
+        env_vars = {
+            'TWILIO_ACCOUNT_SID': bool(os.environ.get('TWILIO_ACCOUNT_SID')),
+            'TWILIO_AUTH_TOKEN': bool(os.environ.get('TWILIO_AUTH_TOKEN')),
+            'TWILIO_PHONE_NUMBER': bool(os.environ.get('TWILIO_PHONE_NUMBER')),
+            'SMS_API_KEY': bool(os.environ.get('SMS_API_KEY')),
+            'SMS_SENDER_ID': os.environ.get('SMS_SENDER_ID', 'SKBUDY'),
+            'MSG91_FLOW_ID': bool(os.environ.get('MSG91_FLOW_ID')),
+            'WHATSAPP_ACCESS_TOKEN': bool(os.environ.get('WHATSAPP_ACCESS_TOKEN')),
+            'WHATSAPP_PHONE_ID': bool(os.environ.get('WHATSAPP_PHONE_ID'))
+        }
+        
+        recommendations = []
+        
+        if not debug_info['sms_enabled'] and not debug_info['whatsapp_enabled']:
+            recommendations.append("Configure at least one SMS service (Twilio or MSG91) or WhatsApp Business API")
+        
+        if not debug_info['twilio_configured'] and not debug_info['msg91_configured']:
+            recommendations.extend([
+                "For Twilio: Set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER",
+                "For MSG91: Set SMS_API_KEY, SMS_SENDER_ID, MSG91_FLOW_ID"
+            ])
+        
+        if not debug_info['whatsapp_configured']:
+            recommendations.append("For WhatsApp: Set WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_ID")
+        
+        return jsonify({
+            'otp_service_debug': debug_info,
+            'environment_variables': env_vars,
+            'recommendations': recommendations
+        }), 200
+        
+    except Exception as e:
+        return jsonify({
+            'error': 'Debug failed',
+            'details': str(e)
+        }), 500
+
+@auth_bp.route('/cleanup-expired-otps', methods=['POST'])
+def cleanup_expired_otps():
+    """Manually trigger cleanup of expired OTPs"""
+    try:
+        otp_service.cleanup_expired_otps()
+        return jsonify({'message': 'Expired OTPs cleaned up successfully'}), 200
+    except Exception as e:
+        logger.error(f"Cleanup OTPs error: {str(e)}")
+        return jsonify({'error': 'Failed to cleanup expired OTPs', 'details': str(e)}), 500
