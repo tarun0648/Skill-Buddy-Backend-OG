@@ -11,7 +11,12 @@ import secrets
 import hashlib
 from werkzeug.security import generate_password_hash
 import os
+from services.redis_cache_service import cache, CacheKeys, CacheTTL
+import re
+# Only import auth_required where needed
+from utils.auth_utils import auth_required
 
+logger = logging.getLogger(__name__)
 # Create blueprint
 auth_bp = Blueprint('auth', __name__)
 
@@ -23,6 +28,17 @@ else:
     user_model = None
 
 logger = logging.getLogger(__name__)
+
+def init_auth_routes(user_model_instance, db_instance, email_service_instance):
+    """Initialize auth routes with model instances"""
+    global user_model, db, email_service
+    user_model = user_model_instance
+    db = db_instance
+    email_service = email_service_instance
+
+def validate_email(email):
+    pattern = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
+    return re.match(pattern, email) is not None
 
 def generate_reset_token():
     """Generate a secure password reset token"""
@@ -744,3 +760,322 @@ def cleanup_expired_otps():
     except Exception as e:
         logger.error(f"Cleanup OTPs error: {str(e)}")
         return jsonify({'error': 'Failed to cleanup expired OTPs', 'details': str(e)}), 500
+    
+@auth_bp.route('/sso/linkedin/authorize', methods=['POST'])
+def linkedin_authorize():
+    """Initiate LinkedIn SSO authorization"""
+    try:
+        data = request.get_json()
+        user_email = data.get('email') if data else None
+        fetch_data = data.get('fetch_data', False) if data else False
+        
+        if not sso_service.linkedin_client_id:
+            return jsonify({'error': 'LinkedIn SSO not configured'}), 503
+        
+        auth_url = sso_service.get_linkedin_auth_url(user_email, fetch_data)
+        
+        return jsonify({
+            'auth_url': auth_url,
+            'provider': 'linkedin',
+            'fetch_data': fetch_data
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"LinkedIn authorize error: {e}")
+        return jsonify({'error': 'Failed to initiate LinkedIn authorization'}), 500
+
+@auth_bp.route('/sso/linkedin/callback', methods=['POST'])
+def linkedin_callback():
+    """Handle LinkedIn SSO callback"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        code = data.get('code')
+        state = data.get('state')
+        
+        if not code or not state:
+            return jsonify({'error': 'Authorization code and state are required'}), 400
+        
+        # Exchange code for token and fetch profile
+        success, result = sso_service.exchange_linkedin_code(code, state)
+        
+        if not success:
+            return jsonify({'error': result.get('error', 'LinkedIn authentication failed')}), 400
+        
+        profile_data = result['profile_data']
+        
+        if 'error' in profile_data:
+            return jsonify({'error': f"Failed to fetch LinkedIn profile: {profile_data['error']}"}), 400
+        
+        # Extract user information
+        personal_info = profile_data.get('personal_information', {})
+        email = personal_info.get('email', '')
+        name = personal_info.get('name', '')
+        
+        if not email:
+            return jsonify({'error': 'No email found in LinkedIn profile'}), 400
+        
+        # Check if user exists
+        existing_user = user_model.get_user_by_email(email)
+        
+        if existing_user:
+            # Update existing user with LinkedIn data
+            update_data = {
+                'linkedin_profile_data': profile_data,
+                'linkedin_connected': True,
+                'last_login': datetime.utcnow()
+            }
+            
+            # Update profile if name is missing
+            if not existing_user.get('profile', {}).get('name') and name:
+                update_data['profile.name'] = name
+            
+            user_model.update_user(existing_user['id'], update_data)
+            user_id = existing_user['id']
+            is_new_user = False
+        else:
+            # Create new user
+            user_data = {
+                'email': email,
+                'name': name,
+                'sso_provider': 'linkedin',
+                'is_verified': True,
+                'linkedin_profile_data': profile_data,
+                'linkedin_connected': True,
+                'initial_xp': 10
+            }
+            
+            user_id = user_model.create_user(user_data)
+            is_new_user = True
+        
+        # Get updated user data
+        user = user_model.get_user_by_id(user_id)
+        
+        logger.info(f"LinkedIn SSO successful for user: {email}")
+        
+        return jsonify({
+            'message': 'LinkedIn authentication successful',
+            'user_id': user_id,
+            'user': {
+                'id': user_id,
+                'email': email,
+                'name': name,
+                'profile': user.get('profile', {}),
+                'linkedin_connected': True
+            },
+            'profile_data': profile_data,
+            'is_new_user': is_new_user
+        }), 200 if not is_new_user else 201
+        
+    except Exception as e:
+        logger.error(f"LinkedIn callback error: {e}")
+        return jsonify({'error': 'LinkedIn authentication failed'}), 500
+
+@auth_bp.route('/sso/github/authorize', methods=['POST'])
+def github_authorize():
+    """Initiate GitHub SSO authorization"""
+    try:
+        data = request.get_json()
+        user_email = data.get('email') if data else None
+        fetch_data = data.get('fetch_data', False) if data else False
+        
+        if not sso_service.github_client_id:
+            return jsonify({'error': 'GitHub SSO not configured'}), 503
+        
+        auth_url = sso_service.get_github_auth_url(user_email, fetch_data)
+        
+        return jsonify({
+            'auth_url': auth_url,
+            'provider': 'github',
+            'fetch_data': fetch_data
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"GitHub authorize error: {e}")
+        return jsonify({'error': 'Failed to initiate GitHub authorization'}), 500
+
+@auth_bp.route('/sso/github/callback', methods=['POST'])
+def github_callback():
+    """Handle GitHub SSO callback"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+        
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'No data provided'}), 400
+        
+        code = data.get('code')
+        state = data.get('state')
+        
+        if not code or not state:
+            return jsonify({'error': 'Authorization code and state are required'}), 400
+        
+        # Exchange code for token and fetch profile
+        success, result = sso_service.exchange_github_code(code, state)
+        
+        if not success:
+            return jsonify({'error': result.get('error', 'GitHub authentication failed')}), 400
+        
+        profile_data = result['profile_data']
+        
+        if 'error' in profile_data:
+            return jsonify({'error': f"Failed to fetch GitHub profile: {profile_data['error']}"}), 400
+        
+        # Extract user information
+        personal_info = profile_data.get('personal_information', {})
+        email = personal_info.get('email', '')
+        name = personal_info.get('name', '')
+        username = personal_info.get('username', '')
+        
+        if not email:
+            return jsonify({'error': 'No email found in GitHub profile'}), 400
+        
+        # Check if user exists
+        existing_user = user_model.get_user_by_email(email)
+        
+        if existing_user:
+            # Update existing user with GitHub data
+            update_data = {
+                'github_profile_data': profile_data,
+                'github_connected': True,
+                'last_login': datetime.utcnow()
+            }
+            
+            # Update profile if name is missing
+            if not existing_user.get('profile', {}).get('name') and name:
+                update_data['profile.name'] = name
+            
+            # Update GitHub link in profile
+            if username:
+                update_data['profile.github_link'] = f"https://github.com/{username}"
+            
+            user_model.update_user(existing_user['id'], update_data)
+            user_id = existing_user['id']
+            is_new_user = False
+        else:
+            # Create new user
+            user_data = {
+                'email': email,
+                'name': name,
+                'sso_provider': 'github',
+                'is_verified': True,
+                'github_profile_data': profile_data,
+                'github_connected': True,
+                'initial_xp': 10
+            }
+            
+            user_id = user_model.create_user(user_data)
+            is_new_user = True
+            
+            # Update profile with GitHub link
+            if username:
+                user_model.update_user(user_id, {
+                    'profile.github_link': f"https://github.com/{username}"
+                })
+        
+        # Get updated user data
+        user = user_model.get_user_by_id(user_id)
+        
+        logger.info(f"GitHub SSO successful for user: {email}")
+        
+        return jsonify({
+            'message': 'GitHub authentication successful',
+            'user_id': user_id,
+            'user': {
+                'id': user_id,
+                'email': email,
+                'name': name,
+                'username': username,
+                'profile': user.get('profile', {}),
+                'github_connected': True
+            },
+            'profile_data': profile_data,
+            'is_new_user': is_new_user
+        }), 200 if not is_new_user else 201
+        
+    except Exception as e:
+        logger.error(f"GitHub callback error: {e}")
+        return jsonify({'error': 'GitHub authentication failed'}), 500
+
+@auth_bp.route('/sso/status', methods=['GET'])
+def sso_status():
+    """Get SSO service status and configuration"""
+    try:
+        debug_info = sso_service.get_debug_info()
+        
+        return jsonify({
+            'linkedin_available': debug_info['linkedin_configured'],
+            'github_available': debug_info['github_configured'],
+            'configuration': {
+                'linkedin_client_id_configured': bool(debug_info['linkedin_client_id']),
+                'github_client_id_configured': bool(debug_info['github_client_id']),
+                'linkedin_redirect_uri': debug_info['linkedin_redirect_uri'],
+                'github_redirect_uri': debug_info['github_redirect_uri']
+            },
+            'database_available': debug_info['database_available']
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"SSO status error: {e}")
+        return jsonify({'error': 'Failed to get SSO status'}), 500
+
+@auth_bp.route('/sso/disconnect/<provider>', methods=['POST'])
+@auth_required
+def disconnect_sso(provider):
+    """Disconnect SSO provider from user account"""
+    try:
+        if not user_model:
+            return jsonify({'error': 'Database not available'}), 500
+        
+        user_id = request.user_id
+        
+        if provider not in ['linkedin', 'github']:
+            return jsonify({'error': 'Invalid provider. Must be linkedin or github'}), 400
+        
+        # Get current user
+        user = user_model.get_user_by_id(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Check if this is the only authentication method
+        sso_provider = user.get('sso_provider')
+        has_password = bool(user.get('password'))
+        has_phone = bool(user.get('phone'))
+        
+        if sso_provider == provider and not has_password and not has_phone:
+            return jsonify({
+                'error': 'Cannot disconnect the only authentication method. Please add email/password or phone authentication first.'
+            }), 400
+        
+        # Remove SSO connection
+        update_data = {
+            f'{provider}_connected': False,
+            f'{provider}_profile_data': None
+        }
+        
+        # If this was the primary SSO provider, change to email
+        if sso_provider == provider:
+            if has_password:
+                update_data['sso_provider'] = 'email'
+            elif has_phone:
+                update_data['sso_provider'] = 'phone'
+        
+        success = user_model.update_user(user_id, update_data)
+        
+        if success:
+            return jsonify({
+                'message': f'{provider.title()} disconnected successfully',
+                'provider': provider
+            }), 200
+        else:
+            return jsonify({'error': 'Failed to disconnect SSO provider'}), 500
+        
+    except Exception as e:
+        logger.error(f"SSO disconnect error: {e}")
+        return jsonify({'error': 'Failed to disconnect SSO provider'}), 500

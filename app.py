@@ -1,4 +1,4 @@
-# app.py (UPDATED - Added OTP/Phone Authentication Support)
+# app.py - Updated with Redis Cache Integration
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -11,6 +11,9 @@ import os
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
 import logging
+
+# Import Redis cache service
+from services.redis_cache_service import cache, CacheKeys, CacheTTL
 
 # Create required directories first
 os.makedirs('logs', exist_ok=True)
@@ -34,11 +37,12 @@ CORS(app, origins=[
     "exp://192.168.1.100:8081"
 ])
 
-# Rate limiting
+# Rate limiting with Redis backend
 limiter = Limiter(
     key_func=get_remote_address,
     app=app,
-    default_limits=["20000 per day", "5000 per hour"]
+    default_limits=["20000 per day", "5000 per hour"],
+    storage_uri=os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
 )
 
 # Initialize Firebase Admin SDK
@@ -66,28 +70,41 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+# Log Redis cache status
+cache_info = cache.get_cache_info()
+logger.info(f"Redis cache status: {cache_info}")
+
 # Utility Functions
 def validate_email(email):
     pattern = r'^[^\s@]+@[^\s@]+\.[^\s@]+$'
     return re.match(pattern, email) is not None
 
 def auth_required(f):
-    """Decorator to require user ID authentication"""
+    """Decorator to require user ID authentication with caching"""
     @wraps(f)
     def decorated(*args, **kwargs):
         user_id = request.headers.get('X-User-ID')
         if not user_id:
             return jsonify({'error': 'User ID required in X-User-ID header'}), 401
         
-        # Verify user exists in database
-        if db:
-            try:
-                doc_ref = db.collection('users').document(user_id)
-                doc = doc_ref.get()
-                if not doc.exists:
-                    return jsonify({'error': 'Invalid user ID'}), 401
-            except Exception as e:
-                return jsonify({'error': 'User verification failed'}), 401
+        # Check cache first for user validation
+        cache_key = cache.generate_cache_key(CacheKeys.USER_PROFILE, user_id, 'validation')
+        cached_validation = cache.get(cache_key)
+        
+        if cached_validation is None:
+            # Verify user exists in database
+            if db:
+                try:
+                    doc_ref = db.collection('users').document(user_id)
+                    doc = doc_ref.get()
+                    if not doc.exists:
+                        return jsonify({'error': 'Invalid user ID'}), 401
+                    
+                    # Cache the validation result
+                    cache.set(cache_key, {'valid': True}, CacheTTL.MEDIUM)
+                    
+                except Exception as e:
+                    return jsonify({'error': 'User verification failed'}), 401
         
         request.user_id = user_id
         return f(*args, **kwargs)
@@ -104,670 +121,403 @@ except ImportError as e:
     auth_bp = None
 
 try:
-    from routes.user_routes import user_bp
+    from routes.user_routes import user_bp, init_user_routes
     app.register_blueprint(user_bp, url_prefix='/api/user')
-    print("✓ User routes loaded")
+    print("✓ User routes loaded (with Redis caching)")
 except ImportError as e:
     print(f"✗ User routes failed: {e}")
     user_bp = None
 
 try:
-    from routes.resume_routes import resume_bp
+    from routes.resume_routes import resume_bp, init_resume_routes
     app.register_blueprint(resume_bp, url_prefix='/api/resume')
-    print("✓ Resume routes loaded")
+    print("✓ Resume routes loaded (with Redis caching)")
 except ImportError as e:
     print(f"✗ Resume routes failed: {e}")
     resume_bp = None
 
 try:
-    from routes.profile_analysis_routes import profile_analysis_bp
+    from routes.profile_analysis_routes import profile_analysis_bp, init_profile_analysis_routes
     app.register_blueprint(profile_analysis_bp, url_prefix='/api/profile-analysis')
-    print("✓ Profile analysis routes loaded")
+    print("✓ Profile analysis routes loaded (with Redis caching)")
 except ImportError as e:
     print(f"✗ Profile analysis routes failed: {e}")
     profile_analysis_bp = None
 
 try:
-    from routes.portfolio_analysis_routes import portfolio_analysis_bp
+    from routes.portfolio_analysis_routes import portfolio_analysis_bp, init_portfolio_analysis_routes
     app.register_blueprint(portfolio_analysis_bp, url_prefix='/api/portfolio-analysis')
-    print("✓ Portfolio analysis routes loaded")
+    print("✓ Portfolio analysis routes loaded (with Redis caching)")
 except ImportError as e:
     print(f"✗ Portfolio analysis routes failed: {e}")
     portfolio_analysis_bp = None
 
 try:
-    from routes.community_routes import community_bp
+    from routes.community_routes import community_bp, init_community_routes
     app.register_blueprint(community_bp, url_prefix='/api/community')
-    print("✓ Community platform routes loaded")
+    print("✓ Community platform routes loaded (with Redis caching)")
 except ImportError as e:
-    print(f"✗ Community platform routes failed: {e}")
+    print(f"✗ Community routes failed: {e}")
     community_bp = None
 
-# Profile completion info endpoint
-@app.route('/api/profile-completion/info', methods=['GET'])
-def get_profile_completion_info():
-    """Get information about profile completion system"""
-    try:
-        from utils.profile_completion_utils import ProfileCompletionManager
-        
-        return jsonify({
-            'completion_system': {
-                'basic_profile_percentage': 55,
-                'additional_elements_percentage': 45,
-                'total_percentage': 100
-            },
-            'steps': ProfileCompletionManager.COMPLETION_STEPS,
-            'milestones': ProfileCompletionManager.get_milestones_info(),
-            'xp_rewards': ProfileCompletionManager.XP_REWARDS
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Error getting profile completion info: {e}")
-        return jsonify({'error': 'Failed to get profile completion info'}), 500
+# Initialize models and services
+try:
+    from models.user_model import UserModel
+    from models.resume_model import ResumeModel
+    from models.profile_analysis_model import ProfileAnalysisModel
+    from models.portfolio_analysis_model import PortfolioAnalysisModel
+    from models.community_model import CommunityModel
+    from services.email_service import EmailService
+    
+    # Initialize models
+    user_model = UserModel(db) if db else None
+    resume_model = ResumeModel(db) if db else None
+    profile_analysis_model = ProfileAnalysisModel(db) if db else None
+    portfolio_analysis_model = PortfolioAnalysisModel(db) if db else None
+    community_model = CommunityModel(db) if db else None
+    email_service = EmailService()
+    
+    # Initialize route handlers with models
+    if user_bp and user_model:
+        init_user_routes(user_model, db, email_service)
+    
+    if resume_bp and resume_model:
+        init_resume_routes(resume_model, user_model, db, email_service)
+    
+    if profile_analysis_bp and profile_analysis_model:
+        init_profile_analysis_routes(profile_analysis_model, user_model, db, email_service)
+    
+    if portfolio_analysis_bp and portfolio_analysis_model:
+        init_portfolio_analysis_routes(portfolio_analysis_model, user_model, db, email_service)
+    
+    if community_bp and community_model:
+        init_community_routes(community_model, user_model, db)
+    
+    print("✓ Models and services initialized with Redis caching")
+    
+except Exception as e:
+    print(f"✗ Models initialization failed: {e}")
+    user_model = None
+    resume_model = None
+    profile_analysis_model = None
+    portfolio_analysis_model = None
+    community_model = None
+    email_service = None
 
-# Updated status endpoint with OTP service status
+# Global rate limiting
+@app.before_request
+def before_request():
+    """Global rate limiting and cache warming"""
+    # Skip rate limiting for health check
+    if request.endpoint == 'health_check':
+        return
+    
+    # Log request for monitoring
+    logger.info(f"Request: {request.method} {request.path} from {request.remote_addr}")
+
+# Health check endpoint with cache status
 @app.route('/api/status', methods=['GET'])
-def api_status():
+def health_check():
+    """Enhanced health check with cache status"""
     try:
-        stats = {
-            'api_status': 'healthy',
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'database_connected': db is not None,
-            'features_available': {
-                'authentication': auth_bp is not None,
-                'phone_otp_auth': True,  # NEW
-                'user_management': user_bp is not None,
-                'resume_processing': resume_bp is not None,
-                'profile_analysis': profile_analysis_bp is not None,
-                'portfolio_analysis': portfolio_analysis_bp is not None,
-                'profile_completion_system': True,
-                'community_platform': community_bp is not None
-            },
-            'profile_completion': {
-                'basic_profile_required': 55,
-                'github_link_bonus': 15,
-                'linkedin_link_bonus': 15,
-                'resume_upload_bonus': 15,
-                'total_possible': 100
-            }
+        status = {
+            'status': 'healthy',
+            'timestamp': datetime.datetime.utcnow().isoformat(),
+            'version': '1.0.0',
+            'services': {}
         }
         
-        # Check OTP service status
+        # Check Firebase
+        if db:
+            try:
+                # Test Firebase connection
+                test_doc = db.collection('health_check').document('test')
+                test_doc.set({'timestamp': datetime.datetime.utcnow()})
+                test_doc.delete()
+                status['services']['firebase'] = 'healthy'
+            except Exception as e:
+                status['services']['firebase'] = f'error: {str(e)}'
+        else:
+            status['services']['firebase'] = 'not configured'
+        
+        # Check Redis cache
+        cache_info = cache.get_cache_info()
+        status['services']['redis'] = cache_info
+        
+        # Check email service
         try:
-            from services.otp_service import otp_service
+            email_status = email_service.get_service_status() if email_service else {'enabled': False}
+            status['services']['email'] = email_status
+        except Exception as e:
+            status['services']['email'] = {'enabled': False, 'error': str(e)}
+        
+        # Check OTP service
+        try:
+            from services.otp_service import OTPService
+            otp_service = OTPService()
             otp_debug = otp_service.get_debug_info()
-            stats['otp_service'] = {
-                'enabled': otp_debug['sms_enabled'] or otp_debug['whatsapp_enabled'],
+            status['services']['otp'] = {
                 'sms_enabled': otp_debug['sms_enabled'],
                 'whatsapp_enabled': otp_debug['whatsapp_enabled'],
                 'twilio_configured': otp_debug['twilio_configured'],
-                'msg91_configured': otp_debug['msg91_configured'],
-                'whatsapp_configured': otp_debug['whatsapp_configured']
+                'msg91_configured': otp_debug['msg91_configured']
             }
         except Exception as e:
-            stats['otp_service'] = {'enabled': False, 'error': str(e)}
+            status['services']['otp'] = {'enabled': False, 'error': str(e)}
         
         # Try to get statistics if available
         if resume_bp and db:
             try:
-                from models.resume_model import ResumeModel
-                from models.user_model import UserModel
+                user_stats = user_model.get_user_statistics() if user_model else {}
+                resume_stats = resume_model.get_processing_statistics() if resume_model else {}
                 
-                user_model = UserModel(db)
-                resume_model = ResumeModel(db)
-                
-                user_stats = user_model.get_user_statistics()
-                resume_stats = resume_model.get_processing_statistics()
-                
-                stats.update({
+                status.update({
                     'user_statistics': user_stats,
                     'resume_statistics': resume_stats
                 })
             except Exception as e:
-                stats['statistics_error'] = str(e)
+                status['statistics_error'] = str(e)
         
         # Try to get profile analysis statistics
         if profile_analysis_bp and db:
             try:
-                from models.profile_analysis_model import ProfileAnalysisModel
-                
-                analysis_model = ProfileAnalysisModel(db)
-                analysis_stats = analysis_model.get_analysis_statistics()
-                
-                stats['profile_analysis_statistics'] = analysis_stats
+                analysis_stats = profile_analysis_model.get_analysis_statistics() if profile_analysis_model else {}
+                status['profile_analysis_statistics'] = analysis_stats
             except Exception as e:
-                stats['profile_analysis_error'] = str(e)
+                status['profile_analysis_error'] = str(e)
         
         # Try to get portfolio analysis statistics
         if portfolio_analysis_bp and db:
             try:
-                from models.portfolio_analysis_model import PortfolioAnalysisModel
-                
-                portfolio_model = PortfolioAnalysisModel(db)
-                portfolio_stats = portfolio_model.get_analysis_statistics()
-                
-                stats['portfolio_analysis_statistics'] = portfolio_stats
+                portfolio_stats = portfolio_analysis_model.get_analysis_statistics() if portfolio_analysis_model else {}
+                status['portfolio_analysis_statistics'] = portfolio_stats
             except Exception as e:
-                stats['portfolio_analysis_error'] = str(e)
+                status['portfolio_analysis_error'] = str(e)
         
         # Try to get community statistics
         if community_bp and db:
             try:
-                from models.community_model import CommunityModel
-                
-                community_model = CommunityModel(db)
-                community_stats = community_model.get_community_statistics()
-                
-                stats['community_statistics'] = community_stats
+                community_stats = community_model.get_community_statistics() if community_model else {}
+                status['community_statistics'] = community_stats
             except Exception as e:
-                stats['community_error'] = str(e)
+                status['community_error'] = str(e)
         
-        return jsonify(stats), 200
+        return jsonify(status), 200
         
     except Exception as e:
-        logger.error(f"Status check error: {e}")
+        logger.error(f"Health check error: {e}")
         return jsonify({
-            'api_status': 'error',
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'error': str(e)
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': datetime.datetime.utcnow().isoformat()
         }), 500
 
-# Basic Routes
-@app.route('/', methods=['GET'])
-def health_check():
-    return jsonify({
-        'message': 'Skill Buddy API with Phone OTP Authentication is running',
-        'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        'status': 'healthy',
-        'version': '4.1.0',  # Updated version for phone auth
-        'features': [
-            'Resume Processing',
-            'User Management', 
-            'LinkedIn Profile Analysis',
-            'GitHub Profile Analysis',
-            'Portfolio Website Analysis',
-            'Enhanced Profile Completion System',
-            'Community Platform',
-            'Phone OTP Authentication'  # NEW
-        ],
-        'authentication_methods': {  # NEW
-            'email_password': 'Traditional email/password authentication',
-            'phone_otp': 'Phone number with OTP verification',
-            'google_sso': 'Google Single Sign-On (existing)'
-        },
-        'otp_features': {  # NEW
-            'sms_support': 'SMS OTP via Twilio or MSG91',
-            'whatsapp_support': 'WhatsApp OTP via WhatsApp Business API',
-            'auto_signup': 'Automatic account creation with OTP verification',
-            'rate_limiting': 'Built-in rate limiting for OTP requests',
-            'international_support': 'International phone number formatting'
-        },
-        'profile_completion_system': {
-            'basic_profile': '55% (Name, Profession, Career Choices, College Name & Email)',
-            'github_link': '15% bonus',
-            'linkedin_link': '15% bonus', 
-            'resume_upload': '15% bonus',
-            'total': '100% for complete profile'
-        },
-        'community_features': {
-            'posts': 'Create and share posts with the community',
-            'likes': 'Like posts from other users',
-            'replies': 'Reply to posts and engage in discussions',
-            'user_profiles': 'Integrated with existing user system',
-            'real_time_updates': 'All interactions stored in Firestore'
-        }
-    })
+# Cache management endpoints
+@app.route('/api/cache/status', methods=['GET'])
+@auth_required
+def get_cache_status():
+    """Get comprehensive cache status"""
+    try:
+        user_id = request.user_id
+        
+        # Get cache info
+        cache_info = cache.get_cache_info()
+        
+        # Get user-specific cache status
+        user_cache_patterns = [
+            f"{CacheKeys.USER_PROFILE}:{user_id}*",
+            f"{CacheKeys.USER_RESUMES}:{user_id}*",
+            f"{CacheKeys.RESUME_ANALYSIS}:{user_id}*",
+            f"{CacheKeys.PROFILE_ANALYSIS}:{user_id}*",
+            f"{CacheKeys.PORTFOLIO_ANALYSIS}:{user_id}*"
+        ]
+        
+        user_cache_count = 0
+        for pattern in user_cache_patterns:
+            keys = cache.get_keys_by_pattern(pattern)
+            user_cache_count += len(keys)
+        
+        # Get global cache patterns
+        global_cache_patterns = [
+            f"{CacheKeys.COMMUNITY_POSTS}:*",
+            f"{CacheKeys.COMMUNITY_STATS}:*",
+            f"{CacheKeys.SYSTEM_STATS}:*"
+        ]
+        
+        global_cache_count = 0
+        for pattern in global_cache_patterns:
+            keys = cache.get_keys_by_pattern(pattern)
+            global_cache_count += len(keys)
+        
+        return jsonify({
+            'cache_info': cache_info,
+            'user_cache_entries': user_cache_count,
+            'global_cache_entries': global_cache_count,
+            'total_cache_entries': user_cache_count + global_cache_count,
+            'user_id': user_id
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Get cache status error: {str(e)}")
+        return jsonify({'error': 'Failed to get cache status', 'details': str(e)}), 500
 
-# Test authentication endpoint
+@app.route('/api/cache/clear-all', methods=['POST'])
+@auth_required
+def clear_all_cache():
+    """Clear all cache entries (admin only)"""
+    try:
+        user_id = request.user_id
+        
+        # You might want to add admin check here
+        # For now, users can only clear their own cache
+        
+        # Clear all user-specific caches
+        user_cache_patterns = [
+            f"{CacheKeys.USER_PROFILE}:{user_id}*",
+            f"{CacheKeys.USER_RESUMES}:{user_id}*",
+            f"{CacheKeys.USER_STATS}:{user_id}*",
+            f"{CacheKeys.USER_SETTINGS}:{user_id}*",
+            f"{CacheKeys.RESUME_ANALYSIS}:{user_id}*",
+            f"{CacheKeys.PROFILE_ANALYSIS}:{user_id}*",
+            f"{CacheKeys.PORTFOLIO_ANALYSIS}:{user_id}*"
+        ]
+        
+        total_deleted = 0
+        for pattern in user_cache_patterns:
+            deleted = cache.delete_pattern(pattern)
+            total_deleted += deleted
+        
+        logger.info(f"Cleared {total_deleted} cache entries for user: {user_id}")
+        
+        return jsonify({
+            'message': 'User cache cleared successfully',
+            'entries_deleted': total_deleted
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Clear all cache error: {str(e)}")
+        return jsonify({'error': 'Failed to clear cache', 'details': str(e)}), 500
+
+@app.route('/api/cache/warm-up', methods=['POST'])
+@auth_required
+def warm_up_cache():
+    """Warm up cache for the authenticated user"""
+    try:
+        user_id = request.user_id
+        
+        warmed_caches = []
+        
+        # Warm up user profile
+        if user_model:
+            try:
+                user_data = user_model.get_user_by_id(user_id)
+                if user_data:
+                    profile_cache_key = cache.generate_cache_key(CacheKeys.USER_PROFILE, user_id)
+                    cache.set(profile_cache_key, user_data, CacheTTL.USER_PROFILE)
+                    warmed_caches.append('user_profile')
+            except Exception as e:
+                logger.warning(f"Failed to warm up user profile cache: {e}")
+        
+        # Warm up user stats
+        if user_model:
+            try:
+                stats = user_model.get_user_statistics(user_id)
+                stats_cache_key = cache.generate_cache_key(CacheKeys.USER_STATS, user_id)
+                cache.set(stats_cache_key, stats, CacheTTL.USER_STATS)
+                warmed_caches.append('user_stats')
+            except Exception as e:
+                logger.warning(f"Failed to warm up user stats cache: {e}")
+        
+        # Warm up recent resumes
+        if resume_model:
+            try:
+                resumes = resume_model.get_user_resume_summary(user_id)
+                if resumes:
+                    resumes_cache_key = cache.generate_cache_key(CacheKeys.USER_RESUMES, user_id, 'details:false', 'limit:50')
+                    cache.set(resumes_cache_key, {'resumes': resumes}, CacheTTL.USER_RESUMES)
+                    warmed_caches.append('user_resumes')
+            except Exception as e:
+                logger.warning(f"Failed to warm up resumes cache: {e}")
+        
+        logger.info(f"Cache warm-up completed for user: {user_id}, warmed: {warmed_caches}")
+        
+        return jsonify({
+            'message': 'Cache warm-up completed',
+            'warmed_caches': warmed_caches
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Cache warm-up error: {str(e)}")
+        return jsonify({'error': 'Cache warm-up failed', 'details': str(e)}), 500
+
+# Test endpoints
 @app.route('/api/test-auth', methods=['GET'])
 @auth_required
 def test_auth():
-    return jsonify({
-        'message': 'Authentication successful',
-        'user_id': request.user_id,
-        'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat()
-    })
-
-# NEW: Test OTP service endpoint
-@app.route('/api/test-otp-service', methods=['GET'])
-@auth_required
-def test_otp_service():
-    """Test endpoint to check OTP service integration"""
+    """Test authentication with cache validation"""
     try:
-        from services.otp_service import otp_service
-        
         user_id = request.user_id
         
-        # Get OTP service debug info
-        debug_info = otp_service.get_debug_info()
+        # Get user data from cache if available
+        cache_key = cache.generate_cache_key(CacheKeys.USER_PROFILE, user_id)
+        cached_user = cache.get(cache_key)
         
-        return jsonify({
-            'message': 'OTP service integration test',
-            'user_id': user_id,
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'otp_service_status': debug_info,
-            'features_available': {
-                'sms_sending': debug_info['sms_enabled'],
-                'whatsapp_sending': debug_info['whatsapp_enabled'],
-                'twilio_integration': debug_info['twilio_configured'],
-                'msg91_integration': debug_info['msg91_configured'],
-                'whatsapp_integration': debug_info['whatsapp_configured'],
-                'otp_verification': True,
-                'rate_limiting': True,
-                'phone_formatting': True
-            },
-            'otp_configuration': {
-                'otp_length': debug_info['otp_length'],
-                'expiry_minutes': debug_info['otp_expiry_minutes'],
-                'max_attempts': debug_info['max_attempts'],
-                'rate_limit_minutes': debug_info['rate_limit_minutes']
-            }
-        }), 200
+        if cached_user:
+            return jsonify({
+                'message': 'Authentication successful',
+                'user_id': user_id,
+                'data_source': 'cache',
+                'cached_user': cached_user
+            }), 200
+        else:
+            # Get from database
+            user_data = user_model.get_user_by_id(user_id) if user_model else None
+            return jsonify({
+                'message': 'Authentication successful',
+                'user_id': user_id,
+                'data_source': 'database',
+                'user_exists': user_data is not None
+            }), 200
         
     except Exception as e:
-        logger.error(f"OTP service test error: {e}")
-        return jsonify({
-            'error': 'OTP service test failed',
-            'details': str(e)
-        }), 500
+        logger.error(f"Test auth error: {str(e)}")
+        return jsonify({'error': 'Authentication test failed', 'details': str(e)}), 500
 
-# Test community platform endpoint
-@app.route('/api/test-community', methods=['GET'])
-@auth_required
-def test_community():
-    """Test endpoint to check community platform integration"""
+@app.route('/api/info', methods=['GET'])
+def get_app_info():
+    """Get application information with cache status"""
     try:
-        from models.user_model import UserModel
-        
-        user_id = request.user_id
-        user_model = UserModel(db)
-        user = user_model.get_user_by_id(user_id)
-        
-        if not user:
-            return jsonify({'error': 'User not found'}), 404
-        
-        user_profile = user.get('profile', {})
-        
-        # Check community stats without complex queries
-        try:
-            posts_ref = db.collection('community_posts')\
-                .where(filter=firestore.FieldFilter('user_id', '==', user_id))\
-                .where(filter=firestore.FieldFilter('is_active', '==', True))
-            user_posts = posts_ref.get()
-            user_posts_count = len(user_posts)
-        except Exception as e:
-            logger.warning(f"Could not get user posts count: {e}")
-            user_posts_count = 0
-        
-        return jsonify({
-            'message': 'Community platform integration test',
-            'user_id': user_id,
-            'user_name': user_profile.get('name', 'Anonymous'),
-            'user_profession': user_profile.get('profession', 'Student'),
-            'auth_method': user.get('sso_provider', 'unknown'),
-            'phone_verified': user.get('is_verified', False) and user.get('sso_provider') == 'phone',
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'community_status': {
-                'can_create_posts': True,
-                'can_like_posts': True,
-                'can_reply_to_posts': True,
-                'user_posts_count': user_posts_count
-            },
-            'features_available': {
-                'post_creation': community_bp is not None,
-                'user_authentication': True,
-                'firestore_integration': db is not None,
-                'real_time_updates': True
+        info = {
+            'name': 'Skill Buddy API',
+            'version': '1.0.0',
+            'description': 'Enhanced API with Redis caching for resume and profile analysis',
+            'features': [
+                'User Authentication',
+                'Resume Processing',
+                'Profile Analysis (LinkedIn/GitHub)',
+                'Portfolio Analysis',
+                'Community Platform',
+                'Redis Caching',
+                'Real-time Notifications',
+                'Rate Limiting'
+            ],
+            'cache_status': cache.get_cache_info(),
+            'endpoints': {
+                'auth': '/api/auth/*',
+                'user': '/api/user/*',
+                'resume': '/api/resume/*',
+                'profile_analysis': '/api/profile-analysis/*',
+                'portfolio_analysis': '/api/portfolio-analysis/*',
+                'community': '/api/community/*',
+                'cache_management': '/api/cache/*'
             }
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Community test error: {e}")
-        return jsonify({
-            'error': 'Community platform test failed',
-            'details': str(e)
-        }), 500
-
-# Test profile completion endpoint
-@app.route('/api/test-profile-completion', methods=['GET'])
-@auth_required
-def test_profile_completion():
-    """Test endpoint to check profile completion system"""
-    try:
-        from utils.profile_completion_utils import ProfileCompletionManager
-        
-        # Mock profile data for testing
-        test_profiles = [
-            {
-                'name': 'Test User',
-                'description': 'Name only'
-            },
-            {
-                'name': 'Test User',
-                'profession': 'Student',
-                'career_choices': ['Software Engineering'],
-                'college_name': 'Test University',
-                'college_email': 'test@university.edu',
-                'description': 'Basic profile complete (55%)'
-            },
-            {
-                'name': 'Test User',
-                'profession': 'Student',
-                'career_choices': ['Software Engineering'],
-                'college_name': 'Test University',
-                'college_email': 'test@university.edu',
-                'github_link': 'https://github.com/testuser',
-                'linkedin_link': 'https://linkedin.com/in/testuser',
-                'has_resume': True,
-                'description': 'Complete profile (100%)'
-            }
-        ]
-        
-        results = []
-        for i, profile in enumerate(test_profiles):
-            description = profile.pop('description')
-            completion = ProfileCompletionManager.calculate_completion_percentage(profile)
-            breakdown = ProfileCompletionManager.get_completion_breakdown(profile)
-            next_steps = ProfileCompletionManager.get_next_steps(profile)
-            
-            results.append({
-                'test_case': i + 1,
-                'description': description,
-                'profile': profile,
-                'completion_percentage': completion,
-                'breakdown': breakdown,
-                'next_steps': next_steps
-            })
-        
-        return jsonify({
-            'message': 'Profile completion system test',
-            'user_id': request.user_id,
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'test_results': results,
-            'system_info': ProfileCompletionManager.get_milestones_info()
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Profile completion test error: {e}")
-        return jsonify({
-            'error': 'Profile completion test failed',
-            'details': str(e)
-        }), 500
-
-# Test profile analysis endpoint
-@app.route('/api/test-profile-analysis', methods=['GET'])
-@auth_required
-def test_profile_analysis():
-    """Test endpoint to check if profile analysis features are working"""
-    try:
-        claude_api_key = os.environ.get('CLAUDE_API_KEY')
-        github_token = os.environ.get('GITHUB_TOKEN')
-        
-        return jsonify({
-            'message': 'Profile analysis features test',
-            'user_id': request.user_id,
-            'claude_api_configured': bool(claude_api_key),
-            'github_token_configured': bool(github_token),
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'features_status': {
-                'linkedin_analysis': profile_analysis_bp is not None,
-                'github_analysis': profile_analysis_bp is not None,
-                'portfolio_analysis': portfolio_analysis_bp is not None,
-                'claude_integration': bool(claude_api_key)
-            }
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Profile analysis test error: {e}")
-        return jsonify({
-            'error': 'Profile analysis test failed',
-            'details': str(e)
-        }), 500
-
-# Portfolio analysis test endpoint
-@app.route('/api/test-portfolio-analysis', methods=['GET'])
-@auth_required
-def test_portfolio_analysis():
-    """Test endpoint to check if portfolio analysis features are working"""
-    try:
-        claude_api_key = os.environ.get('CLAUDE_API_KEY')
-        
-        return jsonify({
-            'message': 'Portfolio analysis features test',
-            'user_id': request.user_id,
-            'claude_api_configured': bool(claude_api_key),
-            'timestamp': datetime.datetime.now(datetime.timezone.utc).isoformat(),
-            'features_status': {
-                'portfolio_analysis': portfolio_analysis_bp is not None,
-                'web_scraping': True,  # Built-in with requests and BeautifulSoup
-                'claude_integration': bool(claude_api_key),
-                'data_extraction': True
-            },
-            'supported_analysis': {
-                'content_extraction': ['projects', 'skills', 'experience', 'education'],
-                'technical_analysis': ['performance', 'seo', 'responsive_design'],
-                'scoring_criteria': ['content_quality', 'technical_implementation', 'design_ux', 'professional_branding'],
-                'improvement_suggestions': ['immediate_actions', 'content_improvements', 'technical_improvements']
-            }
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Portfolio analysis test error: {e}")
-        return jsonify({
-            'error': 'Portfolio analysis test failed',
-            'details': str(e)
-        }), 500
-
-# Add this debug endpoint to app.py for testing
-@app.route('/api/debug/profile-completion/<user_id>', methods=['GET'])
-def debug_profile_completion(user_id):
-    """Debug endpoint to check profile completion calculation"""
-    try:
-        if not db:
-            return jsonify({'error': 'Database not available'}), 500
-        
-        # Get user data
-        doc_ref = db.collection('users').document(user_id)
-        doc = doc_ref.get()
-        
-        if not doc.exists:
-            return jsonify({'error': 'User not found'}), 404
-        
-        user_data = doc.to_dict()
-        profile = user_data.get('profile', {})
-        
-        # Import the completion manager
-        from utils.profile_completion_utils import ProfileCompletionManager
-        from models.user_model import UserModel
-        
-        user_model = UserModel(db)
-        
-        # Calculate completion using both methods
-        util_completion = ProfileCompletionManager.calculate_completion_percentage(profile)
-        model_completion = user_model.calculate_profile_completion(profile)
-        stored_completion = profile.get('completion_status', 0)
-        
-        # Get detailed breakdown
-        breakdown = ProfileCompletionManager.get_completion_breakdown(profile)
-        next_steps = ProfileCompletionManager.get_next_steps(profile)
-        
-        # Check each field individually
-        field_analysis = {}
-        for field in ['name', 'profession', 'career_choices', 'college_name', 'college_email', 'github_link', 'linkedin_link', 'has_resume']:
-            value = profile.get(field)
-            field_analysis[field] = {
-                'raw_value': value,
-                'type': type(value).__name__,
-                'string_value': str(value) if value is not None else 'None',
-                'stripped_value': str(value).strip() if value is not None else '',
-                'is_empty': not value or not str(value).strip() if field != 'has_resume' else not bool(value),
-                'evaluation': 'PASS' if (
-                    field == 'has_resume' and bool(value) or
-                    field == 'career_choices' and value and isinstance(value, list) and len([c for c in value if c and str(c).strip()]) > 0 or
-                    field not in ['has_resume', 'career_choices'] and value and str(value).strip()
-                ) else 'FAIL'
-            }
-        
-        return jsonify({
-            'user_id': user_id,
-            'profile_data': profile,
-            'auth_method': user_data.get('sso_provider', 'unknown'),
-            'phone_verified': user_data.get('is_verified', False) and user_data.get('sso_provider') == 'phone',
-            'completion_calculations': {
-                'utility_method': util_completion,
-                'model_method': model_completion,
-                'stored_value': stored_completion,
-                'all_match': util_completion == model_completion == stored_completion
-            },
-            'field_analysis': field_analysis,
-            'breakdown': breakdown,
-            'next_steps': next_steps,
-            'debug_info': {
-                'profile_keys': list(profile.keys()),
-                'has_all_fields': all(field in profile for field in ['name', 'profession', 'career_choices', 'college_name', 'college_email', 'github_link', 'linkedin_link', 'has_resume'])
-            }
-        }), 200
-        
-    except Exception as e:
-        logger.error(f"Debug profile completion error: {e}")
-        return jsonify({'error': 'Debug failed', 'details': str(e)}), 500
-
-@app.route('/api/debug/email-config', methods=['GET'])
-def debug_email_config():
-    """Debug email configuration - shows what's loaded"""
-    try:
-        from services.email_service import email_service
-        
-        debug_info = email_service.get_debug_info()
-        
-        # Add environment variable check
-        import os
-        env_vars = {
-            'SMTP_SERVER': os.environ.get('SMTP_SERVER'),
-            'SMTP_PORT': os.environ.get('SMTP_PORT'), 
-            'SMTP_USERNAME': os.environ.get('SMTP_USERNAME'),
-            'SMTP_PASSWORD_EXISTS': bool(os.environ.get('SMTP_PASSWORD')),
-            'SMTP_USE_TLS': os.environ.get('SMTP_USE_TLS'),
-            'FROM_EMAIL': os.environ.get('FROM_EMAIL'),
-            'FROM_NAME': os.environ.get('FROM_NAME')
         }
         
-        return jsonify({
-            'email_service_debug': debug_info,
-            'environment_variables': env_vars,
-            'recommendations': get_email_config_recommendations(debug_info, env_vars)
-        }), 200
+        return jsonify(info), 200
         
     except Exception as e:
-        return jsonify({
-            'error': 'Debug failed',
-            'details': str(e)
-        }), 500
-
-@app.route('/api/debug/test-email-connection', methods=['POST'])
-def debug_test_email_connection():
-    """Test email connection with detailed feedback"""
-    try:
-        from services.email_service import email_service
-        
-        if not email_service.enabled:
-            return jsonify({
-                'success': False,
-                'error': 'Email service is disabled',
-                'debug_info': email_service.get_debug_info(),
-                'solution': 'Check SMTP_USERNAME and SMTP_PASSWORD environment variables'
-            }), 400
-        
-        # Test connection
-        connection_result = email_service.test_connection()
-        
-        return jsonify({
-            'success': connection_result,
-            'message': 'Connection test successful' if connection_result else 'Connection test failed',
-            'debug_info': email_service.get_debug_info()
-        }), 200 if connection_result else 400
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'solution': 'Check SMTP credentials and network connectivity'
-        }), 500
-
-@app.route('/api/debug/send-test-email', methods=['POST'])
-def debug_send_test_email():
-    """Send a test email with detailed debugging"""
-    try:
-        from services.email_service import email_service
-        
-        data = request.get_json()
-        test_email = data.get('email') if data else None
-        
-        if not test_email:
-            return jsonify({'error': 'Email address required'}), 400
-        
-        if not email_service.enabled:
-            return jsonify({
-                'success': False,
-                'error': 'Email service is disabled',
-                'debug_info': email_service.get_debug_info()
-            }), 400
-        
-        # Send test email
-        subject = "Test Email from Skill Buddy"
-        html_content = f"""
-        <h2>🎉 Email Test Successful!</h2>
-        <p>This is a test email from your Skill Buddy application.</p>
-        <p><strong>Timestamp:</strong> {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-        <p>If you received this email, your SMTP configuration is working correctly!</p>
-        """
-        
-        text_content = f"""
-        Email Test Successful!
-        
-        This is a test email from your Skill Buddy application.
-        Timestamp: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-        
-        If you received this email, your SMTP configuration is working correctly!
-        """
-        
-        success = email_service.send_email([test_email], subject, html_content, text_content)
-        
-        return jsonify({
-            'success': success,
-            'message': 'Test email sent successfully' if success else 'Test email failed',
-            'email': test_email,
-            'debug_info': email_service.get_debug_info()
-        }), 200 if success else 400
-        
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'error': str(e),
-            'debug_info': email_service.get_debug_info()
-        }), 500
-
-def get_email_config_recommendations(debug_info, env_vars):
-    """Generate configuration recommendations based on debug info"""
-    recommendations = []
-    
-    if not debug_info['enabled']:
-        if not env_vars['SMTP_USERNAME']:
-            recommendations.append("Set SMTP_USERNAME environment variable")
-        if not env_vars['SMTP_PASSWORD_EXISTS']:
-            recommendations.append("Set SMTP_PASSWORD environment variable")
-    
-    if env_vars['SMTP_SERVER'] == 'smtp.gmail.com' and env_vars['SMTP_PASSWORD_EXISTS']:
-        recommendations.append("For Gmail: Use App Password instead of regular password")
-        recommendations.append("Enable 2-Factor Authentication in Google Account")
-    
-    if debug_info['smtp_port'] not in [587, 465]:
-        recommendations.append("Use port 587 (TLS) or 465 (SSL) for most email providers")
-    
-    if not env_vars.get('FROM_EMAIL'):
-        recommendations.append("Set FROM_EMAIL environment variable")
-    
-    return recommendations
+        logger.error(f"Get app info error: {str(e)}")
+        return jsonify({'error': 'Failed to get app info', 'details': str(e)}), 500
 
 # Error handlers
 @app.errorhandler(404)
@@ -776,54 +526,20 @@ def not_found(error):
 
 @app.errorhandler(500)
 def internal_error(error):
+    logger.error(f"Internal server error: {str(error)}")
     return jsonify({'error': 'Internal server error'}), 500
 
 @app.errorhandler(429)
-def rate_limit_handler(e):
-    return jsonify({'error': 'Rate limit exceeded. Please try again later.'}), 429
+def ratelimit_handler(e):
+    return jsonify({'error': 'Rate limit exceeded', 'message': str(e)}), 429
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    debug = os.environ.get('FLASK_ENV') == 'development'
+    print("=" * 50)
+    print("🚀 Starting Skill Buddy API with Redis Cache")
+    print("=" * 50)
+    print(f"✓ Redis Cache: {'Enabled' if cache.enabled else 'Disabled'}")
+    print(f"✓ Firebase: {'Connected' if db else 'Not connected'}")
+    print(f"✓ Email Service: {'Enabled' if email_service and email_service.enabled else 'Disabled'}")
+    print("=" * 50)
     
-    print("=== Skill Buddy API with Phone OTP Authentication Starting ===")
-    print(f"Port: {port}")
-    print(f"Debug: {debug}")
-    print("Features:")
-    print("  ✓ Resume Processing")
-    print("  ✓ User Management")
-    print("  ✓ LinkedIn Profile Analysis")
-    print("  ✓ GitHub Profile Analysis")
-    print("  ✓ Portfolio Website Analysis")
-    print("  ✓ Enhanced Profile Completion System")
-    print("  ✓ Community Platform")
-    print("  ✓ Phone OTP Authentication (NEW)")
-    print("")
-    print("Authentication Methods:")
-    print("  • Email/Password (Traditional)")
-    print("  • Phone/OTP (NEW)")
-    print("  • Google SSO (Existing)")
-    print("")
-    print("OTP Features:")
-    print("  • SMS via Twilio or MSG91")
-    print("  • WhatsApp via WhatsApp Business API")
-    print("  • International phone number support")
-    print("  • Rate limiting and security features")
-    print("  • Automatic signup with phone verification")
-    print("")
-    print("Profile Completion System:")
-    print("  • Basic Profile (55%): Name, Profession, Career Choices, College Info")
-    print("  • GitHub Link (+15%)")
-    print("  • LinkedIn Link (+15%)")
-    print("  • Resume Upload (+15%)")
-    print("  • Total: 100%")
-    print("")
-    print("Community Platform Features:")
-    print("  • Create and share posts")
-    print("  • Like posts from other users")
-    print("  • Reply to posts and engage in discussions")
-    print("  • Integrated with all authentication methods")
-    print("  • Optimized queries to avoid Firestore index requirements")
-    print("========================================================")
-    
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    app.run(debug=True, host='0.0.0.0', port=5000)

@@ -1139,3 +1139,214 @@
 2025-07-15 16:58:28,608 - services.otp_service - INFO - OTP stored for phone: +919480620648
 2025-07-15 16:58:28,609 - routes.auth_routes - INFO - OTP resent for login to +919480620648 via sms
 2025-07-15 16:58:28,609 - werkzeug - INFO - 127.0.0.1 - - [15/Jul/2025 16:58:28] "POST /api/auth/phone/resend-otp HTTP/1.1" 200 -
+2025-07-17 18:42:32,661 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 3, 'redis_version': '3.0.504'}
+2025-07-17 18:42:33,252 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:42:33,282 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:49:01,851 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 7, 'redis_version': '3.0.504'}
+2025-07-17 18:49:01,901 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:49:01,902 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:49:02,657 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:49:03,067 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-17 18:49:03,068 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-17 18:49:03,096 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 18:49:04,085 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.60K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 3, 'redis_version': '3.0.504'}
+2025-07-17 18:49:04,116 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:49:04,117 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:49:04,177 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:49:04,193 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 18:49:04,196 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 18:51:05,777 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\test_redis.py', reloading
+2025-07-17 18:51:05,939 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 18:51:07,521 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.60K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 7, 'redis_version': '3.0.504'}
+2025-07-17 18:51:07,639 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:51:07,643 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:51:07,753 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:51:07,778 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 18:51:07,782 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 18:54:28,005 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 11, 'redis_version': '3.0.504'}
+2025-07-17 18:54:28,038 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:54:28,040 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:54:28,104 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:54:28,141 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-17 18:54:28,141 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-17 18:54:28,144 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 18:54:29,142 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.66K', 'keyspace_hits': 2, 'keyspace_misses': 0, 'total_commands_processed': 26, 'redis_version': '3.0.504'}
+2025-07-17 18:54:29,176 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:54:29,177 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:54:29,241 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 18:54:29,258 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 18:54:29,261 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 18:54:33,241 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 18:54:35,292 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 18:54:35] "GET /api/status HTTP/1.1" 200 -
+2025-07-17 18:57:24,265 - __main__ - INFO - Request: GET /api/info from 127.0.0.1
+2025-07-17 18:57:24,267 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 18:57:24] "GET /api/info HTTP/1.1" 200 -
+2025-07-17 19:00:49,526 - __main__ - INFO - Request: POST /auth/register from 127.0.0.1
+2025-07-17 19:00:49,526 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:00:49] "[33mPOST /auth/register HTTP/1.1[0m" 404 -
+2025-07-17 19:01:02,957 - __main__ - INFO - Request: POST /api/auth/register from 127.0.0.1
+2025-07-17 19:01:03,419 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:01:03] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-17 19:01:35,360 - __main__ - INFO - Request: POST /api/auth/register from 127.0.0.1
+2025-07-17 19:01:35,536 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:01:35] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-17 19:01:51,950 - __main__ - INFO - Request: POST /api/auth/register from 127.0.0.1
+2025-07-17 19:01:52,082 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:01:52] "[31m[1mPOST /api/auth/register HTTP/1.1[0m" 409 -
+2025-07-17 19:02:33,798 - __main__ - INFO - Request: POST /api/auth/register from 127.0.0.1
+2025-07-17 19:02:34,229 - models.user_model - INFO - Created user: gS7GArkOAjAE9fqMjZFY with auth method: email
+2025-07-17 19:02:40,248 - services.email_service - INFO - Email sent successfully to 1 recipients
+2025-07-17 19:02:40,248 - routes.auth_routes - INFO - Welcome email sent to tarun00648@gmail.com
+2025-07-17 19:02:40,440 - routes.auth_routes - INFO - User registered successfully: tarun00648@gmail.com
+2025-07-17 19:02:40,445 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:02:40] "[35m[1mPOST /api/auth/register HTTP/1.1[0m" 201 -
+2025-07-17 19:03:58,885 - __main__ - INFO - Request: POST /api/auth/login from 127.0.0.1
+2025-07-17 19:03:59,333 - models.user_model - INFO - Updated user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:03:59,333 - routes.auth_routes - INFO - User logged in: tarun00648@gmail.com
+2025-07-17 19:03:59,335 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:03:59] "POST /api/auth/login HTTP/1.1" 200 -
+2025-07-17 19:04:17,096 - __main__ - INFO - Request: GET /api/test-auth from 127.0.0.1
+2025-07-17 19:04:17,097 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:04:17] "[31m[1mGET /api/test-auth HTTP/1.1[0m" 401 -
+2025-07-17 19:04:22,791 - __main__ - INFO - Request: GET /api/test-auth from 127.0.0.1
+2025-07-17 19:04:24,110 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:04:24] "GET /api/test-auth HTTP/1.1" 200 -
+2025-07-17 19:04:39,712 - __main__ - INFO - Request: GET /api/user/profile from 127.0.0.1
+2025-07-17 19:04:40,031 - routes.user_routes - INFO - Profile cached for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:04:40,036 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:04:40] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-17 19:05:28,991 - __main__ - INFO - Request: GET /api/user/profile from 127.0.0.1
+2025-07-17 19:05:28,992 - routes.user_routes - INFO - Profile cache hit for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:05:28,992 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:05:28] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-17 19:06:07,763 - __main__ - INFO - Request: PUT /api/user/profile from 127.0.0.1
+2025-07-17 19:06:07,898 - routes.user_routes - ERROR - Update profile error: 'UserModel' object has no attribute '_update_database'
+2025-07-17 19:06:07,903 - services.redis_cache_service - INFO - Redis cache initialized successfully
+2025-07-17 19:06:07,905 - services.redis_cache_service - INFO - Invalidated 2 cache entries matching pattern: user_profile:*
+2025-07-17 19:06:07,906 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:06:07] "[35m[1mPUT /api/user/profile HTTP/1.1[0m" 500 -
+2025-07-17 19:07:10,792 - __main__ - INFO - Request: GET /api/user/profile from 127.0.0.1
+2025-07-17 19:07:10,969 - routes.user_routes - INFO - Profile cached for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:07:10,971 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:07:10] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-17 19:07:56,656 - __main__ - INFO - Request: PUT /api/user/profile from 127.0.0.1
+2025-07-17 19:07:56,760 - routes.user_routes - ERROR - Update profile error: 'UserModel' object has no attribute '_update_database'
+2025-07-17 19:07:56,762 - services.redis_cache_service - INFO - Redis cache initialized successfully
+2025-07-17 19:07:56,764 - services.redis_cache_service - INFO - Invalidated 2 cache entries matching pattern: user_profile:*
+2025-07-17 19:07:56,764 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:07:56] "[35m[1mPUT /api/user/profile HTTP/1.1[0m" 500 -
+2025-07-17 19:11:54,906 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\routes\\user_routes.py', reloading
+2025-07-17 19:11:57,378 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 19:12:02,476 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '678.30K', 'keyspace_hits': 21, 'keyspace_misses': 5, 'total_commands_processed': 130, 'redis_version': '3.0.504'}
+2025-07-17 19:12:02,516 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 19:12:02,517 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 19:12:02,630 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 19:12:02,646 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 19:12:02,677 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 19:13:34,946 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\models\\user_model.py', reloading
+2025-07-17 19:13:35,093 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 19:13:36,201 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '678.30K', 'keyspace_hits': 21, 'keyspace_misses': 5, 'total_commands_processed': 134, 'redis_version': '3.0.504'}
+2025-07-17 19:13:36,250 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 19:13:36,251 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 19:13:36,304 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 19:13:36,334 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 19:13:36,338 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 19:13:43,737 - __main__ - INFO - Request: PUT /api/user/profile from 127.0.0.1
+2025-07-17 19:13:45,364 - routes.user_routes - INFO - Profile updated and cache invalidated for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:13:45,365 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:13:45] "PUT /api/user/profile HTTP/1.1" 200 -
+2025-07-17 19:14:05,135 - __main__ - INFO - Request: GET /api/user/profile from 127.0.0.1
+2025-07-17 19:14:05,443 - routes.user_routes - INFO - Profile cached for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:14:05,445 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:14:05] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-17 19:18:11,383 - __main__ - INFO - Request: GET /api/user/profile/links from 127.0.0.1
+2025-07-17 19:18:11,384 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:18:11] "[31m[1mGET /api/user/profile/links HTTP/1.1[0m" 405 -
+2025-07-17 19:18:15,478 - __main__ - INFO - Request: PUT /api/user/profile/links from 127.0.0.1
+2025-07-17 19:18:15,942 - routes.user_routes - INFO - Profile links updated and cache invalidated for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 19:18:15,943 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:18:15] "PUT /api/user/profile/links HTTP/1.1" 200 -
+2025-07-17 19:18:32,609 - __main__ - INFO - Request: GET /api/user/stats from 127.0.0.1
+2025-07-17 19:18:32,707 - routes.user_routes - ERROR - Get user stats error: UserModel.get_user_statistics() takes 1 positional argument but 2 were given
+2025-07-17 19:18:32,708 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:18:32] "[35m[1mGET /api/user/stats HTTP/1.1[0m" 500 -
+2025-07-17 19:50:43,569 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\routes\\user_routes.py', reloading
+2025-07-17 19:50:46,195 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 19:50:56,268 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '678.99K', 'keyspace_hits': 27, 'keyspace_misses': 9, 'total_commands_processed': 176, 'redis_version': '3.0.504'}
+2025-07-17 19:50:56,346 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 19:50:56,347 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 19:50:56,522 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 19:50:56,543 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 19:50:56,638 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 19:54:31,233 - __main__ - INFO - Request: GET /api/user/settings from 127.0.0.1
+2025-07-17 19:54:32,767 - routes.user_routes - ERROR - Get user settings error: type object 'CacheTTL' has no attribute 'USER_SETTINGS'
+2025-07-17 19:54:32,768 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 19:54:32] "[35m[1mGET /api/user/settings HTTP/1.1[0m" 500 -
+2025-07-17 20:03:42,771 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\app.py', reloading
+2025-07-17 20:03:44,901 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 20:03:46,303 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '679.07K', 'keyspace_hits': 29, 'keyspace_misses': 11, 'total_commands_processed': 191, 'redis_version': '3.0.504'}
+2025-07-17 20:03:46,337 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 20:03:46,340 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 20:03:46,399 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:34:14,414 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 15, 'redis_version': '3.0.504'}
+2025-07-17 21:34:15,053 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:34:15,054 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:34:17,085 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:35:05,634 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 19, 'redis_version': '3.0.504'}
+2025-07-17 21:35:05,669 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:35:05,671 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:35:05,734 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:35:05,952 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-17 21:35:05,952 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-17 21:35:05,958 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 21:35:06,952 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '677.96K', 'keyspace_hits': 29, 'keyspace_misses': 11, 'total_commands_processed': 195, 'redis_version': '3.0.504'}
+2025-07-17 21:35:06,988 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:35:06,989 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:35:07,054 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:35:07,072 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 21:35:07,222 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 21:35:15,077 - __main__ - INFO - Request: GET /api/user/settings from 127.0.0.1
+2025-07-17 21:35:17,474 - routes.user_routes - ERROR - Get user settings error: type object 'CacheTTL' has no attribute 'USER_SETTINGS'
+2025-07-17 21:35:17,476 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:35:17] "[35m[1mGET /api/user/settings HTTP/1.1[0m" 500 -
+2025-07-17 21:36:08,063 - __main__ - INFO - Request: GET /api/user/profile from 127.0.0.1
+2025-07-17 21:36:08,246 - routes.user_routes - INFO - Profile cached for user: gS7GArkOAjAE9fqMjZFY
+2025-07-17 21:36:08,246 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:36:08] "GET /api/user/profile HTTP/1.1" 200 -
+2025-07-17 21:36:42,296 - __main__ - INFO - Request: GET /api/user/stats from 127.0.0.1
+2025-07-17 21:36:42,411 - routes.user_routes - ERROR - Get user stats error: UserModel.get_user_statistics() takes 1 positional argument but 2 were given
+2025-07-17 21:36:42,411 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:36:42] "[35m[1mGET /api/user/stats HTTP/1.1[0m" 500 -
+2025-07-17 21:37:00,501 - __main__ - INFO - Request: GET /api/user/stats from 127.0.0.1
+2025-07-17 21:37:00,662 - routes.user_routes - ERROR - Get user stats error: UserModel.get_user_statistics() takes 1 positional argument but 2 were given
+2025-07-17 21:37:00,663 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:37:00] "[35m[1mGET /api/user/stats HTTP/1.1[0m" 500 -
+2025-07-17 21:38:14,511 - __main__ - INFO - Request: POST /api/resume/upload from 127.0.0.1
+2025-07-17 21:38:14,655 - routes.resume_routes - ERROR - Resume upload error: 'ResumeModel' object has no attribute 'create_resume_record'
+2025-07-17 21:38:14,657 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:38:14] "[35m[1mPOST /api/resume/upload HTTP/1.1[0m" 500 -
+2025-07-17 21:43:56,017 - werkzeug - INFO -  * Detected change in 'C:\\Users\\tarun\\Downloads\\Updated Backend with jwt\\skill-buddy-backend\\routes\\user_routes.py', reloading
+2025-07-17 21:43:59,568 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 21:44:02,210 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '680.70K', 'keyspace_hits': 38, 'keyspace_misses': 16, 'total_commands_processed': 237, 'redis_version': '3.0.504'}
+2025-07-17 21:44:02,246 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:44:02,250 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:52:10,796 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 23, 'redis_version': '3.0.504'}
+2025-07-17 21:52:12,484 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:52:12,488 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:52:12,612 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:52:12,705 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-17 21:52:12,706 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-17 21:52:12,710 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 21:52:14,826 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '680.70K', 'keyspace_hits': 38, 'keyspace_misses': 16, 'total_commands_processed': 241, 'redis_version': '3.0.504'}
+2025-07-17 21:52:14,857 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:52:14,858 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:52:14,915 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:52:14,933 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 21:52:14,935 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 21:53:14,210 - __main__ - INFO - Request: POST /api/resume/upload from 127.0.0.1
+2025-07-17 21:53:14,222 - routes.resume_routes - ERROR - Resume upload error: 'ResumeModel' object has no attribute 'create_resume_record'
+2025-07-17 21:53:14,228 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:53:14] "[35m[1mPOST /api/resume/upload HTTP/1.1[0m" 500 -
+2025-07-17 21:53:55,052 - __main__ - INFO - Redis cache status: {'enabled': True, 'connected_clients': 1, 'used_memory': '676.86K', 'keyspace_hits': 0, 'keyspace_misses': 0, 'total_commands_processed': 27, 'redis_version': '3.0.504'}
+2025-07-17 21:53:55,089 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:53:55,094 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:53:55,151 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:53:55,173 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://172.20.10.7:5000
+2025-07-17 21:53:55,173 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-07-17 21:53:55,175 - werkzeug - INFO -  * Restarting with stat
+2025-07-17 21:54:01,354 - __main__ - INFO - Redis cache status: {'enabled': False, 'error': 'Redis not available'}
+2025-07-17 21:54:01,388 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:54:01,390 - services.otp_service - INFO - OTP Service initialized - SMS: True, WhatsApp: True
+2025-07-17 21:54:01,448 - services.email_service - INFO - Email service initialized with SMTP server: smtp.gmail.com:587
+2025-07-17 21:54:01,465 - werkzeug - WARNING -  * Debugger is active!
+2025-07-17 21:54:01,467 - werkzeug - INFO -  * Debugger PIN: 855-111-663
+2025-07-17 21:55:42,385 - werkzeug - INFO - 127.0.0.1 - - [17/Jul/2025 21:55:42] "[35m[1mPOST /api/resume/upload HTTP/1.1[0m" 500 -

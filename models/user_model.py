@@ -1,17 +1,46 @@
-# models/user_model.py (UPDATED with Phone Number Support)
+# models/user_model.py - Updated with Redis Cache Support
 from datetime import datetime
 from typing import Dict, Any, List, Optional
 import logging
 from firebase_admin import firestore
 
+# Import cache service for cache invalidation
+try:
+    from services.redis_cache_service import cache, CacheKeys, CacheTTL
+    CACHE_AVAILABLE = True
+except ImportError:
+    CACHE_AVAILABLE = False
+
 logger = logging.getLogger(__name__)
 
 class UserModel:
-    """User data model for Firestore operations with phone support"""
+    """User data model for Firestore operations with phone support and Redis cache integration"""
     
     def __init__(self, db):
         self.db = db
         self.collection_name = 'users'
+    
+    def _invalidate_user_cache(self, user_id: str):
+        """Invalidate all cache entries for a user"""
+        if not CACHE_AVAILABLE:
+            return
+            
+        try:
+            cache_patterns = [
+                f"{CacheKeys.USER_PROFILE}:{user_id}*",
+                f"{CacheKeys.USER_RESUMES}:{user_id}*",
+                f"{CacheKeys.USER_STATS}:{user_id}*",
+                f"{CacheKeys.USER_SETTINGS}:{user_id}*",
+                f"{CacheKeys.GITHUB_PROFILE}:{user_id}*",
+                f"{CacheKeys.LINKEDIN_PROFILE}:{user_id}*"
+            ]
+            
+            for pattern in cache_patterns:
+                cache.delete_pattern(pattern)
+            
+            logger.info(f"Invalidated cache for user: {user_id}")
+        except Exception as e:
+            logger.warning(f"Cache invalidation failed for user {user_id}: {e}")
     
     def create_user(self, user_data: Dict[str, Any]) -> str:
         """Create a new user in Firestore with phone or email"""
@@ -305,13 +334,16 @@ class UserModel:
             return None
     
     def update_user(self, user_id: str, update_data: Dict[str, Any]) -> bool:
-        """Update user data"""
+        """Update user data with cache invalidation"""
         try:
             # Always add updated timestamp
             update_data['updated_at'] = firestore.SERVER_TIMESTAMP
             
             doc_ref = self.db.collection(self.collection_name).document(user_id)
             doc_ref.update(update_data)
+            
+            # Invalidate cache for this user
+            self._invalidate_user_cache(user_id)
             
             logger.info(f"Updated user: {user_id}")
             return True
@@ -336,7 +368,7 @@ class UserModel:
             return False
     
     def update_resume_status(self, user_id: str, has_resume: bool) -> bool:
-        """Update user's resume status and recalculate completion"""
+        """Update user's resume status and recalculate completion with cache invalidation"""
         try:
             logger.info(f"Updating resume status for user {user_id}: {has_resume}")
             
@@ -446,7 +478,7 @@ class UserModel:
             return False
     
     def delete_user(self, user_id: str) -> bool:
-        """Soft delete user"""
+        """Soft delete user with cache invalidation"""
         try:
             update_data = {
                 'is_active': False,
@@ -456,6 +488,9 @@ class UserModel:
             
             doc_ref = self.db.collection(self.collection_name).document(user_id)
             doc_ref.update(update_data)
+            
+            # Invalidate cache for this user
+            self._invalidate_user_cache(user_id)
             
             return True
             
@@ -478,9 +513,96 @@ class UserModel:
             logger.error(f"Error verifying user phone: {e}")
             return False
     
+    def update_last_login(self, user_id: str) -> bool:
+        """Update user's last login timestamp"""
+        try:
+            update_data = {
+                'last_login': firestore.SERVER_TIMESTAMP,
+                'updated_at': firestore.SERVER_TIMESTAMP
+            }
+            
+            return self.update_user(user_id, update_data)
+            
+        except Exception as e:
+            logger.error(f"Error updating last login: {e}")
+            return False
+    
+    def update_password(self, user_id: str, hashed_password: str) -> bool:
+        """Update user's password"""
+        try:
+            update_data = {
+                'password': hashed_password,
+                'password_changed_at': firestore.SERVER_TIMESTAMP,
+                'updated_at': firestore.SERVER_TIMESTAMP
+            }
+            
+            return self.update_user(user_id, update_data)
+            
+        except Exception as e:
+            logger.error(f"Error updating password: {e}")
+            return False
+    
+    def save_reset_token(self, user_id: str, token: str, expiry: datetime) -> bool:
+        """Save password reset token"""
+        try:
+            update_data = {
+                'password_reset_token': token,
+                'password_reset_expires': expiry,
+                'password_reset_requested_at': firestore.SERVER_TIMESTAMP,
+                'updated_at': firestore.SERVER_TIMESTAMP
+            }
+            
+            return self.update_user(user_id, update_data)
+            
+        except Exception as e:
+            logger.error(f"Error saving reset token: {e}")
+            return False
+    
+    def validate_reset_token(self, token: str) -> Optional[str]:
+        """Validate password reset token and return user_id"""
+        try:
+            query = self.db.collection(self.collection_name).where('password_reset_token', '==', token).limit(1)
+            docs = query.get()
+            
+            for doc in docs:
+                user_data = doc.to_dict()
+                expiry = user_data.get('password_reset_expires')
+                
+                if expiry and expiry > datetime.utcnow():
+                    return doc.id
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error validating reset token: {e}")
+            return None
+    
+    def clear_reset_token(self, user_id: str) -> bool:
+        """Clear password reset token"""
+        try:
+            update_data = {
+                'password_reset_token': firestore.DELETE_FIELD,
+                'password_reset_expires': firestore.DELETE_FIELD,
+                'password_reset_requested_at': firestore.DELETE_FIELD,
+                'updated_at': firestore.SERVER_TIMESTAMP
+            }
+            
+            return self.update_user(user_id, update_data)
+            
+        except Exception as e:
+            logger.error(f"Error clearing reset token: {e}")
+            return False
+    
     def get_user_statistics(self) -> Dict[str, Any]:
         """Get user statistics"""
         try:
+            # Check cache first
+            if CACHE_AVAILABLE:
+                cache_key = cache.generate_cache_key(CacheKeys.SYSTEM_STATS, 'user_statistics')
+                cached_stats = cache.get(cache_key)
+                if cached_stats:
+                    return cached_stats
+            
             total_users = len(self.db.collection(self.collection_name).where('is_active', '==', True).get())
             
             # Get users by authentication method
@@ -496,7 +618,7 @@ class UserModel:
                               .where('is_active', '==', True)
                               .where('sso_provider', '==', 'google').get())
             
-            return {
+            stats = {
                 'total_users': total_users,
                 'active_users': total_users,
                 'email_users': email_users,
@@ -506,6 +628,13 @@ class UserModel:
                                      .where('is_active', '==', True)
                                      .where('is_verified', '==', True).get())
             }
+            
+            # Cache the statistics
+            if CACHE_AVAILABLE:
+                cache.set(cache_key, stats, CacheTTL.SYSTEM_STATS)
+            
+            return stats
+            
         except Exception as e:
             logger.error(f"Error getting user statistics: {e}")
             return {
@@ -516,3 +645,110 @@ class UserModel:
                 'google_users': 0,
                 'verified_users': 0
             }
+    
+    def get_user_individual_statistics(self, user_id: str) -> Dict[str, Any]:
+        """Get statistics for a specific user"""
+        try:
+            # Check cache first
+            if CACHE_AVAILABLE:
+                cache_key = cache.generate_cache_key(CacheKeys.USER_STATS, user_id, 'individual')
+                cached_stats = cache.get(cache_key)
+                if cached_stats:
+                    return cached_stats
+            
+            user = self.get_user_by_id(user_id)
+            if not user:
+                return {}
+            
+            profile = user.get('profile', {})
+            xp_data = user.get('xp', {})
+            
+            stats = {
+                'user_id': user_id,
+                'profile_completion': profile.get('completion_status', 0),
+                'member_since': user.get('created_at', 'Unknown'),
+                'last_login': user.get('last_login', 'Unknown'),
+                'total_xp': xp_data.get('total_xp', 0),
+                'level': xp_data.get('level', 1),
+                'badges_count': len(xp_data.get('badges', [])),
+                'profile_data': {
+                    'has_name': bool(profile.get('name')),
+                    'has_profession': bool(profile.get('profession')),
+                    'has_college': bool(profile.get('college_name')),
+                    'has_github': bool(profile.get('github_link')),
+                    'has_linkedin': bool(profile.get('linkedin_link')),
+                    'has_resume': bool(profile.get('has_resume')),
+                    'career_choices_count': len(profile.get('career_choices', []))
+                },
+                'authentication': {
+                    'sso_provider': user.get('sso_provider', 'email'),
+                    'is_verified': user.get('is_verified', False),
+                    'email': bool(user.get('email')),
+                    'phone': bool(user.get('phone'))
+                }
+            }
+            
+            # Cache the individual statistics
+            if CACHE_AVAILABLE:
+                cache.set(cache_key, stats, CacheTTL.USER_STATS)
+            
+            return stats
+            
+        except Exception as e:
+            logger.error(f"Error getting user individual statistics: {e}")
+            return {'error': str(e)}
+    
+    def search_users(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """Search users by name or email"""
+        try:
+            # Search by name
+            name_query = self.db.collection(self.collection_name)\
+                .where('profile.name', '>=', query)\
+                .where('profile.name', '<=', query + '\uf8ff')\
+                .limit(limit)
+            
+            # Search by email
+            email_query = self.db.collection(self.collection_name)\
+                .where('email', '>=', query.lower())\
+                .where('email', '<=', query.lower() + '\uf8ff')\
+                .limit(limit)
+            
+            users = []
+            seen_ids = set()
+            
+            # Combine results
+            for doc in name_query.get():
+                if doc.id not in seen_ids:
+                    user_data = doc.to_dict()
+                    user_data['id'] = doc.id
+                    # Remove sensitive data
+                    user_data.pop('password', None)
+                    user_data.pop('password_reset_token', None)
+                    users.append(user_data)
+                    seen_ids.add(doc.id)
+            
+            for doc in email_query.get():
+                if doc.id not in seen_ids and len(users) < limit:
+                    user_data = doc.to_dict()
+                    user_data['id'] = doc.id
+                    # Remove sensitive data
+                    user_data.pop('password', None)
+                    user_data.pop('password_reset_token', None)
+                    users.append(user_data)
+                    seen_ids.add(doc.id)
+            
+            return users[:limit]
+            
+        except Exception as e:
+            logger.error(f"Error searching users: {e}")
+            return []
+    
+    def user_exists(self, identifier: str, identifier_type: str = 'auto') -> bool:
+        """Check if user exists by email or phone"""
+        try:
+            user = self.get_user_by_identifier(identifier, identifier_type)
+            return user is not None
+        except Exception as e:
+            logger.error(f"Error checking if user exists: {e}")
+            return False
+    

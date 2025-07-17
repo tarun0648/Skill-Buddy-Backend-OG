@@ -4,7 +4,12 @@ import datetime
 from functools import wraps
 from flask import request, jsonify, current_app
 from werkzeug.security import generate_password_hash, check_password_hash
+import logging
 
+# Import cache service
+from services.redis_cache_service import cache, CacheKeys, CacheTTL
+
+logger = logging.getLogger(__name__)
 class AuthUtils:
     
     @staticmethod
@@ -61,41 +66,34 @@ class AuthUtils:
         return check_password_hash(password_hash, password)
 
 def auth_required(f):
-    """Decorator to require authentication - FIXED VERSION"""
+    """Decorator to require user ID authentication with caching"""
     @wraps(f)
     def decorated(*args, **kwargs):
-        # Get Authorization header
-        auth_header = request.headers.get('Authorization')
-        print(f"[DEBUG] Auth header received: {auth_header}")  # Debug log
+        user_id = request.headers.get('X-User-ID')
+        if not user_id:
+            return jsonify({'error': 'User ID required in X-User-ID header'}), 401
         
-        if not auth_header:
-            print("[DEBUG] No Authorization header found")
-            return jsonify({'error': 'No token provided'}), 401
+        # Check cache first for user validation
+        cache_key = cache.generate_cache_key(CacheKeys.USER_PROFILE, user_id, 'validation')
+        cached_validation = cache.get(cache_key)
         
-        # Extract token
-        if auth_header.startswith('Bearer '):
-            token = auth_header[7:]  # Remove 'Bearer ' prefix
-            print(f"[DEBUG] Extracted token: {token[:20]}...")  # Debug log (first 20 chars)
-        else:
-            print("[DEBUG] Authorization header doesn't start with 'Bearer '")
-            return jsonify({'error': 'Invalid token format'}), 401
+        if cached_validation is None:
+            # Verify user exists in database
+            from app import db  # Import db from app
+            if db:
+                try:
+                    doc_ref = db.collection('users').document(user_id)
+                    doc = doc_ref.get()
+                    if not doc.exists:
+                        return jsonify({'error': 'Invalid user ID'}), 401
+                    
+                    # Cache the validation result
+                    cache.set(cache_key, {'valid': True}, CacheTTL.MEDIUM)
+                    
+                except Exception as e:
+                    return jsonify({'error': 'User verification failed'}), 401
         
-        # Verify token
-        payload = AuthUtils.verify_token(token)
-        print(f"[DEBUG] Token verification result: {payload}")  # Debug log
-        
-        if 'error' in payload:
-            print(f"[DEBUG] Token verification failed: {payload['error']}")
-            return jsonify({'error': payload['error']}), 401
-        
-        if payload.get('type') != 'access':
-            print(f"[DEBUG] Invalid token type: {payload.get('type')}")
-            return jsonify({'error': 'Invalid token type'}), 401
-        
-        # Set user_id on request
-        request.user_id = payload['user_id']
-        print(f"[DEBUG] Authentication successful for user: {payload['user_id']}")
-        
+        request.user_id = user_id
         return f(*args, **kwargs)
     
     return decorated

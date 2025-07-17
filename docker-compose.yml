@@ -1,0 +1,74 @@
+# docker-compose.yml - Redis Configuration
+version: '3.8'
+
+services:
+  # Redis Cache Service
+  redis:
+    image: redis:7-alpine
+    container_name: skill_buddy_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: unless-stopped
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    networks:
+      - skill_buddy_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Flask Application
+  app:
+    build: .
+    container_name: skill_buddy_app
+    ports:
+      - "5000:5000"
+    depends_on:
+      - redis
+    environment:
+      - FLASK_ENV=production
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+      - ./serviceAccountKey.json:/app/serviceAccountKey.json
+    restart: unless-stopped
+    networks:
+      - skill_buddy_network
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  # Redis Commander (Optional - for Redis GUI)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: skill_buddy_redis_commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6389
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+    depends_on:
+      - redis
+    networks:
+      - skill_buddy_network
+    profiles:
+      - tools
+
+volumes:
+  redis_data:
+    driver: local
+
+networks:
+  skill_buddy_network:
+    driver: bridge
