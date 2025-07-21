@@ -1,0 +1,76 @@
+{
+  "personal_information": {
+    "name": "TARUN S",
+    "email": "taruns0648@gmail.com",
+    "phone": "9480620648",
+    "city": null,
+    "country": null
+  },
+  "summary": "Motivated and driven Computer Science Engineering student specializing in Artificial Intelligence and Machine Learning, currently in the 4th semester at PES University. Seeking an internship to apply academic knowledge in a real-world setting. Eager to learn, grow, and contribute to a dynamic team environment.",
+  "education": [
+    {
+      "school": "PES University",
+      "degree": "B.Tech in Computer Science and Engineering (AIML)",
+      "start_year": "2023",
+      "end_year": "2027",
+      "major": "Artificial Intelligence and Machine Learning",
+      "gpa": "8.02"
+    }
+  ],
+  "work_experience": [],
+  "projects": [
+    {
+      "name": "Random Password Generator Using Python",
+      "start_year": null,
+      "end_year": null,
+      "description": "Developed a program that generates secure passwords based on user-defined criteria."
+    },
+    {
+      "name": "Audio Visualizer",
+      "start_year": null,
+      "end_year": null,
+      "description": "Created a platform to convert audio into a visual form with download and editing options."
+    },
+    {
+      "name": "Alcohol Breath Analyzer Using Arduino",
+      "start_year": null,
+      "end_year": null,
+      "description": "Built a system to detect alcohol content through temperature-based sensing."
+    },
+    {
+      "name": "Chat Bot File Transfer using Wireshark and C",
+      "start_year": null,
+      "end_year": null,
+      "description": "Implemented a chatbot for file transfers over a network, analyzed via Wireshark."
+    },
+    {
+      "name": "Rock Paper Scissors Game (Multiuser) using Wireshark and C",
+      "start_year": null,
+      "end_year": null,
+      "description": "Designed a multiplayer game using raw sockets and Wireshark for traffic analysis."
+    },
+    {
+      "name": "Full-Stack Website Project",
+      "start_year": null,
+      "end_year": null,
+      "description": "Developed the frontend using HTML and Java, integrated with a MongoDB backend."
+    }
+  ],
+  "certifications": [],
+  "awards": [],
+  "skills": [
+    "Python",
+    "HTML",
+    "Java",
+    "C",
+    "MongoDB",
+    "React",
+    "Programming",
+    "Communication",
+    "Leadership",
+    "Problem-Solving",
+    "English",
+    "Kannada"
+  ],
+  "is_resume": true
+}
