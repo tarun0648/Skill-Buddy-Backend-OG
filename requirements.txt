@@ -1,0 +1,255 @@
+# Core Flask dependencies
+Flask==2.3.3
+Flask-CORS==4.0.0
+
+# Firebase dependencies  
+firebase-admin==6.2.0
+google-cloud-firestore==2.13.1
+
+# OpenAI integration (for interview system)
+openai==1.35.0
+
+# Authentication and security
+PyJWT==2.8.0
+bcrypt==4.0.1
+passlib==1.7.4
+argon2-cffi==23.1.0
+
+# ENHANCED PASSWORD SECURITY
+# Password strength validation
+zxcvbn==4.4.28
+
+# Secure random number generation
+pycryptodome==3.19.0
+
+# Request handling and validation
+Werkzeug
+marshmallow==3.20.1
+
+# Data validation and processing
+email-validator==2.1.0
+
+# Date and time handling
+python-dateutil==2.8.2
+
+# File processing
+PyPDF2==3.0.1
+python-docx==0.8.11
+python-magic==0.4.27
+
+# PDF processing for resumes
+pdfplumber==0.10.3
+
+# Image processing (optional)
+Pillow
+
+# Excel file processing
+openpyxl==3.1.2
+xlrd==2.0.1
+
+# CSV processing
+pandas
+
+# HTTP requests
+requests==2.31.0
+
+# Environment variables
+python-dotenv
+python-decouple==3.8
+
+# Background tasks and queue
+celery
+redis==4.6.0
+
+# Database utilities
+SQLAlchemy==2.0.21
+
+# Logging and monitoring
+sentry-sdk==1.38.0
+
+# Phone number validation and SMS
+phonenumbers==8.13.19
+twilio==8.8.0
+
+# Email sending
+Flask-Mail==0.9.1
+sendgrid==6.10.0
+mailgun==0.1.1
+
+# Email template rendering
+Jinja2==3.1.2
+
+# Async email support (optional)
+aiosmtplib==2.0.2
+
+# Email validation and processing
+premailer==3.10.0
+flanker==0.9.11
+
+# Rate limiting
+Flask-Limiter==3.5.0
+slowapi==0.1.9
+
+# Security headers
+flask-talisman==1.1.0
+
+# CSRF protection
+Flask-WTF==1.2.1
+
+# Caching
+Flask-Caching==2.1.0
+
+# Testing dependencies
+pytest==7.4.2
+pytest-flask==1.2.0
+pytest-cov==4.1.0
+pytest-mock==3.12.0
+
+# Security testing
+bandit==1.7.5
+
+# Code quality
+flake8==6.0.0
+black==23.7.0
+isort==5.12.0
+mypy==1.7.1
+
+# Documentation
+sphinx==7.2.6
+sphinx-rtd-theme==1.3.0
+
+# Development dependencies
+watchdog==3.0.0
+virtualenv==20.25.0
+
+# Cloud storage (optional)
+boto3==1.28.62  # AWS S3
+google-cloud-storage==2.10.0  # Google Cloud Storage
+
+# JSON Web Tokens
+authlib==1.2.1
+
+# URL parsing and validation
+validators==0.22.0
+
+# Text processing
+nltk==3.8.1
+textblob==0.17.1
+
+# Configuration management
+pyyaml==6.0.1
+
+# UUID generation
+uuid==1.30
+uuid6==2023.5.2
+
+# Data serialization
+jsonschema==4.19.1
+marshmallow-dataclass==8.6.0
+
+# Configuration validation
+cerberus==1.3.5
+
+# HTTP client
+httpx==0.25.0
+
+# Task scheduling
+APScheduler==3.10.4
+
+# WebSocket support (for real-time features)
+Flask-SocketIO==5.3.6
+
+# Session management
+Flask-Session==0.5.0
+
+# WSGI server for production
+gunicorn==21.2.0
+#uWSGI
+
+# Process management
+supervisor==4.2.5
+
+# Memory profiling and optimization
+memory-profiler==0.61.0
+
+# Progress bars for long operations
+tqdm==4.66.1
+
+# Timezone handling
+pytz==2023.3
+
+# Regular expressions
+regex
+
+# JSON manipulation
+jsonpath-ng==1.5.3
+
+# Markdown processing
+markdown==3.5
+
+# Template engines
+Jinja2==3.1.2
+
+# URL routing
+Flasgger  # Swagger/OpenAPI documentation
+
+# Health checks
+Flask-HealthCheck
+Flask-HealthZ
+
+# HTML parsing
+beautifulsoup4==4.12.2
+
+# MONITORING AND LOGGING
+# Application monitoring
+# sentry-sdk[flask]==1.38.0  # Already included above
+
+# Performance monitoring
+newrelic==9.2.0
+py-spy==0.3.14
+
+# Log aggregation
+python-json-logger==2.0.7
+
+# Structured logging
+structlog==23.2.0
+
+# SECURITY HEADERS AND MIDDLEWARE
+# Content Security Policy
+flask-csp
+
+# Security middleware
+secure==0.3.0
+
+# OPTIONAL: Advanced Security Features
+# Two-factor authentication (if implementing 2FA)
+pyotp==2.9.0
+qrcode==7.4.2
+
+# VULNERABILITY SCANNING
+# Safety for dependency vulnerability checking
+safety
+
+# License checking
+pip-licenses==4.3.2
+
+# COMPLIANCE AND AUDITING
+# GDPR compliance utilities
+anonymizedf==1.0.1
+
+# DATA PROTECTION
+# Field-level encryption
+cryptography-vectors
+
+# DEPLOYMENT HELPERS
+# Docker utilities (if using containerization)
+docker==6.1.3
+
+# Cloud deployment
+google-cloud-secret-manager==2.16.4
+
+# File integrity checking
+checksumdir==1.2.0
+
+# Social media integration
+facebook-business==18.0.5

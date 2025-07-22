@@ -1,0 +1,625 @@
+[
+  {
+    "question": "Describe a time you led a team to deliver a critical project under a tight deadline. How did you organize and motivate the team?",
+    "role": "Engineering Lead",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Leadership & Motivation",
+    "source": "https://glassdoor.com/Interview/engineering-lead-questions"
+  },
+  {
+    "question": "How do you balance hands-on coding with mentoring responsibilities as an Engineering Lead?",
+    "role": "Engineering Lead",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Time Management",
+    "source": "https://hiring.engineering.com/leadership-interview"
+  },
+  {
+    "question": "Tell me about a time you had to resolve a deep technical disagreement between two senior engineers.",
+    "role": "Engineering Lead",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Behavioral",
+    "topic": "Conflict Resolution",
+    "source": "https://barraiser.com/technical-lead-interview"
+  },
+  {
+    "question": "How do you ensure code quality and consistency across multiple teams?",
+    "role": "Engineering Lead",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Standards & Best Practices",
+    "source": "https://martinfowler.com/architecture"
+  },
+  {
+    "question": "Explain your approach to designing a component that must scale to millions of users per day.",
+    "role": "Engineering Lead",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Technical",
+    "topic": "Scalability & Performance",
+    "source": "https://highscalability.com/case-studies"
+  },
+  {
+    "question": "What metrics do you track to gauge your team’s health and success as a technical leader?",
+    "role": "Engineering Lead",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Analytical",
+    "topic": "Team Metrics",
+    "source": "https://dora.dev/metrics"
+  },
+  {
+    "question": "Describe a major architecture decision you made as an Engineering Manager I. What trade-offs did you consider?",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "System Design",
+    "source": "https://leetcodetips.com/engineering-manager"
+  },
+  {
+    "question": "How do you structure your 1:1 meetings with direct reports to maximize impact at the EM I level?",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Coaching & Development",
+    "source": "https://manager-tools.com/one-on-one-guide"
+  },
+  {
+    "question": "Tell me about a time you had to ramp a new engineer rapidly onto your codebase. What was your onboarding process?",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2024",
+    "category": "Execution",
+    "topic": "Onboarding",
+    "source": "https://hiring.engineering.com/onboarding-best-practices"
+  },
+  {
+    "question": "You discover a critical bug in production—two hours before a major release. How do you lead your EM I team through the incident?",
+    "role": "Engineering Manager I",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Incident Management",
+    "source": "https://devops.com/incident-communication"
+  },
+  {
+    "question": "How have you handled an underperforming direct report at the EM I level? Walk me through your performance improvement process.",
+    "role": "Engineering Manager I",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Performance Management",
+    "source": "https://barraiser.com/engineering-manager-interview"
+  },
+  {
+    "question": "What frameworks or tools do you use to track technical debt across your projects?",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Technical Debt",
+    "source": "https://thoughtworks.com/tech-debt-strategies"
+  },
+  {
+    "question": "As an Engineering Manager II, how do you align your team’s roadmaps with overall company objectives?",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Goal Alignment",
+    "source": "https://okrexample.com/alignment-strategies"
+  },
+  {
+    "question": "Describe a time you led multiple teams through a large-scale platform migration as an EM II.",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Technical",
+    "topic": "Platform Migration",
+    "source": "https://architecture.io/case-studies"
+  },
+  {
+    "question": "How do you foster cross-team collaboration and reduce silos at the EM II level?",
+    "role": "Engineering Manager II",
+    "difficulty": "Mid/Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Cross-Functional Collaboration",
+    "source": "https://exponent.com/interview-questions/collaboration"
+  },
+  {
+    "question": "Walk me through your approach to capacity planning and scaling for a regional data center.",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Analytical",
+    "topic": "Capacity Planning",
+    "source": "https://highscalability.com/capacity-planning"
+  },
+  {
+    "question": "Tell me about a time you championed a major re-architecture to improve reliability.",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Reliability Engineering",
+    "source": "https://sre.google/sre-book/automation"
+  },
+  {
+    "question": "How do you develop and track career paths for senior engineers and staff engineers?",
+    "role": "Engineering Manager II",
+    "difficulty": "Mid/Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Behavioral",
+    "topic": "Career Development",
+    "source": "https://igotanoffer.com/blogs/management/engineer-career-paths"
+  },
+  {
+    "question": "As a Senior Engineering Manager, how have you influenced technical strategy at the department level?",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Technical Strategy",
+    "source": "https://hiring.engineering.com/strategic-leadership"
+  },
+  {
+    "question": "Describe your experience managing managers—how do you coach and develop EM I & II leaders?",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "People Management",
+    "source": "https://barraiser.com/engineering-manager-interview"
+  },
+  {
+    "question": "Tell me about a time you had to make a trade-off between innovation and stability for a critical platform.",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Technical/Behavioral",
+    "topic": "Trade-off Decisions",
+    "source": "https://martinfowler.com/tech-excellence"
+  },
+  {
+    "question": "How do you establish and enforce security standards across multiple engineering teams?",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Security & Compliance",
+    "source": "https://owasp.org"
+  },
+  {
+    "question": "What processes do you put in place to handle large-scale incidents spanning multiple services?",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Incident Response",
+    "source": "https://devops.com/incident-communication"
+  },
+  {
+    "question": "Describe how you measure the ROI of platform investments you championed.",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Analytical",
+    "topic": "Business Impact",
+    "source": "https://metrics.engineering.com"
+  },
+  {
+    "question": "As Director of Engineering, how do you develop a multi-year technology roadmap aligned with business goals?",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Roadmap Planning",
+    "source": "https://forrester.com/technology-roadmaps"
+  },
+  {
+    "question": "How do you balance resource allocation across multiple product lines as a Director of Engineering?",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Resource Management",
+    "source": "https://pmalliance.com/resource-allocation"
+  },
+  {
+    "question": "Tell me about a time you had to influence C-level stakeholders to secure funding for a major initiative.",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Behavioral",
+    "topic": "Stakeholder Management",
+    "source": "https://hbr.org/technology-funding"
+  },
+  {
+    "question": "What metrics do you report to the executive team to demonstrate engineering effectiveness?",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Analytical",
+    "topic": "Executive Reporting",
+    "source": "https://dora.dev/metrics"
+  },
+  {
+    "question": "As VP of Engineering, how have you scaled engineering culture during hypergrowth?",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Culture & Scaling",
+    "source": "https://barraiser.com/executive-engineering-interview"
+  },
+  {
+    "question": "Describe your approach to building and leading a global engineering organization.",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Global Leadership",
+    "source": "https://forbes.com/global-engineering"
+  },
+  {
+    "question": "How do you ensure alignment between R&D investments and product roadmap as VP of Engineering?",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Strategic",
+    "topic": "Investment Alignment",
+    "source": "https://igotanoffer.com/blogs/management/engineering-execs"
+  },
+  {
+    "question": "Tell me about a time you had to reorganize teams to improve strategic focus.",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Org Design",
+    "source": "https://hbr.org/org-design"
+  },
+  {
+    "question": "As CTO, how do you translate emerging technology trends into actionable R&D initiatives?",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Technology Vision",
+    "source": "https://techcrunch.com/cto-interview-guide"
+  },
+  {
+    "question": "Describe how you balance technical innovation with risk management at the CTO level.",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Technical/Behavioral",
+    "topic": "Innovation vs. Risk",
+    "source": "https://barraiser.com/cti-interview"
+  },
+  {
+    "question": "Tell me about a time you led the technical strategy that enabled your company to enter a new market.",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Strategic",
+    "topic": "Market Expansion",
+    "source": "https://forbes.com/tech-strategy"
+  },
+  {
+    "question": "How do you build partnerships with external technology vendors and research institutions as CTO?",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Partnerships",
+    "source": "https://hbr.org/tech-partnerships"
+  },
+  {
+    "question": "What governance structures do you establish to ensure security and compliance across the organization?",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Governance",
+    "source": "https://owasp.org"
+  },
+  {
+    "question": "How do you assess when to introduce a new technology or framework to your team?",
+    "role": "Engineering Lead",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Technology Adoption",
+    "source": "https://martinfowler.com/"
+  },
+  {
+    "question": "Describe a time you had to convince senior leadership to invest in refactoring efforts.",
+    "role": "Engineering Lead",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Behavioral",
+    "topic": "Influence & Persuasion",
+    "source": "https://barraiser.com/technical-lead-interview"
+  },
+  {
+    "question": "How do you ensure knowledge transfer when a key engineer leaves the team?",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Knowledge Management",
+    "source": "https://dev.to/"
+  },
+  {
+    "question": "Tell me about a time you improved your team’s incident response process.",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Technical/Behavioral",
+    "topic": "Incident Management",
+    "source": "https://sre.google/sre-book"
+  },
+  {
+    "question": "What tools and practices do you use to monitor production performance?",
+    "role": "Engineering Manager I",
+    "difficulty": "Mid",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Monitoring & Observability",
+    "source": "https://newrelic.com/"
+  },
+  {
+    "question": "How would you restructure a monolithic application into microservices?",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Technical",
+    "topic": "Microservices",
+    "source": "https://samnewman.io/patterns/microservices"
+  },
+  {
+    "question": "Describe your approach to defining SLAs and SLOs for your services.",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "Reliability Engineering",
+    "source": "https://sre.google/sre-book"
+  },
+  {
+    "question": "How do you drive cross-functional planning between engineering, product, and design?",
+    "role": "Engineering Manager II",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Cross-Functional Collaboration",
+    "source": "https://exponent.com/"
+  },
+  {
+    "question": "Tell me about a time you introduced CI/CD best practices to a legacy codebase.",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "Technical",
+    "topic": "CI/CD",
+    "source": "https://circleci.com/"
+  },
+  {
+    "question": "What metrics do you present to the board to justify engineering budget increases?",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Analytical",
+    "topic": "Executive Reporting",
+    "source": "https://dora.dev/metrics"
+  },
+  {
+    "question": "How have you built an engineering career ladder and promotion process?",
+    "role": "Senior Engineering Manager",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2024",
+    "category": "Behavioral",
+    "topic": "Career Development",
+    "source": "https://hiring.engineering.com/"
+  },
+  {
+    "question": "Describe a time you led the deprecation of an old service without impacting customers.",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Service Deprecation",
+    "source": "https://highscalability.com/"
+  },
+  {
+    "question": "How do you align multiple engineering directors under a unified technical vision?",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Strategic",
+    "topic": "Technical Vision",
+    "source": "https://forbes.com/"
+  },
+  {
+    "question": "Tell me about a large‐scale cost optimization you led across global data centers.",
+    "role": "Director of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Analytical",
+    "topic": "Cost Optimization",
+    "source": "https://barraiser.com/"
+  },
+  {
+    "question": "As VP of Engineering, how do you cultivate leaders at every level of your organization?",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral",
+    "topic": "Leadership Development",
+    "source": "https://hbr.org/"
+  },
+  {
+    "question": "Describe your process for evaluating and integrating acquisitions from a technology standpoint.",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Technical/Strategic",
+    "topic": "M&A Technology Integration",
+    "source": "https://forrester.com/"
+  },
+  {
+    "question": "Tell me about a strategic shift you led in your engineering organization during hypergrowth.",
+    "role": "VP of Engineering",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Org Strategy",
+    "source": "https://barraiser.com/"
+  },
+  {
+    "question": "How do you decide when to build in‐house versus buy a third-party solution?",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Build vs. Buy",
+    "source": "https://techcrunch.com/"
+  },
+  {
+    "question": "Describe how you establish a technology scouting process for emerging innovations.",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Strategic",
+    "topic": "Technology Scouting",
+    "source": "https://cacm.acm.org/"
+  },
+  {
+    "question": "Tell me about a time you had to make a tough call on technology deprecation at the C-suite level.",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Behavioral",
+    "topic": "Decision Making",
+    "source": "https://hbr.org/"
+  },
+  {
+    "question": "How do you balance innovation labs with core product engineering priorities?",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Execution",
+    "topic": "Innovation Management",
+    "source": "https://sloanreview.mit.edu/"
+  },
+  {
+    "question": "Describe your experience building global disaster recovery and business continuity plans.",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2024",
+    "category": "Technical",
+    "topic": "Disaster Recovery",
+    "source": "https://aws.amazon.com/"
+  },
+  {
+    "question": "How do you foster a culture of responsible AI and data ethics in your engineering teams?",
+    "role": "CTO",
+    "difficulty": "Executive",
+    "company": "",
+    "year": "2025",
+    "category": "Behavioral/Strategic",
+    "topic": "Ethics & Governance",
+    "source": "https://aiethicsjournal.org/"
+  },
+  {
+    "question": "Can you walk me through your experience with leading a team of developers in a Python environment and how you collaborate with product managers to deliver successful projects?",
+    "role": "Senior Python Developer",
+    "difficulty": "Senior",
+    "company": "",
+    "year": "2025",
+    "category": "AI Generated",
+    "topic": "Python, Django, AWS",
+    "source": "AI Generated",
+    "jd_skills": [
+      "Python",
+      "Django",
+      "AWS",
+      "microservices"
+    ],
+    "jd_technologies": [
+      "Docker",
+      "Redis",
+      "PostgreSQL"
+    ],
+    "jd_industry": "tech",
+    "jd_company_type": "not specified"
+  }
+]
